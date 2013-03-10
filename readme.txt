@@ -1,3 +1,5 @@
+抱歉只有中文的说明
+
 特色
 1. c++层仅有系统相关的部分（仅仅实现了渲染，并且是gdi渲染）
 2. 所有游戏对象和逻辑都在lua
@@ -15,6 +17,15 @@
 	一次性渲染的方式在c++层可以做点合并批次的优化——尚未实现
 4. 这样设计的局限
 	对象不能太多，否则会慢吧没有测试过，特别适合手机（对象100个左右）
+
+目录结构
+mos c++ 
+ui lua
+
+开发环境
+mos/mos.sln 输出 ui/mos.exe
+vs2010，其中对lua的支持在
+https://github.com/downloads/yujiang/vsLua/LuaLanguage.vsix
 
 lua的数据结构
 g_root
@@ -37,10 +48,6 @@ graph
 image_db
 	定义一个image+frame是来自一个图片的某个rect——常见的是把所有ui资源做到一个大图中。
 
-开发环境
-mos/mos.sln 输出 ui/mos.exe
-vs2010，其中对lua的支持在
-https://github.com/downloads/yujiang/vsLua/LuaLanguage.vsix
 
 输入常用命令(在main.lua)
 r reload 比如改了一个button；r button，会遍历root，把所有button对象的metatable替换成新的。
