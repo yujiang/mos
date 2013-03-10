@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ui">
+      <UniqueIdentifier>{param wrong please use crc --help }</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ex">
+      <UniqueIdentifier>{param wrong please use crc --help }</UniqueIdentifier>
+    </Filter>
+    <Filter Include="clib">
+      <UniqueIdentifier>{d70de0cb-10f6-42d6-bebe-252e03114aa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{d52b1d21-1951-4bb7-9e65-6210aea6327e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{1f956610-fb4c-42d9-b594-51bf872a6679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="keyword">
+      <UniqueIdentifier>{c0f0fba9-f3b7-4692-9c29-2fe5fdc5ca0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="db">
+      <UniqueIdentifier>{92fce7d8-8c58-4f72-b50e-1c952b4a10a0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\window.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="readme.txt" />
+    <None Include="ui\cell.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\image.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\button.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\root.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\ui.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ex\table_ex.lua">
+      <Filter>ex</Filter>
+    </None>
+    <None Include="ex\sort_ex.lua">
+      <Filter>ex</Filter>
+    </None>
+    <None Include="ex\string_ex.lua">
+      <Filter>ex</Filter>
+    </None>
+    <None Include="ex\class.lua">
+      <Filter>ex</Filter>
+    </None>
+    <None Include="ui\layer.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="main.lua" />
+    <None Include="clib\cdriver.lua">
+      <Filter>clib</Filter>
+    </None>
+    <None Include="monk.lua" />
+    <None Include="core\timer.lua">
+      <Filter>core</Filter>
+    </None>
+    <None Include="ui\msgbox.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\label.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\text.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\menu.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\menu_popup.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\mitem.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="ui\box.lua">
+      <Filter>ui</Filter>
+    </None>
+    <None Include="core\timer_vector.lua">
+      <Filter>core</Filter>
+    </None>
+    <None Include="core\timer_list.lua">
+      <Filter>core</Filter>
+    </None>
+    <None Include="core\timer_map.lua">
+      <Filter>core</Filter>
+    </None>
+    <None Include="game\move.lua">
+      <Filter>game</Filter>
+    </None>
+    <None Include="game\ani.lua">
+      <Filter>game</Filter>
+    </None>
+    <None Include="game\sprite.lua">
+      <Filter>game</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Lib\lua\keyword.lua">
+      <Filter>keyword</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Lib\lua\my_keyword.lua">
+      <Filter>keyword</Filter>
+    </None>
+    <None Include="game\map.lua">
+      <Filter>game</Filter>
+    </None>
+    <None Include="core\timer_everyframe.lua">
+      <Filter>core</Filter>
+    </None>
+    <None Include="game\ai.lua">
+      <Filter>game</Filter>
+    </None>
+    <None Include="core\emitter.lua">
+      <Filter>core</Filter>
+    </None>
+    <None Include="test.lua" />
+    <None Include="game\camera.lua">
+      <Filter>game</Filter>
+    </None>
+    <None Include="todo.txt" />
+    <None Include="db\ani_data.lua">
+      <Filter>db</Filter>
+    </None>
+  </ItemGroup>
+</Project>

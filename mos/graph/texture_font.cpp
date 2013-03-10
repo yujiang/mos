@@ -1,0 +1,65 @@
+#include "graph.h"
+#include "texture_font.h"
+#include "graph.h"
+#include "cell.h"
+#include "image.h"
+#include "device/window.h"
+#include "font.h"
+
+bool texture_font::create_texture_font(int width,int height,const stFont* st_font,bool bold)
+{
+	m_st_font = st_font;
+	m_bold = bold;
+
+	m_image = new image;
+	m_image->create_image_dynamic(width,height,1); //just a alpha chanel
+	m_image->m_alpha = true;
+
+	int maxw = st_font->max_width();
+	int maxh = st_font->max_height();
+	int col = width / maxw;
+	int line = height / maxh;
+
+	printf(__FUNCTION__" w %d h %d fw %d fh %d\n",width,height,st_font->max_width(),st_font->max_height());
+
+	for (int y = 0; y<line; y++)
+	for (int x = 0; x<col; x++)
+	{
+		texture_char* p = new texture_char(x*maxw,y*maxh,maxw,maxh);
+		m_char_free.push_back(p);
+	}
+
+	return true;
+}
+
+texture_char* texture_font::find_char(int char_value)
+{
+	texture_char* p = m_map_char[char_value];
+	if (p)
+		return p;
+	if (m_char_free.empty())
+		return NULL;
+	
+	p = m_char_free.back();
+	
+	if (!create_char(p,char_value))
+		return NULL;
+
+	m_char_free.pop_back();
+	m_map_char[char_value] = p;
+	return p;
+}
+
+bool texture_font::create_char(texture_char* tc,int char_value)
+{
+	image* img = create_font_image(m_st_font,char_value,tc->advance);
+	if (!img)
+		return false;
+	st_cell cell;
+	cell.x = tc->rc.l;
+	cell.y = tc->rc.t;
+	m_image->draw_image(cell,img,NULL,NULL);
+	delete img;
+	return true;
+}
+

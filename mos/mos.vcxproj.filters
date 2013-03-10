@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="graph">
+      <UniqueIdentifier>{4226bfb3-32c4-4a99-84da-b2493984e592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="device">
+      <UniqueIdentifier>{0b48c00b-81b6-455b-ae0c-ba32dd2caef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{ed77c0e0-c3ba-4020-9ad3-e57126119dd1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="driver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\cell.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\texture.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="device\window.h">
+      <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\graph.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\image.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\point.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\rect.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="device\file.h">
+      <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="cc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\color.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="core\pool.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\texture_font.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\font.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\image_db.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="mos.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utf8.h">
+      <Filter>core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\cell.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\texture.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="device\window.cpp">
+      <Filter>device</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\graph.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\image.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\point.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\rect.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="device\file.cpp">
+      <Filter>device</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\image_jpeg.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\image_png.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\texture_font.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\font.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\image_db.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utf8.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,113 @@
+面向手机和游戏写个ui for coco2dx，有几个目的：
+1. 去掉华而不实的功能：比如对齐，skin，scheme，xml等
+2. 为render做优化
+3. 紧凑点，有啥写啥不多做事情，比如不需要menu, 滚动条。
+	后来还是加了menu自己用
+4. 用过程的方法而不用对象，发现并不好写。
+	后来还是用了点oo的思想
+5. 有可能的话做个编辑器
+
+changelog
+1.3 搭好了框架，todo：绘制出来，响应事件。
+1.4 
+	还是改为了class的方法，有一些小坑，封装性好得多。
+	使用cocos2dx的HelloLua作为宿主程序，修改hello.lua即可。
+1.5
+	觉得cocos2dx不爽，决定自己重新写，不会的可以从他那里copy code。
+	window，只有一个HWND
+	image，用到了libpng和libjpeg
+	console的输入从qin拿来	
+	剩下最麻烦的device和texture。
+	模拟器的device可以用window gdi正好有代码。drawbit有点坑人，是长宽不规则无法整除4造成。
+1.6
+	搞定了image就停下来先。——ok了，排序写错害我检查了半天。
+	先在tlqx中实现这个卡牌玩法，搞定技能和数值之后，再回头来做这个，或者在家可以做这个。
+	实现了鼠标点击的事件
+	实现了脚本reload，遍历所有类以及其子类，然后重新设定metable
+1.12
+	支持鼠标拖动控件drag
+	支持domodel和msgbox
+	支持box显示一个rect
+1.13
+	加了键盘的事件
+	lua的入口函数改为了xpcall以得到堆栈
+1.14
+	写了texure_font和texture_char的对应关系
+1.15
+	用freetype显示文字，注意load_char加参数FT_LOAD_NO_BITMAP，否则load出来是点阵的。
+	文字被label剪裁，这样可以显示像素级别的文字移动了。
+1.17
+	如果有focus，focus来相应键盘
+	支持鼠标滚轮事件
+1.18
+	改了root.focus的一些bug，只有ldown产生focus，同时要随时检查focus,modal,drag的状态。
+	改了button的bug，只有lup的事件不行，还必须前面有个ldown
+	做了file frame向不同图片或者一张图片的不同rect的映射。
+1.20
+	注意把0xffxxxxxx从lua传到c++，作为integer会出错
+	之前的color不对，dc是bgr，而图片image都是rgb
+	重构了代码，button直接从cell派生
+	cell--text 
+	    --image
+		--label
+		--box
+	但是cell又有这几个基本成员bg,box,caption.
+	加了menu的支持，之前说过游戏中用不到，这里为了自己使用方便点，为了支持子菜单，多做了点事情。
+	root支持modal_window,popup_menu,hover,focuse。
+	text支持了居中在label层而非text层。
+	用lua写代码确实方便，快的多，跳过设计模式。
+1.22
+	支持了menu，为了自己好调试
+1.24
+	支持数据的serialize，非常容易
+	不得不说这个存储非常牛，(self reference)可以找到
+	将来的模板也不是问题了
+1.26
+	写了game的timer
+	image可以有ani，ani用timer来改变image的frame。
+	支持了一张png的连续帧。
+1.27
+	加了move，加了everyframe的timer
+	加了map和sprite
+	c++层支持重心点
+	sprite的shape和ani合在一起做成表格。
+	重构sprite不再从image派生而是把image作为bg，这样不再需要c++层支持重心点，
+	要y排序，重载get_z即可
+1.28
+	用coroutine实现ai
+1.29
+	加了fps
+1.30
+	无法简单的loadmap，因为move挂在了全局的timer上，导致没有释放。
+	所以addchild的时候必须先destroy掉,destory会调用stop_move。
+2.2 
+	写了对timer的测试
+	c++层没有动态释放——重构把资源都放到graph，还是先不释放，因为没啥可以leak的。
+	看下luvit——已经到了0.6
+2.6
+	对luvit的on和emit印象很深刻，但是看了看代码，发现真正需要的就是
+	button::on_click，window::on_close 其实这两个也一般不需要，重载一次即可，哪里需要多次重载呢？
+	多半在ai，比如sprite::on_reach，这里改为了emit。
+	在root加了个close的chain
+	看了下windows的子菜单，还是改为一样的操作了
+	存储不再存move，ai
+2.7
+	重构把windows.h从头文件移走，仅仅a2u和window.cpp需要。
+2.8 
+	加了资源的dump和autoclear
+2.10
+	加了类camera，貌似move应该放在ui里
+	为了跨平台，使用了iconv，有一些坑，比如字符串长度要包括后面的0，出错也看不到原因。
+2.22
+	支持image的zlib的压缩，10s不用即压缩，100s不用则释放。
+	如上，这样就不必用rle来做数据格式了。（rle的优势在于内存占用小），为何不用png呢，解压麻烦（慢）。
+
+	重心是放在了ani这一层，而没有放在image——因为image格式没有该信息。
+	只在sprite的doani中用一次（一个ani必须保证图片大小和重心都一致，这个在输出可以保证——无非是黑边有点）。
+	但是image必须是剪裁并且紧凑的，否则blt太浪费了，image还是有个off。
+
+Todo：
+	1. 支持其他animation格式。比如天龙的文件格式(256色rle)。
+	2. 支持一些ui模板（）
+	3. 支持opengl（比dx优先级高，为了手机）
+	进展非常的快哦。

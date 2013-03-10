@@ -1,0 +1,2 @@
+lua monk.lua
+pause
