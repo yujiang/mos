@@ -41,6 +41,13 @@ const stFont* get_font(int font_id)
 	return &it->second;
 }
 
+const char* get_windows_font(const char* file)
+{
+	static char buf[128];
+	sprintf(buf,"Fonts/%s",file);
+	return buf;
+}
+
 bool regist_font(int font_id,const char* name,int width,int height,int xspace,int yspace)
 {
 	if (g_font_types.find(font_id) != g_font_types.end())
@@ -51,8 +58,13 @@ bool regist_font(int font_id,const char* name,int width,int height,int xspace,in
 	error =  FT_New_Face( library,get_resourcefile(name),0,&face);
 	if (error)
 	{
-		assert(0);
-		return false;
+		//find in windows font
+		error =  FT_New_Face( library,get_windows_font(name),0,&face);
+		if (error)
+		{
+			assert(0);
+			return false;
+		}
 	}
 	error = FT_Set_Pixel_Sizes(face,width,height);
 	if (error)
