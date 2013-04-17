@@ -326,12 +326,16 @@ function test_ui(w,h)
 	mv:move_to(400,400,100)
 
 	local win4 = window()
-	win4:create_window("win4",10,10,20,100,50)
+	win4:create_window("win4",10,10,20,200,100)
 	win4:set_box(0x008080ff,180)
 
 	l1:add_window(win4)
 	local label1 = label()
-	label1:create_label("lable1",0,0,0,100,50,"fps:100√\nhello world!HAPPY.\n你好，世界！\nlong long ago.")
+	local s1 = "1.fps:100√\n2.hello world!HAPPY.\n3.你好，世界！\n4.long long ago."
+	for i=5,20 do 
+		s1 = s1 .."\n".. i.. ".test s"
+	end
+	label1:create_label("lable1",0,0,0,200,100,s1)
 	label1._disable = false
 	label1:get_text():set_scroll(4)
 	--label1:create_label("lable1",0,0,0,100,60,"好a好b若c您d为e了！")

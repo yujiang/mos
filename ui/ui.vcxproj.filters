@@ -27,7 +27,6 @@
     <None Include="ui\window.lua">
       <Filter>ui</Filter>
     </None>
-    <None Include="readme.txt" />
     <None Include="ui\cell.lua">
       <Filter>ui</Filter>
     </None>
@@ -131,5 +130,6 @@
     <None Include="db\ani_data.lua">
       <Filter>db</Filter>
     </None>
+    <None Include="..\readme.txt" />
   </ItemGroup>
 </Project>

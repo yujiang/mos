@@ -51,7 +51,7 @@ image_db
 
 输入常用命令(在main.lua)
 r reload 比如改了一个button；r button，会遍历root，把所有button对象的metatable替换成新的。
-l load window
+l load window	
 s show window
 df dofile 常用df main.lua 
 dump cdriver.dump_resource 看c++的cache

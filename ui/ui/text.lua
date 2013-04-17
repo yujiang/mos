@@ -39,11 +39,15 @@ function text:in_rect(x,y)
 	return x >= 0 and x < self.w and y >= 0 and y < self.h
 end
 
+function text:in_rect_pixel(x,y)
+	return self:in_rect(x,y)
+end
+
 function text:on_mouse_msg(mouse_event,x,y,param)
 	if mouse_event == WM_MOUSEWHEEL and self.scroll then
 		local miny = self.h - self.line * ui:get_font_height(self.font)
 		--print("text:on_mouse_msg",mouse_event,x,y,param)
-		--print("h,line,height",self.h,self.line,ui:get_font_height(self.font),miny)
+		--print(string.format("h=%d line=%d height=%d miny=%d",self.h,self.line,ui:get_font_height(self.font),miny))
 		if miny < 0 then
 			local depth = param / 120
 			self.y = self.y + self.scroll * depth
@@ -53,6 +57,7 @@ function text:on_mouse_msg(mouse_event,x,y,param)
 				self.y = 0
 			end
 		end
+		--print(self.y)
 		return self
 	end
 end

@@ -209,6 +209,7 @@ function on_mouse_event(mouse_event,x,y,param)
 end
 
 function on_mouse_wheel(delta,x,y)
+	--print("on_mouse_wheel",delta,x,y)
 	on_mouse_event(WM_MOUSEWHEEL,x,y,delta)
 end
 

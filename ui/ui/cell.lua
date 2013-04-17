@@ -508,6 +508,9 @@ function cell:recv_mouse_msg(mouse_event,x,y,param)
 		end
 	end	
 
+	if mouse_event == WM_MOUSEWHEEL then
+		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,self:in_rect_pixel(x,y),self:in_rect(x,y))
+	end
 	if self:in_rect_pixel(x,y) then
 		return self:on_mouse_msg(mouse_event,x,y,param)	
 	end

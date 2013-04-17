@@ -76,6 +76,7 @@
   <ItemGroup>
     <None Include="..\..\..\..\..\Lib\lua\keyword.lua" />
     <None Include="..\..\..\..\..\Lib\lua\my_keyword.lua" />
+    <None Include="..\readme.txt" />
     <None Include="clib\cdriver.lua" />
     <None Include="core\emitter.lua" />
     <None Include="core\timer.lua" />
@@ -96,7 +97,6 @@
     <None Include="game\sprite.lua" />
     <None Include="main.lua" />
     <None Include="monk.lua" />
-    <None Include="readme.txt" />
     <None Include="test.lua" />
     <None Include="todo.txt" />
     <None Include="ui\box.lua" />
