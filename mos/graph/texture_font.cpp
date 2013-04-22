@@ -5,15 +5,26 @@
 #include "image.h"
 #include "device/window.h"
 #include "font.h"
+#include "device/window_render.h"
+#include "mos.h"
+
+texture_font::~texture_font()
+{
+	delete m_texture;
+	m_texture = NULL;
+}
 
 bool texture_font::create_texture_font(int width,int height,const stFont* st_font,bool bold)
 {
 	m_st_font = st_font;
 	m_bold = bold;
 
-	m_image = new image;
-	m_image->create_image_dynamic(width,height,1); //just a alpha chanel
-	m_image->m_alpha = true;
+	//m_image = new image;
+	//m_image->create_image_dynamic(width,height,1); //just a alpha chanel
+	//m_image->m_alpha = true;
+	m_texture = get_render()->create_texture();
+	m_texture->create_texture_dynamic(width,height,1);
+	m_texture->set_alpha(true);
 
 	int maxw = st_font->max_width();
 	int maxh = st_font->max_height();
@@ -58,7 +69,10 @@ bool texture_font::create_char(texture_char* tc,int char_value)
 	st_cell cell;
 	cell.x = tc->rc.l;
 	cell.y = tc->rc.t;
-	m_image->draw_image(cell,img,NULL,NULL);
+	
+	//m_image->draw_image(cell,img,NULL,NULL);
+	m_texture->draw_image(cell,img,NULL,NULL);
+
 	delete img;
 	return true;
 }

@@ -2,23 +2,23 @@
 #define __GRAPH_TEXTURE_H_
 
 //wrap opengl texture not directx.
-class image;
-#include <string>
+struct g_rect;
+class st_cell;
 
 class texture
 {
 public:
-	~texture();
-	image* m_image;
+	virtual void set_alpha(bool alpha) = 0;
+	virtual bool create_texture_dynamic(int width,int height,int m_bits_component) = 0;
+	virtual int draw_image(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip) = 0;
+	virtual bool create_texture(image* img,const g_rect* rc) = 0;
 
-	bool create_texture(image* img,const g_rect* rc);
-	int draw_cell(const st_cell& cell,const g_rect* rc = NULL);
+	int draw_cell(const st_cell& cell,const g_rect* rc = 0);
 
 	unsigned int m_time_use;
-	void mark_use(unsigned int time){
+	void mark_use_texture(unsigned int time){
 		m_time_use = time;
 	}
-
 	//const g_rect* m_image_rect;
 };
 

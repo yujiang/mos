@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "driver.h"
 #include "device/window.h"
+#include "device/window_render.h"
 #include "script.h"
 #include "graph/graph.h"
 #include "mos.h"
@@ -11,6 +12,10 @@
 window* g_window = NULL;
 unsigned int g_time_now = 0;
 
+window_render* get_render()
+{
+	return g_window->m_render;
+}
 
 bool init_window(const char* name,const char* title,st_window_param& st)
 {
@@ -46,9 +51,9 @@ bool window_run()
 		return false;
 
 	g_time_now = get_time();
-	g_window->render_start();
+	get_render()->render_start();
 	lua_call_function("on_every_frame");
-	g_window->render_end();
+	get_render()->render_end();
 
 	return true;
 }

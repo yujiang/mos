@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "utf8.h"
-#include "3rd/iconv/iconv.h"
+#include "iconv/iconv.h"
 #include "assert.h"
 
 using namespace std;

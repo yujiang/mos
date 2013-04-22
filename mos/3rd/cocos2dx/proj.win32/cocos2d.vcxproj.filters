@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="cocoa">
+      <UniqueIdentifier>{aec8225f-81a7-4213-b97b-7004d5535398}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{0b3a64bd-79fa-476a-a461-6b97e5072453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{926fc31c-8742-4984-9940-c972dd02fc8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\win32">
+      <UniqueIdentifier>{9428f8e6-4ce3-4596-b8af-14d70b7c5b5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{163895ae-8a8e-46bf-bdf2-98bb2c1347fc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\cocoa\CCGeometry.cpp">
+      <Filter>cocoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\ccGLStateCache.cpp">
+      <Filter>shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\CCShaderCache.cpp">
+      <Filter>shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\ccShaders.cpp">
+      <Filter>shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\CCGLProgram.cpp">
+      <Filter>shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\win32\CCCommon.cpp">
+      <Filter>platform\win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\cocoa\CCGeometry.h">
+      <Filter>cocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cocoa\CCObject.h">
+      <Filter>cocoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ccConfig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ccMacros.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ccTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\CCPlatformConfig.h">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\CCPlatformMacros.h">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\win32\CCGL.h">
+      <Filter>platform\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\win32\CCPlatformDefine.h">
+      <Filter>platform\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccGLStateCache.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_Position_uColor_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_Position_uColor_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionColor_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionColor_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionColorLengthTexture_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionColorLengthTexture_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTexture_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTexture_uColor_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTexture_uColor_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTexture_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTextureA8Color_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTextureA8Color_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTextureColor_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTextureColor_vert.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShader_PositionTextureColorAlphaTest_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\CCShaderCache.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShaderEx_SwitchMask_frag.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\ccShaders.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\CCGLProgram.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\CCCommon.h">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\win32\CCStdC.h">
+      <Filter>platform\win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

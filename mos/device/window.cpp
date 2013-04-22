@@ -1,13 +1,12 @@
 #include "window.h"
+#include "window_render_gdi.h"
 #include <windows.h>
 #include "script.h"
 #include <string>
 #include <conio.h>
-#include "graph/texture.h"
-#include "graph/image.h"
 #include "windowsx.h"
 #include "mos.h"
-#pragma comment(lib,"winmm.lib")
+//#pragma comment(lib,"winmm.lib")
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -120,10 +119,21 @@ HWND InitInstance(HINSTANCE hInstance, const char* szWindowClass, const char* sz
 
 
 //////////////////////////////////////////////////////////////////////////
+
+window::window() 
+{
+	m_destroy = false;
+	m_render = new window_render_gdi(this);
+}
+
 window::~window()
 {
-	delete m_image;
-	m_image = 0;
+}
+
+void window::on_destroy()
+{
+	m_destroy = true;
+	m_render->on_destroy();
 }
 
 bool window::create_window(const char* name,const char* title,st_window_param& st)
@@ -144,62 +154,11 @@ bool window::create_window(const char* name,const char* title,st_window_param& s
 	GetClientRect((HWND)m_hWnd,&rc);
 	
 	//create offscreen buf
-	int width = (rc.right-rc.left);
-	int height = (rc.bottom-rc.top);
-	m_image = new image;
-	m_image->create_image_dynamic(width,height,3);
+	m_width = (rc.right-rc.left);
+	m_height = (rc.bottom-rc.top);
 
-	return true;
+	return m_render->create_render(m_width,m_height);
 }
-
-void window::render_start()
-{
-	//clear(0);
-	m_image->clear(0);
-}
-
-void window::render_end()
-{
-	BITMAPINFO bmi;
-	ZeroMemory(&bmi,sizeof(bmi));
-	BITMAPINFOHEADER& h = bmi.bmiHeader;
-	h.biSize = sizeof(BITMAPINFOHEADER);
-	h.biWidth = m_image->m_width;
-	h.biHeight = -m_image->m_height;
-	h.biPlanes = 1;
-	h.biBitCount = 24;
-	h.biCompression = BI_RGB;
-	h.biSizeImage = m_image->m_width * m_image->m_height;
-
-	//flip();
-	HDC dc = GetDC((HWND)m_hWnd);
-	int err = SetDIBitsToDevice(dc,0,0,m_image->m_width,m_image->m_height,
-		0,0,0,m_image->m_height,
-		m_image->get_buffer() ,
-		&bmi,
-		DIB_RGB_COLORS);
-	if (err <= 0)
-	{
-		//GDI_ERROR
-		printf("error! SetDIBitsToDevice %d %d\n",err,GetLastError());
-	}
-	ReleaseDC((HWND)m_hWnd,dc);
-}
-
-int window::draw_texture(const st_cell& cell,texture* tex, const g_rect* rc)
-{
-	return m_image->draw_image(cell,tex->m_image,rc,m_rc_clip);
-}
-
-int window::draw_box(const st_cell& cell,int w,int h)
-{
-	return m_image->draw_box(cell,w,h);
-}
-
-//int window::draw_text(const st_cell& cell,const st_cell& text)
-//{
-//	return 0;
-//}
 
 //////////////////////////////////////////////////////////////////////////
 //static func

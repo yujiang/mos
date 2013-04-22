@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-#include "3rd/libjpeg/jpeglib.h"
+#include "libjpeg/jpeglib.h"
 
 /*
  * ERROR HANDLING:

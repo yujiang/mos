@@ -20,12 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -53,14 +55,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./;3rd</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;3rd;3rd/cocos2dx;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rd/libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freetype2411.lib;libiconv.lib;libzlib.lib;libjpeg.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcocos2d.lib;kazmath.lib;opengl32.lib;glew32.lib;winmm.lib;freetype2411.lib;libiconv.lib;libzlib.lib;libjpeg.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -81,7 +83,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>3rd/libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freetype2411.lib;libiconv.lib;libzlib.lib;libjpeg.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kazmath.lib;opengl32.lib;glew32.lib;winmm.lib;freetype2411.lib;libiconv.lib;libzlib.lib;libjpeg.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -91,8 +93,14 @@
     <ClInclude Include="cc.h" />
     <ClInclude Include="core\pool.h" />
     <ClInclude Include="core\utf8.h" />
+    <ClInclude Include="device\director.h" />
     <ClInclude Include="device\file.h" />
+    <ClInclude Include="device\texture_gdi.h" />
+    <ClInclude Include="device\texture_gl.h" />
     <ClInclude Include="device\window.h" />
+    <ClInclude Include="device\window_render.h" />
+    <ClInclude Include="device\window_render_gdi.h" />
+    <ClInclude Include="device\window_render_gl.h" />
     <ClInclude Include="driver.h" />
     <ClInclude Include="graph\cell.h" />
     <ClInclude Include="graph\color.h" />
@@ -111,8 +119,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\utf8.cpp" />
+    <ClCompile Include="device\director.cpp" />
     <ClCompile Include="device\file.cpp" />
+    <ClCompile Include="device\texture_gdi.cpp" />
+    <ClCompile Include="device\texture_gl.cpp" />
     <ClCompile Include="device\window.cpp" />
+    <ClCompile Include="device\window_render.cpp" />
+    <ClCompile Include="device\window_render_gdi.cpp" />
+    <ClCompile Include="device\window_render_gl.cpp" />
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="graph\cell.cpp" />
     <ClCompile Include="graph\font.cpp" />

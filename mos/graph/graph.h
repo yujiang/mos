@@ -3,6 +3,7 @@
 
 #include "rect.h"
 #include <unordered_map>
+#include <string>
 
 //file可能不是实际的file，可以是一个key
 //根据file和frame来定位texture(file and rect)

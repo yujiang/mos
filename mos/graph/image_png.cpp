@@ -4,7 +4,7 @@
 #include <assert.h>
 
 //////////////////////////////////////////////////////////////////////////
-#include "3rd/libpng/png.h"
+#include "libpng/png.h"
 
 typedef struct 
 {

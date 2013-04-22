@@ -12,7 +12,7 @@ struct texture_char
 	int advance;
 	//int x,y;
 	unsigned int m_time_use;
-	void mark_use(unsigned int time){
+	void mark_use_char(unsigned int time){
 		m_time_use = time;
 	}
 };
@@ -37,9 +37,12 @@ struct text_char
 
 struct stFont;
 
-class texture_font : public texture
+class texture_font 
 {
 public:
+	texture* m_texture;
+	~texture_font();
+
 	std::unordered_map<int,texture_char*> m_map_char;
 	std::vector<texture_char*> m_char_free;
 
@@ -48,6 +51,11 @@ public:
 	bool create_texture_font(int width,int height,const stFont* st_font,bool bold);
 	const stFont* m_st_font;
 	bool m_bold;
+
+	unsigned int m_time_use;
+	void mark_use_texturefont(unsigned int time){
+		m_time_use = time;
+	}
 protected:
 	bool create_char(texture_char* tc,int char_value);
 };

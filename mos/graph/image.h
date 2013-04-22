@@ -78,7 +78,7 @@ public:
 	}
 
 	unsigned int m_time_use;
-	void mark_use(unsigned int time){
+	void mark_use_image(unsigned int time){
 		m_time_use = time;
 	}
 	bool in_image(int x, int y) ;

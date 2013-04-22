@@ -3,7 +3,7 @@
 #include "texture.h"
 #include "texture_font.h"
 #include "image.h"
-#include "device/window.h"
+#include "device/window_render.h"
 #include "core/utf8.h"
 #include "font.h"
 #include "image_db.h"
@@ -29,14 +29,14 @@ image* graph::find_image_raw(const char* file)
 	image* i = image_map[file];
 	if (i)
 	{
-		i->mark_use(g_time_now);
+		i->mark_use_image(g_time_now);
 		return i;
 	}
 	i = image::create_image_file(file);
 	if (i)
 	{
 		image_map[file] = i;
-		i->mark_use(g_time_now);
+		i->mark_use_image(g_time_now);
 		return i;
 	}
 	return NULL;
@@ -74,7 +74,7 @@ texture* graph::find_texture(const char* file)
 {
 	texture* t = texture_map[file];
 	if (t)
-		t->mark_use(g_time_now);
+		t->mark_use_texture(g_time_now);
 	return t;
 }
 
@@ -105,8 +105,8 @@ bool graph::find_texture_font_rc(const st_cell& text,int char_value,text_char& t
 		texture_char* t = tf->find_char(char_value);
 		if (t)
 		{
-			tf->mark_use(g_time_now);
-			t->mark_use(g_time_now);
+			tf->mark_use_texturefont(g_time_now);
+			t->mark_use_char(g_time_now);
 			tc.rc_texture = &t->rc;
 			tc.advance = t->advance;
 			tc.texture = tf;
@@ -262,17 +262,18 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 		if (!img)
 			return -1;
 
-		t = new texture;
 		const g_rect* rc = NULL;
 		if (r && !r->rc.is_empty())
 			rc = &r->rc;
+
+		t = get_render()->create_texture();
 		if (!t->create_texture(img,rc))
 		{
 			delete t;
 			return -1;
 		}
 
-		t->mark_use(g_time_now);
+		t->mark_use_texture(g_time_now);
 		texture_map[file] = t;
 	}
 	return t->draw_cell(cell);
@@ -280,7 +281,7 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 
 int graph::draw_box(const st_cell& cell,int w,int h)
 {
-	return get_window()->draw_box(cell,w,h);
+	return get_render()->draw_box(cell,w,h);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -392,7 +393,7 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 	if (!font)
 		return -1;
 
-	get_window()->text_start(rc_father);
+	get_render()->text_start(rc_father);
 	st_cell c = cell;
 
 	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
@@ -423,12 +424,12 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 		c.y = cell.y + y;
 		c.color = text.color;
 		c.alpha = text.alpha;
-		tc.texture->draw_cell(c,tc.rc_texture);
+		tc.texture->m_texture->draw_cell(c,tc.rc_texture);
 
 		x += tc.advance;
 	}
 
-	get_window()->text_end();
+	get_render()->text_end();
 	//free((void*)str0);
 	return 0;
 }
@@ -446,12 +447,12 @@ void graph::render_end()
 
 void graph::draw_win_begin(int x,int y,int w,int h)
 {
-	get_window()->window_start(x,y,w,h);
+	get_render()->window_start(x,y,w,h);
 }
 
 void graph::draw_win_end()
 {
-	get_window()->window_end();
+	get_render()->window_end();
 }
 
 
