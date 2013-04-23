@@ -112,8 +112,8 @@ bool image::create_image_image(const image* i,const g_rect* rc)
 	}
 	else
 	{
-		st_cell cell;
-		draw_image(cell,i,rc,NULL);
+		//st_cell cell;
+		draw_image(0,0,-1,255,i,rc,NULL);
 	}
 	return true;
 }
@@ -261,15 +261,20 @@ void image::render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,
 }
 
 
-int image::draw_image(const st_cell& cell,const image* img,const g_rect* rc,const g_rect* rc_clip)
+int image::draw_image_cell(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip)
 {
-	if (cell.alpha <= 0)
+	return draw_image(cell.x,cell.y,cell.color,cell.alpha,img,rc_img,rc_clip);
+}
+int image::draw_box_cell(const st_cell& cell,int w,int h)
+{
+	return draw_box(cell.x,cell.y,cell.color,cell.alpha,w,h);
+}
+
+int image::draw_image(int offx,int offy,int color,int alpha,const image* img,const g_rect* rc_img,const g_rect* rc_clip)
+{
+	if (alpha <= 0)
 		return -1;
-	g_rect rect;
-	if (rc)
-		rect = *rc;
-	else
-		rect = img->get_rect();
+	g_rect rect = rc_img ? *rc_img : img->get_rect();
 
 	g_rect clip;
 	if (rc_clip)
@@ -280,9 +285,6 @@ int image::draw_image(const st_cell& cell,const image* img,const g_rect* rc,cons
 	}
 	else
 		clip = get_rect();
-
-	int offx = cell.x;
-	int offy = cell.y;
 
 	if (offx < clip.l)
 	{
@@ -317,7 +319,7 @@ int image::draw_image(const st_cell& cell,const image* img,const g_rect* rc,cons
 	int h = rect.height();
 	
 	//not use cell.alpha and cell.color
-	if (!img->m_alpha && cell.alpha == 255)
+	if (!img->m_alpha && alpha == 255)
 	{
 		assert(img->m_bits_pixel == m_bits_pixel);
 		if (img->m_bits_pixel == m_bits_pixel)
@@ -328,27 +330,24 @@ int image::draw_image(const st_cell& cell,const image* img,const g_rect* rc,cons
 		if (m_bits_pixel == 3)
 		{
 			if (img->m_bits_pixel == 1)
-				render_image_1_3(offx,offy,src,w,h,img->get_line_pitch(),cell.color,cell.alpha);
+				render_image_1_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 			else if (img->m_bits_pixel == 3)
-				render_image_3_3(offx,offy,src,w,h,img->get_line_pitch(),cell.color,cell.alpha);
+				render_image_3_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 			else if (img->m_bits_pixel == 4)
-				render_image_4_3(offx,offy,src,w,h,img->get_line_pitch(),cell.color,cell.alpha);
+				render_image_4_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 		}
 		else if (m_bits_pixel == 4)
 		{
 			assert(img->m_bits_pixel == m_bits_pixel);
-			if (cell.alpha == 255)
+			if (alpha == 255)
 				copy_image(offx,offy,src,w,h,img->get_line_pitch());
 		}
 	}
 	return 0;
 }
 
-int image::draw_box(const st_cell& cell,int w,int h)
+int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 {
-	int offx = cell.x;
-	int offy = cell.y;
-
 	if (offx < 0)
 	{
 		w += offx;
@@ -371,8 +370,8 @@ int image::draw_box(const st_cell& cell,int w,int h)
 
 	unsigned char* des = get_buf_offset(offx,offy);
 	unsigned char a,r,g,b;
-	G_GET_ARGB(cell.color,a,r,g,b);
-	a = cell.alpha;
+	G_GET_ARGB(color,a,r,g,b);
+	a = alpha;
 	if (a == 255)
 	{
 		for (int y=0; y<h; y++)
@@ -420,7 +419,7 @@ void image::compress()
 	m_buffer = NULL;
 }
 
-void image::uncompress()
+void image::uncompress() 
 {
 	assert(!m_buffer && m_buffer_compress);
 	uLong size = get_buf_size();

@@ -17,7 +17,6 @@ window_render_gdi::~window_render_gdi()
 
 void window_render_gdi::on_destroy()
 {
-
 }
 
 bool window_render_gdi::create_render(int width,int height)
@@ -70,12 +69,12 @@ void window_render_gdi::render_end()
 
 int window_render_gdi::draw_texture(const st_cell& cell,texture* tex, const g_rect* rc)
 {
-	return m_image->draw_image(cell,((texture_gdi*)tex)->m_image,rc,m_rc_clip);
+	return m_image->draw_image_cell(cell,((texture_gdi*)tex)->m_image,rc,m_rc_clip);
 }
 
 int window_render_gdi::draw_box(const st_cell& cell,int w,int h)
 {
-	return m_image->draw_box(cell,w,h);
+	return m_image->draw_box_cell(cell,w,h);
 }
 
 //int window::draw_text(const st_cell& cell,const st_cell& text)

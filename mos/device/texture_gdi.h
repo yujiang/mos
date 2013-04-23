@@ -12,10 +12,9 @@ public:
 	~texture_gdi();
 	image* m_image;
 
-	void set_alpha(bool alpha) ;
-	bool create_texture(image* img,const g_rect* rc) ;
-	bool create_texture_dynamic(int width,int height,int m_bits_component) ;
-	int draw_image(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip) ;
+	bool create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) ;
+	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
+	int draw_image_ontexture(int x,int y,const image* img) ;
 
 };
 

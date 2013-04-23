@@ -2,4 +2,7 @@
 *.pdb
 *.ilk
 *.ttf
+*.sdf
+*.exp
+*.user
 ui/mos.exe

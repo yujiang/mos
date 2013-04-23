@@ -7,6 +7,8 @@
 #include "director.h"
 #include "kazmath/kazmath.h"
 #include "texture_gl.h"
+#include "graph/cell.h"
+#include "graph/color.h"
 #include "cocos2dx/shaders/ccGLStateCache.h"
 #include "cocos2dx/include/ccTypes.h"
 //#include "cocoa/ccMacros.h"
@@ -144,6 +146,8 @@ void window_render_gl::swapBuffers()
 	}
 }
 
+#define kQuadSize sizeof(ccV3F_C4B_T2F)
+
 //from sprite.
 int window_render_gl::draw_texture(const st_cell& cell,texture* _tex,const g_rect* rc)
 {
@@ -154,10 +158,39 @@ int window_render_gl::draw_texture(const st_cell& cell,texture* _tex,const g_rec
 
 	ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
 
+	g_rect rect;
+	rect = rc ? *rc : tex->get_rect();
+
 	ccV3F_C4B_T2F_Quad m_sQuad;
+	m_sQuad.tl.vertices.x = cell.x;
+	m_sQuad.tl.vertices.y = cell.y;
+	m_sQuad.tl.texCoords.u = (float)rect.l/tex->m_tex_width;
+	m_sQuad.tl.texCoords.v = (float)rect.t/tex->m_tex_height;
+	m_sQuad.br.vertices.x = cell.x + tex->m_width;
+	m_sQuad.br.vertices.y = cell.y + tex->m_height;
+	m_sQuad.br.texCoords.u = (float)rect.r/tex->m_tex_width;
+	m_sQuad.br.texCoords.v = (float)rect.b/tex->m_tex_height;
+
+	m_sQuad.bl.vertices.x = m_sQuad.tl.vertices.x;
+	m_sQuad.bl.vertices.y = m_sQuad.br.vertices.y;
+	m_sQuad.bl.texCoords.u = m_sQuad.tl.texCoords.u;
+	m_sQuad.bl.texCoords.v = m_sQuad.br.texCoords.v ;
+	m_sQuad.tr.vertices.x = m_sQuad.br.vertices.x ;
+	m_sQuad.tr.vertices.y = m_sQuad.tl.vertices.y;
+	m_sQuad.tr.texCoords.u = m_sQuad.br.texCoords.u;
+	m_sQuad.tr.texCoords.v = m_sQuad.tl.texCoords.v;
+
+	unsigned char r,g,b;
+	G_GET_RGB(cell.color,r,g,b);
+	ccColor4B c = ccc4(r,g,b,cell.alpha);
+	ccV3F_C4B_T2F* p = &m_sQuad.tl;
+	for (int i=0;i<4;i++,p++)
+	{
+		p->colors = c;		
+	}
+
 	//filled the m_sQuad
 
-#define kQuadSize sizeof(m_sQuad.bl)
 	long offset = (long)&m_sQuad;
 
 	// vertex

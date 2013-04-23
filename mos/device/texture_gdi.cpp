@@ -10,12 +10,7 @@ texture_gdi::~texture_gdi()
 	m_image = NULL;
 }
 
-void texture_gdi::set_alpha(bool alpha) 
-{
-	m_image->m_alpha = alpha;
-}
-
-bool texture_gdi::create_texture(image* img,const g_rect* rc) 
+bool texture_gdi::create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
 {
 	assert(m_image == 0);
 	m_image = new image;
@@ -23,14 +18,18 @@ bool texture_gdi::create_texture(image* img,const g_rect* rc)
 	return true;
 }
 
-bool texture_gdi::create_texture_dynamic(int width,int height,int m_bits_component) 
+bool texture_gdi::create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) 
 {
 	assert(m_image == 0);
 	m_image = new image;
-	return m_image->create_image_dynamic(width,height,m_bits_component);
+	int m_bits_component = bitsPerPixelForFormat(format)/8;
+	bool rt = m_image->create_image_dynamic(width,height,m_bits_component);
+	m_image->m_alpha = hasAlpha(format);
+	return true;
 }
 
-int texture_gdi::draw_image(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip) 
+int texture_gdi::draw_image_ontexture(int x,int y,const image* img) 
 {
-	return m_image->draw_image(cell,img,rc_img,rc_clip);
+	return m_image->draw_image(x,y,-1,255,img,NULL,NULL);
 }
+

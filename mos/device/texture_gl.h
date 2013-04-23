@@ -5,6 +5,8 @@
 class image;
 #include "graph/texture.h"
 #include "OGLES/GL/glew.h"
+#include "graph/rect.h"
+
 
 class texture_gl : public texture
 {
@@ -14,10 +16,36 @@ public:
 
 	GLuint m_textureId;
 
-	void set_alpha(bool alpha) ;
-	bool create_texture(image* img,const g_rect* rc) ;
-	bool create_texture_dynamic(int width,int height,int m_bits_component) ;
-	int draw_image(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip) ;
+	//图的大小
+	CCTexture2DPixelFormat m_format;
+	int m_width,m_height;
+	int get_width() const{
+		return m_width;
+	}
+	int get_height() const{
+		return m_height;
+	}
+	g_rect get_rect() const{
+		return g_rect(0,0,m_width,m_height);
+	}
+
+	//系统贴图的大小，2的幂
+	int m_tex_width,m_tex_height;
+	int get_tex_width() const{
+		return m_tex_width;
+	}
+	int get_tex_height() const{
+		return m_tex_height;
+	}
+
+	bool create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) ;
+	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
+	int draw_image_ontexture(int x,int y,const image* img) ;
+
+	/** Initializes with a texture2d with data */
+	bool initWithData(const void* data, int rowLength,CCTexture2DPixelFormat pixelFormat, int pixelsWide, int pixelsHigh, int width, int height);
+	bool updateWithData(const void* data, int rowLength,int offx,int offy,int width, int height);
+
 };
 
 #endif

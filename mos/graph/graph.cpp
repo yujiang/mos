@@ -276,7 +276,7 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 		t->mark_use_texture(g_time_now);
 		texture_map[file] = t;
 	}
-	return t->draw_cell(cell);
+	return t->draw_cell(cell,0);
 }
 
 int graph::draw_box(const st_cell& cell,int w,int h)

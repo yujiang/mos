@@ -52,9 +52,9 @@ public:
 	}
 
 	unsigned char* m_buffer;
-	unsigned char* get_buffer() {
+	unsigned char* get_buffer() const{
 		if (is_compress())
-			uncompress();
+			const_cast<image*>(this)->uncompress();
 		return m_buffer;
 	}
 	//unsigned char* get_buffer_end() const{
@@ -73,7 +73,7 @@ public:
 	int get_buf_size() const{
 		return get_line_pitch() * get_height();
 	}
-	unsigned char* get_buf_offset(int x,int y) {
+	unsigned char* get_buf_offset(int x,int y) const{
 		return get_buffer() + (y * get_line_pitch() + x * m_bits_pixel);
 	}
 
@@ -85,8 +85,10 @@ public:
 
 public:
 	void clear(unsigned long color);
-	int draw_image(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip);
-	int draw_box(const st_cell& cell,int w,int h);
+	int draw_image_cell(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip);
+	int draw_box_cell(const st_cell& cell,int w,int h);
+	int draw_image(int x,int y,int color,int alpha,const image* img,const g_rect* rc_img,const g_rect* rc_clip);
+	int draw_box(int x,int y,int color,int alpha,int w,int h);
 
 	int copy_image(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch);
 
@@ -103,7 +105,7 @@ public:
 		return m_buffer_compress != 0;
 	}
 	void compress();
-	void uncompress();
+	void uncompress() ;
 	size_t get_compress_size() const{
 		return m_sz_compress;
 	}

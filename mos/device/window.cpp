@@ -1,5 +1,6 @@
 #include "window.h"
 #include "window_render_gdi.h"
+#include "window_render_gl.h"
 #include <windows.h>
 #include "script.h"
 #include <string>
@@ -123,11 +124,14 @@ HWND InitInstance(HINSTANCE hInstance, const char* szWindowClass, const char* sz
 window::window() 
 {
 	m_destroy = false;
-	m_render = new window_render_gdi(this);
+	//m_render = new window_render_gdi(this);
+	m_render = new window_render_gl(this);
 }
 
 window::~window()
 {
+	delete m_render;
+	m_render = 0;
 }
 
 void window::on_destroy()
