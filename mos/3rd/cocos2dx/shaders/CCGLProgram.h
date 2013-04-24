@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include "cocoa/CCObject.h"
 
 #include "platform/win32/CCGL.h"
-#include <unordered_map>
 
 NS_CC_BEGIN
 
@@ -122,39 +121,6 @@ public:
  And it will bind "kCCUniformSampler" to 0
 
  */
-    void updateUniforms();
-    /** calls glUniform1i only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith1i(GLint location, GLint i1);
-
-    /** calls glUniform1f only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith1f(GLint location, GLfloat f1);
-
-    /** calls glUniform2f only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith2f(GLint location, GLfloat f1, GLfloat f2);
-
-    /** calls glUniform3f only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith3f(GLint location, GLfloat f1, GLfloat f2, GLfloat f3);
-
-    /** calls glUniform4f only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith4f(GLint location, GLfloat f1, GLfloat f2, GLfloat f3, GLfloat f4);
-
-    /** calls glUniform2fv only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith2fv(GLint location, GLfloat* floats, unsigned int numberOfArrays);
-
-    /** calls glUniform3fv only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith3fv(GLint location, GLfloat* floats, unsigned int numberOfArrays);
-
-    /** calls glUniform4fv only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWith4fv(GLint location, GLfloat* floats, unsigned int numberOfArrays);
-
-    /** calls glUniformMatrix4fv only if the values are different than the previous call for this same shader program. */
-    void setUniformLocationWithMatrix4fv(GLint location, GLfloat* matrixArray, unsigned int numberOfMatrices);
-    
-    /** will update the builtin uniforms if they are different than the previous call for this same shader program. */
-    void setUniformsForBuiltins();
-
-    /** Deprecated alias for setUniformsForBuiltins */
-    CC_DEPRECATED_ATTRIBUTE void setUniformForModelViewProjectionMatrix();
 
     /** returns the vertexShader error log */
     const char* vertexShaderLog();
@@ -170,7 +136,6 @@ public:
     inline const GLuint getProgram() { return m_uProgram; }
 
 private:
-    bool updateUniformLocation(GLint location, GLvoid* data, unsigned int bytes);
     const char* description();
     bool compileShader(GLuint * shader, GLenum type, const GLchar* source);
     const char* logForOpenGLObject(GLuint object, GLInfoFunction infoFunc, GLLogFunction logFunc);
@@ -179,11 +144,10 @@ private:
     GLuint            m_uProgram;
     GLuint            m_uVertShader;
     GLuint            m_uFragShader;
-    GLint             m_uUniforms[kCCUniform_MAX];
+    //GLint             m_uUniforms[kCCUniform_MAX];
     //struct _hashUniformEntry* m_pHashForUniforms;
     bool              m_bUsesTime;
 	
-	std::unordered_map<GLint,GLvoid*> m_pHashForUniforms;
 };
 
 // end of shaders group

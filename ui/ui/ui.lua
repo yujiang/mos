@@ -299,6 +299,18 @@ end
 
 --test
 function test_ui(w,h)
+	local r = root()
+	r:create_root(w,h)
+	local l1 = r:find_child("top")
+	local win3 = window()
+	win3:create_window("win3",200,200,10,200,200)
+	l1:add_window(win3)
+	win3:set_bg("land.png")
+	win3:get_bg().alpha = 200
+	return r
+end
+
+function test_ui2(w,h)
 	cdriver.regist_image("play",1,"play-button.png")
 	cdriver.regist_image("play",2,"play-button.png")
 	cdriver.regist_image("play",3,"play-button-down.png")

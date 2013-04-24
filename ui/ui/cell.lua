@@ -363,8 +363,8 @@ function cell:find_control(full_name)
 			return child
 		end
 	else
-		print("error! not find "..child_name .. " of "..self.name)
-		table_print_kv(self.childs)
+		--print("error! not find "..child_name .. " of "..self.name)
+		--table_print_kv(self.childs)
 	end
 end
 

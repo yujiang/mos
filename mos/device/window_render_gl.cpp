@@ -5,7 +5,7 @@
 #include <windows.h>
 #include "OGLES/GL/glew.h"
 #include "director.h"
-#include "kazmath/kazmath.h"
+//#include "kazmath/kazmath.h"
 #include "texture_gl.h"
 #include "graph/cell.h"
 #include "graph/color.h"
@@ -134,7 +134,7 @@ void window_render_gl::render_start()
 
 void window_render_gl::render_end()
 {
-	kmGLPopMatrix();
+	//kmGLPopMatrix();
 	swapBuffers();
 }
 
@@ -186,7 +186,8 @@ int window_render_gl::draw_texture(const st_cell& cell,texture* _tex,const g_rec
 	ccV3F_C4B_T2F* p = &m_sQuad.tl;
 	for (int i=0;i<4;i++,p++)
 	{
-		p->colors = c;		
+		p->colors = c;	
+		p->vertices.z = 1.f;
 	}
 
 	//filled the m_sQuad

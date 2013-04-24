@@ -9,4 +9,3 @@ window_render::~window_render()
 {
 	m_window = 0;
 }
-

@@ -31,8 +31,8 @@ THE SOFTWARE.
 //#include "ccMacros.h"
 
 // extern
-#include "kazmath/GL/matrix.h"
-#include "kazmath/kazmath.h"
+//#include "kazmath/GL/matrix.h"
+//#include "kazmath/kazmath.h"
 
 NS_CC_BEGIN
 
@@ -58,7 +58,7 @@ static GLuint    s_uVAO = 0;
 
 void ccGLInvalidateStateCache( void )
 {
-    kmGLFreeAll();
+    //kmGLFreeAll();
     
     s_uCurrentProjectionMatrix = -1;
     s_bVertexAttribPosition = false;

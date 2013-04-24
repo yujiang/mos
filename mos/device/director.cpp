@@ -1,7 +1,7 @@
 #include "director.h"
 #include "window_render_gl.h"
 #include "OGLES/GL/glew.h"
-#include "kazmath/kazmath.h"
+//#include "kazmath/kazmath.h"
 #include "window.h"
 #include "cocos2dx/shaders/ccGLStateCache.h"
 #include "cocos2dx/include/ccMacros.h"
@@ -61,32 +61,18 @@ void CCDirector::setGLDefaultValues(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-
-void CCDirector::setViewPortInPoints(float x , float y , float w , float h)
-{
-	glViewport(x,y,w,h);
-}
-
-void CCDirector::setScissorInPoints(float x , float y , float w , float h)
-{
-	glScissor(x,y,w,h);
-}
-
+//GLU is not implemented in the embedded version of the OpenGL package, OpenGL ES.
 
 void CCDirector::setProjection()
 {
 	int w = m_wgl->m_window->get_width();
 	int h = m_wgl->m_window->get_height();
-
-	setViewPortInPoints(0, 0, w,h);
-
-	kmGLMatrixMode(KM_GL_PROJECTION);
-	kmGLLoadIdentity();
-	kmMat4 orthoMatrix;
-	kmMat4OrthographicProjection(&orthoMatrix, 0, w, 0, h, -1024, 1024 );
-	kmGLMultMatrix(&orthoMatrix);
-	kmGLMatrixMode(KM_GL_MODELVIEW);
-	kmGLLoadIdentity();
+	glViewport(0,0,w,h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0,w,h,0,-1,1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
 	//ccSetProjectionMatrixDirty();
 }

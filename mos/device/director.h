@@ -13,12 +13,10 @@ public:
 	void create_director();
 	CCDirector(window_render_gl* w);
 
-	void CCDirector::setAlphaBlending(bool bOn);
-	void CCDirector::setDepthTest(bool bOn);
-	void CCDirector::setGLDefaultValues(void);
-	void CCDirector::setViewPortInPoints(float x , float y , float w , float h);
-	void CCDirector::setScissorInPoints(float x , float y , float w , float h);
-	void CCDirector::setProjection();
+	void setAlphaBlending(bool bOn);
+	void setDepthTest(bool bOn);
+	void setGLDefaultValues(void);
+	void setProjection();
 };
 
 #endif

@@ -6,3 +6,5 @@
 *.exp
 *.user
 ui/mos.exe
+Debug.win32
+

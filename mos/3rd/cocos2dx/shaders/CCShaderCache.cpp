@@ -183,7 +183,6 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
     }
     
     p->link();
-    p->updateUniforms();
     
     CHECK_GL_ERROR_DEBUG();
 }

@@ -41,11 +41,7 @@ texture_gl::~texture_gl()
 
 bool texture_gl::create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
 {
-	g_rect rect;
-	if (rc)
-		rect = *rc;
-	else
-		rect = img->get_rect();
+	g_rect rect = rc ? *rc : img->get_rect();
 
 	unsigned char* buf = img->get_buf_offset(rect.l,rect.t);
 	format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
