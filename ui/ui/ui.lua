@@ -298,7 +298,7 @@ function ui:regist_font(fontid,ttf,width,height,xspace,yspace)
 end
 
 --test
-function test_ui(w,h)
+function test_ui3(w,h)
 	local r = root()
 	r:create_root(w,h)
 	local l1 = r:find_child("top")
@@ -311,6 +311,17 @@ function test_ui(w,h)
 end
 
 function test_ui2(w,h)
+	local r = root()
+	r:create_root(w,h)
+	local l1 = r:find_child("top")
+	local win4 = window()
+	win4:create_window("win4",10,10,20,200,100)
+	win4:set_box(0x008080ff,180)
+	l1:add_window(win4)
+	return r
+end
+
+function test_ui(w,h)
 	cdriver.regist_image("play",1,"play-button.png")
 	cdriver.regist_image("play",2,"play-button.png")
 	cdriver.regist_image("play",3,"play-button-down.png")

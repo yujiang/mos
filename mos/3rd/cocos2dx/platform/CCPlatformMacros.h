@@ -31,6 +31,8 @@
 #include "platform/CCPlatformConfig.h"
 #include "platform/win32/CCPlatformDefine.h"
 
+#define COCOS2D_DEBUG 1
+
 /**
  * define a create function for a specific type, such as CCLayer
  * @__TYPE__ class type to add create(), such as CCLayer
@@ -225,13 +227,6 @@ public: virtual void set##funName(varType var)   \
 #define CCLOGINFO(format,...)   cocos2d::CCLog(format, ##__VA_ARGS__)
 #define CCLOGWARN(...) __CCLOGWITHFUNCTION(__VA_ARGS__)
 #endif // COCOS2D_DEBUG
-
-// Lua engine debug
-#if !defined(COCOS2D_DEBUG) || COCOS2D_DEBUG == 0 || CC_LUA_ENGINE_DEBUG == 0
-#define LUALOG(...)
-#else
-#define LUALOG(format, ...)     cocos2d::CCLog(format, ##__VA_ARGS__)
-#endif // Lua engine debug
 
 /*
  * only certain compilers support __attribute__((deprecated))

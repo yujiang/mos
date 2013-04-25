@@ -118,6 +118,20 @@ bool image::create_image_image(const image* i,const g_rect* rc)
 	return true;
 }
 
+void image::rgb2bgr()
+{
+	assert(m_bits_pixel == 3);
+	unsigned char* p = m_buffer;
+	unsigned char r;
+	for (int i=0; i<m_width*m_height; ++i)
+	{
+		r = *p;
+		*p = *(p+2);
+		*(p+2) = r ;
+		p += 3;
+	}
+}
+
 void image::clear(unsigned long color)
 {
 	unsigned char a,r,g,b;
@@ -126,15 +140,13 @@ void image::clear(unsigned long color)
 		memset(m_buffer,r,get_buf_size());
 	else
 	{
-		if (m_bits_component == 3)
+		assert(m_bits_pixel == 3);
+		unsigned char* p = m_buffer;
+		for (int i=0; i<m_width*m_height; ++i)
 		{
-			unsigned char* p = m_buffer;
-			for (int i=0; i<m_width*m_height; ++i)
-			{
-				*p ++ = b;
-				*p ++ = g;
-				*p ++ = r;
-			}
+			*p ++ = r;
+			*p ++ = g;
+			*p ++ = b;
 		}
 	}
 }
@@ -176,15 +188,15 @@ void image::render_image_1_3(int offx,int offy,unsigned char* buf, int w, int h,
 			}
 			else if(a == 255)
 			{
-				*desy ++ = b;
-				*desy ++ = g;
 				*desy ++ = r;
+				*desy ++ = g;
+				*desy ++ = b;
 			}
 			else
 			{					
-				*desy ++ = (b * a + *desy * (255-a)) / 255;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
 				*desy ++ = (r * a + *desy * (255-a)) / 255;;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 		}
 		src += line_pitch;
@@ -210,9 +222,9 @@ void image::render_image_3_3(int offx,int offy,unsigned char* buf, int w, int h,
 			g = *srcy ++;
 			b = *srcy ++;
 			//图片是rgb的顺序，而dc是bgr
+			*desy ++ = (r * a + *desy * (255-a)) / 255;
+			*desy ++ = (g * a + *desy * (255-a)) / 255;
 			*desy ++ = (b * a + *desy * (255-a)) / 255;
-			*desy ++ = (g * a + *desy * (255-a)) / 255;;
-			*desy ++ = (r * a + *desy * (255-a)) / 255;;
 		}
 		src += line_pitch;
 		des += get_line_pitch();
@@ -244,15 +256,15 @@ void image::render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,
 			}
 			else if(a == 255)
 			{
-				*desy ++ = b;
-				*desy ++ = g;
 				*desy ++ = r;
+				*desy ++ = g;
+				*desy ++ = b;
 			}
 			else
 			{					
-				*desy ++ = (b * a + *desy * (255-a)) / 255;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
 				*desy ++ = (r * a + *desy * (255-a)) / 255;;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 		}
 		src += line_pitch;
@@ -270,27 +282,23 @@ int image::draw_box_cell(const st_cell& cell,int w,int h)
 	return draw_box(cell.x,cell.y,cell.color,cell.alpha,w,h);
 }
 
-int image::draw_image(int offx,int offy,int color,int alpha,const image* img,const g_rect* rc_img,const g_rect* rc_clip)
+bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_rect* rc_clip)
 {
-	if (alpha <= 0)
-		return -1;
-	g_rect rect = rc_img ? *rc_img : img->get_rect();
-
 	g_rect clip;
 	if (rc_clip)
 	{
-		clip = *rc_clip - get_rect();
+		clip = *rc_clip - rc;
 		if (clip.is_empty())
-			return -1;
+			return false;
 	}
 	else
-		clip = get_rect();
+		clip = rc;
 
 	if (offx < clip.l)
 	{
 		rect.l -= offx - clip.l;
 		if (rect.r <= rect.l)
-			return -1;
+			return false;
 		offx = clip.l;
 	}
 	else if (offx >= clip.r)
@@ -302,15 +310,27 @@ int image::draw_image(int offx,int offy,int color,int alpha,const image* img,con
 	{
 		rect.t -= offy - clip.t;
 		if (rect.b <= rect.t)
-			return -1;
+			return false;
 		offy = clip.t;
 	}
 	else if (offy >= clip.b)
-		return -1;
+		return false;
 	if (offy + rect.height() > clip.b)
 		rect.b -= offy + rect.height() - clip.b;
 
 	if (rect.is_empty())
+		return false;
+
+	return true;
+}
+
+int image::draw_image(int offx,int offy,int color,int alpha,const image* img,const g_rect* rc_img,const g_rect* rc_clip)
+{
+	if (alpha <= 0)
+		return -1;
+	g_rect rect = rc_img ? *rc_img : img->get_rect();
+	g_rect rc = get_rect();
+	if (!get_cliped_rect(rect,rc,offx,offy,rc_clip))
 		return -1;
 
 	unsigned char* src = (const_cast<image*>(img))->get_buf_offset(rect.l,rect.t);
@@ -346,28 +366,34 @@ int image::draw_image(int offx,int offy,int color,int alpha,const image* img,con
 	return 0;
 }
 
-int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
+bool get_cliped_box(int& offx,int& offy,int& w,int& h, int width,int height)
 {
 	if (offx < 0)
 	{
 		w += offx;
 		offx = 0;
 	}
-	else if (offx >= get_width())
-		return -1;
-	if (offx + w > get_width())
-		w = get_width() - offx;
+	else if (offx >= width)
+		return false;
+	if (offx + w > width)
+		w = width - offx;
 
 	if (offy < 0)
 	{
 		h += offy;
 		offy = 0;
 	}
-	else if (offy >= get_height())
-		return -1;
-	if (offy + h > get_height())
-		h = get_height() - offy;
+	else if (offy >= height)
+		return false;
+	if (offy + h > height)
+		h = height - offy;
+	return true;
+}
 
+int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
+{
+	if (!get_cliped_box(offx,offy,w,h,get_width(),get_height()))
+		return -1;
 	unsigned char* des = get_buf_offset(offx,offy);
 	unsigned char a,r,g,b;
 	G_GET_ARGB(color,a,r,g,b);
@@ -379,9 +405,9 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 			unsigned char* desy = des;
 			for (int x=0; x<w; x++)
 			{
-				*desy ++ = b;
-				*desy ++ = g;
 				*desy ++ = r;
+				*desy ++ = g;
+				*desy ++ = b;
 			}
 			des += get_line_pitch();
 		}
@@ -393,9 +419,9 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 			unsigned char* desy = des;
 			for (int x=0; x<w; x++)
 			{
-				*desy ++ = (b * a + *desy * (255-a)) / 255;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
 				*desy ++ = (r * a + *desy * (255-a)) / 255;;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 			des += get_line_pitch();
 		}

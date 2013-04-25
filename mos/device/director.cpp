@@ -3,10 +3,11 @@
 #include "OGLES/GL/glew.h"
 //#include "kazmath/kazmath.h"
 #include "window.h"
-#include "cocos2dx/shaders/ccGLStateCache.h"
-#include "cocos2dx/include/ccMacros.h"
+#include "gl_macro.h"
+//#include "cocos2dx/shaders/ccGLStateCache.h"
+//#include "cocos2dx/include/ccMacros.h"
 
-USING_NS_CC;
+//USING_NS_CC;
 
 CCDirector::CCDirector(window_render_gl* w)
 {
@@ -20,10 +21,13 @@ void CCDirector::create_director()
 
 void CCDirector::setAlphaBlending(bool bOn)
 {
+//#define CC_BLEND_SRC GL_ONE
+//#define CC_BLEND_DST GL_ONE_MINUS_SRC_ALPHA
 	if (bOn)
 	{
 		glEnable(GL_BLEND);
-		glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
+		//glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else
 	{
@@ -50,10 +54,12 @@ void CCDirector::setDepthTest(bool bOn)
 
 void CCDirector::setGLDefaultValues(void)
 {
+	glEnable(GL_TEXTURE_2D);
+
 	setAlphaBlending(true);
 	// XXX: Fix me, should enable/disable depth test according the depth format as cocos2d-iphone did
 	// [self setDepthTest: view_.depthFormat];
-
+		
 	setDepthTest(false);
 	setProjection();
 

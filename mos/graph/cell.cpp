@@ -62,6 +62,7 @@ st_cell::st_cell(const st_cell& r1,const st_cell r2)
 	room = r1.room * r2.room;
 	//color 不必变
 	//alpha 也用个乘法
+	color = r1.color;
 	alpha = r1.alpha * r2.alpha / 255;
 }
 

@@ -9,13 +9,14 @@
 #include "texture_gl.h"
 #include "graph/cell.h"
 #include "graph/color.h"
-#include "cocos2dx/shaders/ccGLStateCache.h"
-#include "cocos2dx/include/ccTypes.h"
+#include "gl_macro.h"
+//#include "cocos2dx/shaders/ccGLStateCache.h"
+//#include "cocos2dx/include/ccTypes.h"
 //#include "cocoa/ccMacros.h"
 //#include "cocoa/CCGLProgram.h"
-#include "cocos2dx/shaders/CCGLProgram.h"
+//#include "cocos2dx/shaders/CCGLProgram.h"
 
-USING_NS_CC;
+//USING_NS_CC;
 
 window_render_gl::window_render_gl(window* w):window_render(w)
 {
@@ -104,7 +105,7 @@ bool window_render_gl::create_render(int width,int height)
 	}
 
 	// Enable point size by default on windows. 
-	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 	//set projection 
 	m_director->create_director();
@@ -129,7 +130,7 @@ void window_render_gl::on_destroy()
 
 void window_render_gl::render_start()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void window_render_gl::render_end()
@@ -149,71 +150,133 @@ void window_render_gl::swapBuffers()
 #define kQuadSize sizeof(ccV3F_C4B_T2F)
 
 //from sprite.
-int window_render_gl::draw_texture(const st_cell& cell,texture* _tex,const g_rect* rc)
+
+enum {
+	kCCVertexAttrib_Position,
+	kCCVertexAttrib_Color,
+	kCCVertexAttrib_TexCoords,
+
+	kCCVertexAttrib_MAX,
+};
+struct s_f2
+{    
+	GLint x;
+	GLint y;
+};
+struct s_uv
+{
+	GLfloat u;
+	GLfloat v;
+};
+
+
+int window_render_gl::draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
+{
+	return draw_texture(cell.x,cell.y,cell.color,cell.alpha,_tex,rc);
+}
+
+int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex,const g_rect* rc_tex)
 {
 	texture_gl* tex = (texture_gl*)_tex;
+	g_rect rect = rc_tex ? *rc_tex : tex->get_rect();
 
-	glActiveTexture(GL_TEXTURE0);
+	g_rect rc = g_rect(0,0,m_window->m_width,m_window->m_height);
+
+	if (!get_cliped_rect(rect,rc,x,y,m_rc_clip))
+		return -1;
+
+	s_f2 f3[4];
+	s_uv uv[4];
+
+	f3[0].x = x;
+	f3[0].y = y;
+	uv[0].u = (float)rect.l/tex->m_tex_width;
+	uv[0].v = (float)rect.t/tex->m_tex_height;
+	f3[3].x = x + rect.width();
+	f3[3].y = y + rect.height();
+	uv[3].u = (float)rect.r/tex->m_tex_width;
+	uv[3].v = (float)rect.b/tex->m_tex_height;
+
+	f3[1].x = f3[0].x;
+	f3[1].y = f3[3].y;
+	uv[1].u = uv[0].u;
+	uv[1].v = uv[3].v;
+	f3[2].x = f3[3].x;
+	f3[2].y = f3[0].y;
+	uv[2].u = uv[3].u;
+	uv[2].v = uv[0].v;
+
+
+	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
 
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
+	//glEnableVertexAttribArray( kCCVertexAttrib_Position );
+	//glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, 0, (void*) (f3));
+	//glEnableVertexAttribArray( kCCVertexAttrib_Color );
+	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)(color));
+	//glEnableVertexAttribArray( kCCVertexAttrib_TexCoords );
+	//glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, (void*)(uv));
 
-	g_rect rect;
-	rect = rc ? *rc : tex->get_rect();
-
-	ccV3F_C4B_T2F_Quad m_sQuad;
-	m_sQuad.tl.vertices.x = cell.x;
-	m_sQuad.tl.vertices.y = cell.y;
-	m_sQuad.tl.texCoords.u = (float)rect.l/tex->m_tex_width;
-	m_sQuad.tl.texCoords.v = (float)rect.t/tex->m_tex_height;
-	m_sQuad.br.vertices.x = cell.x + tex->m_width;
-	m_sQuad.br.vertices.y = cell.y + tex->m_height;
-	m_sQuad.br.texCoords.u = (float)rect.r/tex->m_tex_width;
-	m_sQuad.br.texCoords.v = (float)rect.b/tex->m_tex_height;
-
-	m_sQuad.bl.vertices.x = m_sQuad.tl.vertices.x;
-	m_sQuad.bl.vertices.y = m_sQuad.br.vertices.y;
-	m_sQuad.bl.texCoords.u = m_sQuad.tl.texCoords.u;
-	m_sQuad.bl.texCoords.v = m_sQuad.br.texCoords.v ;
-	m_sQuad.tr.vertices.x = m_sQuad.br.vertices.x ;
-	m_sQuad.tr.vertices.y = m_sQuad.tl.vertices.y;
-	m_sQuad.tr.texCoords.u = m_sQuad.br.texCoords.u;
-	m_sQuad.tr.texCoords.v = m_sQuad.tl.texCoords.v;
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	unsigned char r,g,b;
-	G_GET_RGB(cell.color,r,g,b);
-	ccColor4B c = ccc4(r,g,b,cell.alpha);
-	ccV3F_C4B_T2F* p = &m_sQuad.tl;
-	for (int i=0;i<4;i++,p++)
+	G_GET_RGB(color,r,g,b);
+	glColor4ub(r,g,b,alpha);
+	//glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
+	glBegin(GL_TRIANGLE_STRIP);	
+	for(int i=0;i<4;i++)
 	{
-		p->colors = c;	
-		p->vertices.z = 1.f;
+		glTexCoord2f(uv[i].u,uv[i].v); 
+		glVertex2i(f3[i].x,f3[i].y);	
 	}
+	glEnd();
 
-	//filled the m_sQuad
-
-	long offset = (long)&m_sQuad;
-
-	// vertex
-	int diff = offsetof( ccV3F_C4B_T2F, vertices);
-	glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, kQuadSize, (void*) (offset + diff));
-
-	// texCoods
-	diff = offsetof( ccV3F_C4B_T2F, texCoords);
-	glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, kQuadSize, (void*)(offset + diff));
-
-	// color
-	diff = offsetof( ccV3F_C4B_T2F, colors);
-	glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, kQuadSize, (void*)(offset + diff));
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glFlush();
 
 	CHECK_GL_ERROR_DEBUG();
 
 	return 0;
 }
 
-int window_render_gl::draw_box(const st_cell& cell,int w,int h)
+
+int window_render_gl::draw_box_cell(const st_cell& cell,int w,int h)
 {
+	return draw_box(cell.x,cell.y,cell.color,cell.alpha,w,h);
+}
+
+int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
+{
+	if (!get_cliped_box(x,y,w,h,m_window->m_width,m_window->m_height))
+		return -1;
+
+	s_f2 f3[4];
+
+	f3[0].x = x;
+	f3[0].y = y;
+	f3[3].x = x + w;
+	f3[3].y = y + h;
+
+	f3[1].x = f3[0].x;
+	f3[1].y = f3[3].y;
+	f3[2].x = f3[3].x;
+	f3[2].y = f3[0].y;
+
+	unsigned char r,g,b;
+	G_GET_RGB(color,r,g,b);
+
+	glColor4ub(r,g,b,alpha);
+	//glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBegin(GL_TRIANGLE_STRIP);	
+	for(int i=0;i<4;i++)
+	{
+		glVertex2i(f3[i].x,f3[i].y);	
+	}
+	glEnd();
+
+	glFlush();
+
+	CHECK_GL_ERROR_DEBUG();
+
 	return 0;
 }

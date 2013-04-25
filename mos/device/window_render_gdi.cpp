@@ -54,6 +54,7 @@ void window_render_gdi::render_end()
 
 	//flip();
 	HDC dc = GetDC((HWND)m_window->m_hWnd);
+	m_image->rgb2bgr();
 	int err = SetDIBitsToDevice(dc,0,0,m_image->m_width,m_image->m_height,
 		0,0,0,m_image->m_height,
 		m_image->get_buffer() ,
@@ -67,12 +68,12 @@ void window_render_gdi::render_end()
 	ReleaseDC((HWND)m_window->m_hWnd,dc);
 }
 
-int window_render_gdi::draw_texture(const st_cell& cell,texture* tex, const g_rect* rc)
+int window_render_gdi::draw_texture_cell(const st_cell& cell,texture* tex, const g_rect* rc)
 {
 	return m_image->draw_image_cell(cell,((texture_gdi*)tex)->m_image,rc,m_rc_clip);
 }
 
-int window_render_gdi::draw_box(const st_cell& cell,int w,int h)
+int window_render_gdi::draw_box_cell(const st_cell& cell,int w,int h)
 {
 	return m_image->draw_box_cell(cell,w,h);
 }

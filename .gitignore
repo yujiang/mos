@@ -5,6 +5,6 @@
 *.sdf
 *.exp
 *.user
-ui/mos.exe
+ui/*.exe
 Debug.win32
 

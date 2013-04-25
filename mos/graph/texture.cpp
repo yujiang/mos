@@ -6,6 +6,6 @@
 
 int texture::draw_cell(const st_cell& cell,const g_rect* rc )
 {
-	return get_render()->draw_texture(cell,this,rc);
+	return get_render()->draw_texture_cell(cell,this,rc);
 }
 

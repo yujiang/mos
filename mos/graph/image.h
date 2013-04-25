@@ -84,6 +84,7 @@ public:
 	bool in_image(int x, int y) ;
 
 public:
+	void rgb2bgr();
 	void clear(unsigned long color);
 	int draw_image_cell(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip);
 	int draw_box_cell(const st_cell& cell,int w,int h);
@@ -114,5 +115,7 @@ protected:
 	size_t m_sz_compress;
 };
 
+bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_rect* rc_clip);
+bool get_cliped_box(int& offx,int& offy,int& w,int& h, int width,int height);
 
 #endif

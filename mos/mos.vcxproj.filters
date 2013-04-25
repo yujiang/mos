@@ -114,6 +114,9 @@
     <ClInclude Include="device\window_render_gl.h">
       <Filter>device\gl</Filter>
     </ClInclude>
+    <ClInclude Include="device\gl_macro.h">
+      <Filter>device\gl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

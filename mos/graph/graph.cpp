@@ -281,7 +281,7 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 
 int graph::draw_box(const st_cell& cell,int w,int h)
 {
-	return get_render()->draw_box(cell,w,h);
+	return get_render()->draw_box_cell(cell,w,h);
 }
 
 //////////////////////////////////////////////////////////////////////////

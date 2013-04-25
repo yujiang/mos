@@ -3,10 +3,12 @@
 #include "mos.h"
 #include "graph/image.h"
 #include <assert.h>
-#include "cocos2dx/include/ccMacros.h"
-#include "cocos2dx/shaders/ccGLStateCache.h"
+#include "gl_macro.h"
+//#include "cocos2dx/include/ccMacros.h"
+//#include "cocos2dx/shaders/ccGLStateCache.h"
 
-USING_NS_CC;
+
+//USING_NS_CC;
 
 bool is_2_mi(unsigned int n)
 {
@@ -35,7 +37,8 @@ texture_gl::~texture_gl()
 {
 	if(m_textureId)
 	{
-		ccGLDeleteTexture(m_textureId);
+		glDeleteTextures(1, &m_textureId);
+		m_textureId = 0;
 	}
 }
 
@@ -44,8 +47,13 @@ bool texture_gl::create_texture(const image* img,const g_rect* rc,CCTexture2DPix
 	g_rect rect = rc ? *rc : img->get_rect();
 
 	unsigned char* buf = img->get_buf_offset(rect.l,rect.t);
+	
+	//buf = new unsigned char[rect.width()*rect.height()*4];
+	//memset(buf,255,rect.width()*rect.height()*4);
 	format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
-	return initWithData(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+	bool rt = initWithData(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+	//delete buf;
+	return rt;
 }
 
 bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) 
@@ -71,22 +79,9 @@ bool texture_gl::updateWithData(const void* data, int rowLength,int offx,int off
 	if (!info)
 		return false;
 
-	glGenTextures(1, &m_textureId);
-
-	int align = ( info->unpack_aliment == 4 || ( is_2_mi(m_tex_width) && is_2_mi(m_tex_height) )) ? 4 : 1;
-	glPixelStorei(GL_UNPACK_ALIGNMENT,align);
-
-	if (rowLength > 0)
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
-
-	ccGLBindTexture2D(m_textureId);
-
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-	// Specify OpenGL texture image
+	//glGenTextures(1, &m_textureId);
+	//glActiveTexture(GL_TEXTURE0 );
+	glBindTexture(GL_TEXTURE_2D, m_textureId);
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, offx, offy, width, height, info->glformat, info->gltype, data);	
 
@@ -103,14 +98,14 @@ bool texture_gl::initWithData(const void *data, int rowLength, CCTexture2DPixelF
 		return false;
 
 	glGenTextures(1, &m_textureId);
+	//glActiveTexture(GL_TEXTURE0 );
+	glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-	int align = ( info->unpack_aliment == 4 || ( is_2_mi(pixelsWide) && is_2_mi(pixelsHigh) )) ? 4 : 1;
-	glPixelStorei(GL_UNPACK_ALIGNMENT,align);
+	//int align = ( info->unpack_aliment == 4 || ( is_2_mi(pixelsWide) && is_2_mi(pixelsHigh) )) ? 4 : 1;
+	//glPixelStorei(GL_UNPACK_ALIGNMENT,align);
 
 	if (rowLength > 0)
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
-
-    ccGLBindTexture2D(m_textureId);
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -130,13 +125,13 @@ bool texture_gl::initWithData(const void *data, int rowLength, CCTexture2DPixelF
 	m_format = pixelFormat;
 
 	return true;
-}
+}	
 
 formatinfo c_formatinfos[] = {
 	{kCCTexture2DPixelFormat_RGBA8888,true,32,GL_RGBA,GL_RGBA,GL_UNSIGNED_BYTE,4},
 	{kCCTexture2DPixelFormat_RGB888,false,32,GL_RGB,GL_RGB,GL_UNSIGNED_BYTE,1},
 	{kCCTexture2DPixelFormat_RGB565,false,16,GL_RGB,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,1},
-	{kCCTexture2DPixelFormat_A8,true,8,GL_ALPHA,GL_ALPHA,GL_UNSIGNED_BYTE,1},
+	{kCCTexture2DPixelFormat_A8,true,8,GL_ALPHA8,GL_ALPHA,GL_UNSIGNED_BYTE,1},
 	{kCCTexture2DPixelFormat_I8,false,8,GL_LUMINANCE,GL_LUMINANCE,GL_UNSIGNED_BYTE,1},
 	{kCCTexture2DPixelFormat_AI88,true,16,GL_LUMINANCE_ALPHA,GL_LUMINANCE_ALPHA,GL_UNSIGNED_BYTE,1},
 	{kCCTexture2DPixelFormat_RGBA4444,true,16,GL_RGBA,GL_RGBA,GL_UNSIGNED_SHORT_4_4_4_4,1},

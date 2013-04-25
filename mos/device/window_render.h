@@ -47,8 +47,8 @@ public:
 		m_rc_clip = NULL;
 	}
 
-	virtual int draw_texture(const st_cell& cell,texture* tex,const g_rect* rc) = 0;
-	virtual int draw_box(const st_cell& cell,int w,int h) = 0;
+	virtual int draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc) = 0;
+	virtual int draw_box_cell(const st_cell& cell,int w,int h) = 0;
 	//int draw_text(const st_cell& cell,const st_cell& text);
 	//image* m_image;
 };
