@@ -337,13 +337,10 @@ g_size graph::get_text_size(const st_cell& text,const g_size& sz_father)
 	if (!font)
 		return g_size(0,0);
 
-	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
 	if (af.ptr == 0)
 		return g_size(0,0);
-	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
 	g_size sz = get_text_size(text,sz_father,font,af.ptr);
-	//free((void*)str0);
 	return sz;
 }
 
@@ -381,13 +378,10 @@ int graph::get_text_line(const st_cell& text,const g_size& sz_father)
 	if (!font)
 		return 0;
 
-	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
 	if (af.ptr == 0)
 		return 0;
-	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
 	int line = get_text_line(text,sz_father,font,af.ptr);
-	//free((void*)str0);
 	return line;
 }
 
@@ -400,11 +394,9 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 	get_render()->text_start(rc_father);
 	st_cell c = cell;
 
-	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
 	if (af.ptr == 0)
 		return -1;
-	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
 	const wchar_t* str = af.ptr;
 
 	text_char tc;
@@ -436,7 +428,6 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 	}
 
 	get_render()->text_end();
-	//free((void*)str0);
 	return 0;
 }
 
@@ -464,11 +455,6 @@ void graph::draw_win_end()
 
 //////////////////////////////////////////////////////////////////////////
 //device
-//HDC graph::get_dc()
-//{
-//	return GetDC(m_hWnd);
-//}
-
 bool create_image_png(image*,void* data,int size);
 bool create_image_jpg(image*,void* data,int size);
 

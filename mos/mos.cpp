@@ -42,7 +42,6 @@ bool window_run()
 	{
 		if (s == "q" || s == "quit")
 			return false;
-		//lua_dostring(s.c_str());
 		lua_call_va("on_input","s",s.c_str());
 	}
 

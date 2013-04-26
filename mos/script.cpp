@@ -30,7 +30,6 @@ static int call_function(lua_State* L,const char* func)
 int lua_call_function(const char* func)
 {
 	return call_function(g_L,func);
-	//return lua_call_va(func,"");
 }
 
 int lua_dostring(const char* str)

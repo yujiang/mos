@@ -7,7 +7,6 @@
 #include <conio.h>
 #include "windowsx.h"
 #include "mos.h"
-//#pragma comment(lib,"winmm.lib")
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

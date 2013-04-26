@@ -77,9 +77,3 @@ int window_render_gdi::draw_box_cell(const st_cell& cell,int w,int h)
 {
 	return m_image->draw_box_cell(cell,w,h);
 }
-
-//int window::draw_text(const st_cell& cell,const st_cell& text)
-//{
-//	return 0;
-//}
-

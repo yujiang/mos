@@ -36,7 +36,7 @@ public:
 
 	std::unordered_map<int,texture_font*> texture_font_map;
 
-	//clear second
+	//clear 
 	int m_compress_image,m_clear_image,m_clear_texture,m_clear_texturefont;
 	void auto_clear_resource();
 	void close_resource();
@@ -60,7 +60,6 @@ public:
 	void draw_win_end();
 
 	//device
-	//graph_dc get_dc();
 	void init_graph();
 	void close_graph();
 protected:

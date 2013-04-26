@@ -31,7 +31,6 @@ namespace core
 			return NULL;  
 		} 
 		iconv_close(cd);
-		//u8_toucs(des,len+1,(char*)str,len);
 		return des;
 	}
 

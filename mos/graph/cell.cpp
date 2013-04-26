@@ -218,7 +218,6 @@ int lua_render(lua_State *L)
 	//printf("\n");
 	st_cell st;
 	root->draw(0,st);
-	//delete root;
 	g_cells.clear_all();
 
 	get_graph()->render_end();

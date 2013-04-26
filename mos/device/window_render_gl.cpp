@@ -5,22 +5,14 @@
 #include <windows.h>
 #include "OGLES/GL/glew.h"
 #include "director.h"
-//#include "kazmath/kazmath.h"
 #include "texture_gl.h"
 #include "graph/cell.h"
 #include "graph/color.h"
 #include "gl_macro.h"
-//#include "cocos2dx/shaders/ccGLStateCache.h"
-//#include "cocos2dx/include/ccTypes.h"
-//#include "cocoa/ccMacros.h"
-//#include "cocoa/CCGLProgram.h"
-//#include "cocos2dx/shaders/CCGLProgram.h"
-
-//USING_NS_CC;
 
 window_render_gl::window_render_gl(window* w):window_render(w)
 {
-	m_director = new CCDirector(this);
+	m_director = new director(this);
 }
 
 window_render_gl::~window_render_gl()
@@ -64,7 +56,6 @@ bool window_render_gl::create_render(int width,int height)
 {
 	m_hDC = GetDC((HWND)m_window->m_hWnd);
 	SetupPixelFormat(m_hDC);
-	//SetupPalette();
 	m_hRC = wglCreateContext(m_hDC);
 	wglMakeCurrent(m_hDC, m_hRC);
 
@@ -104,12 +95,7 @@ bool window_render_gl::create_render(int width,int height)
 		printf("OpenGL 2.0 not supported\n");
 	}
 
-	// Enable point size by default on windows. 
-	//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-
-	//set projection 
 	m_director->create_director();
-
 	return true;
 }
 
@@ -135,7 +121,6 @@ void window_render_gl::render_start()
 
 void window_render_gl::render_end()
 {
-	//kmGLPopMatrix();
 	swapBuffers();
 }
 
@@ -147,17 +132,6 @@ void window_render_gl::swapBuffers()
 	}
 }
 
-#define kQuadSize sizeof(ccV3F_C4B_T2F)
-
-//from sprite.
-
-enum {
-	kCCVertexAttrib_Position,
-	kCCVertexAttrib_Color,
-	kCCVertexAttrib_TexCoords,
-
-	kCCVertexAttrib_MAX,
-};
 struct s_f2
 {    
 	GLint x;
@@ -206,18 +180,7 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 	uv[2].u = uv[3].u;
 	uv[2].v = uv[0].v;
 
-
-	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
-
-	//glEnableVertexAttribArray( kCCVertexAttrib_Position );
-	//glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, 0, (void*) (f3));
-	//glEnableVertexAttribArray( kCCVertexAttrib_Color );
-	//glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)(color));
-	//glEnableVertexAttribArray( kCCVertexAttrib_TexCoords );
-	//glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, (void*)(uv));
-
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	unsigned char r,g,b;
 	G_GET_RGB(color,r,g,b);

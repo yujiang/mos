@@ -57,9 +57,6 @@ public:
 			const_cast<image*>(this)->uncompress();
 		return m_buffer;
 	}
-	//unsigned char* get_buffer_end() const{
-	//	return m_buffer + get_buf_size();
-	//}
 
 	bool m_alpha;
 	bool m_premul_alpha;
@@ -94,9 +91,6 @@ public:
 	int copy_image(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch);
 
 protected:
-	//bool create_image_png(void* data,int size);
-	//bool create_image_jpg(void* data,int size);
-
 	void render_image_1_3(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch,int color, int alpha);
 	void render_image_3_3(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch,int color, int alpha);
 	void render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch,int color, int alpha);

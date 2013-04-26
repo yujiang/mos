@@ -29,7 +29,7 @@ public:
 		return g_rect(0,0,m_width,m_height);
 	}
 
-	//系统贴图的大小，2的幂
+	//系统贴图的大小，不必是2的幂
 	int m_tex_width,m_tex_height;
 	int get_tex_width() const{
 		return m_tex_width;
@@ -43,8 +43,8 @@ public:
 	int draw_image_ontexture(int x,int y,const image* img) ;
 
 	/** Initializes with a texture2d with data */
-	bool initWithData(const void* data, int rowLength,CCTexture2DPixelFormat pixelFormat, int pixelsWide, int pixelsHigh, int width, int height);
-	bool updateWithData(const void* data, int rowLength,int offx,int offy,int width, int height);
+	bool init_data(const void* data, int rowLength,CCTexture2DPixelFormat pixelFormat, int pixelsWide, int pixelsHigh, int width, int height);
+	bool update_data(const void* data, int rowLength,int offx,int offy,int width, int height);
 
 };
 

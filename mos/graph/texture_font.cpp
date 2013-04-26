@@ -19,12 +19,8 @@ bool texture_font::create_texture_font(int width,int height,const stFont* st_fon
 	m_st_font = st_font;
 	m_bold = bold;
 
-	//m_image = new image;
-	//m_image->create_image_dynamic(width,height,1); //just a alpha chanel
-	//m_image->m_alpha = true;
 	m_texture = get_render()->create_texture();
 	m_texture->create_texture_dynamic(width,height,kCCTexture2DPixelFormat_A8);
-	//m_texture->set_alpha(true);
 
 	int maxw = st_font->max_width();
 	int maxh = st_font->max_height();
@@ -66,11 +62,6 @@ bool texture_font::create_char(texture_char* tc,int char_value)
 	image* img = create_font_image(m_st_font,char_value,tc->advance);
 	if (!img)
 		return false;
-	//st_cell cell;
-	//cell.x = tc->rc.l;
-	//cell.y = tc->rc.t;
-	
-	//m_image->draw_image(cell,img,NULL,NULL);
 	m_texture->draw_image_ontexture(tc->rc.l,tc->rc.t,img);
 
 	delete img;

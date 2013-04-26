@@ -50,7 +50,6 @@ void image::register_image_file(const char* fileext,load_image_func func)
 
 image* image::create_image_file(const char* file)
 {
-	//m_create_type = image_create_file;
 	size_t sz;
 	char* buf = read_imagefile(file,sz);
 	if (!buf)
@@ -112,12 +111,12 @@ bool image::create_image_image(const image* i,const g_rect* rc)
 	}
 	else
 	{
-		//st_cell cell;
 		draw_image(0,0,-1,255,i,rc,NULL);
 	}
 	return true;
 }
 
+//图片是rgb的顺序，而dc是bgr，所以有此函数
 void image::rgb2bgr()
 {
 	assert(m_bits_pixel == 3);
@@ -183,7 +182,6 @@ void image::render_image_1_3(int offx,int offy,unsigned char* buf, int w, int h,
 			a = *srcy ++;
 			if (a == 0)
 			{
-				//srcy += 3;
 				desy += 3;
 			}
 			else if(a == 255)
@@ -221,7 +219,6 @@ void image::render_image_3_3(int offx,int offy,unsigned char* buf, int w, int h,
 			r = *srcy ++;
 			g = *srcy ++;
 			b = *srcy ++;
-			//图片是rgb的顺序，而dc是bgr
 			*desy ++ = (r * a + *desy * (255-a)) / 255;
 			*desy ++ = (g * a + *desy * (255-a)) / 255;
 			*desy ++ = (b * a + *desy * (255-a)) / 255;
@@ -271,7 +268,6 @@ void image::render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,
 		des += get_line_pitch();
 	}
 }
-
 
 int image::draw_image_cell(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip)
 {
@@ -334,11 +330,9 @@ int image::draw_image(int offx,int offy,int color,int alpha,const image* img,con
 		return -1;
 
 	unsigned char* src = (const_cast<image*>(img))->get_buf_offset(rect.l,rect.t);
-	//unsigned char* des = get_buf_offset(offx,offy);
 	int w = rect.width();
 	int h = rect.height();
 	
-	//not use cell.alpha and cell.color
 	if (!img->m_alpha && alpha == 255)
 	{
 		assert(img->m_bits_pixel == m_bits_pixel);

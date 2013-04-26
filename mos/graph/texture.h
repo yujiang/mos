@@ -60,7 +60,6 @@ bool hasAlpha(CCTexture2DPixelFormat format);
 class texture
 {
 public:
-	//virtual void set_alpha(bool alpha) = 0;
 	virtual bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) = 0;
 	virtual bool create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) = 0;
 
@@ -72,7 +71,6 @@ public:
 	void mark_use_texture(unsigned int time){
 		m_time_use = time;
 	}
-	//const g_rect* m_image_rect;
 };
 
 //texture class: 

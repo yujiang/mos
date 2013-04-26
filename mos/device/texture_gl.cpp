@@ -4,11 +4,6 @@
 #include "graph/image.h"
 #include <assert.h>
 #include "gl_macro.h"
-//#include "cocos2dx/include/ccMacros.h"
-//#include "cocos2dx/shaders/ccGLStateCache.h"
-
-
-//USING_NS_CC;
 
 bool is_2_mi(unsigned int n)
 {
@@ -51,7 +46,7 @@ bool texture_gl::create_texture(const image* img,const g_rect* rc,CCTexture2DPix
 	//buf = new unsigned char[rect.width()*rect.height()*4];
 	//memset(buf,255,rect.width()*rect.height()*4);
 	format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
-	bool rt = initWithData(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+	bool rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
 	//delete buf;
 	return rt;
 }
@@ -62,7 +57,7 @@ bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFor
 	int bits = bitsPerPixelForFormat(format)/8;
 	char* data = new char[width*height*bits];
 	memset(data,0,sizeof(char)*width*height*bits);
-	bool rt = initWithData(data,0,format,width,height,width,height);
+	bool rt = init_data(data,0,format,width,height,width,height);
 	delete data;
 	return rt;
 }
@@ -70,17 +65,15 @@ bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFor
 int texture_gl::draw_image_ontexture(int x,int y,const image* img) 
 {
 	unsigned char* buf = img->get_buffer();
-	return updateWithData(buf,img->m_width,x,y,img->m_width,img->m_height);
+	return update_data(buf,img->m_width,x,y,img->m_width,img->m_height);
 }
 
-bool texture_gl::updateWithData(const void* data, int rowLength,int offx,int offy,int width, int height)
+bool texture_gl::update_data(const void* data, int rowLength,int offx,int offy,int width, int height)
 {
 	const formatinfo* info = get_formatinfo(m_format);
 	if (!info)
 		return false;
 
-	//glGenTextures(1, &m_textureId);
-	//glActiveTexture(GL_TEXTURE0 );
 	glBindTexture(GL_TEXTURE_2D, m_textureId);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 
@@ -91,19 +84,14 @@ bool texture_gl::updateWithData(const void* data, int rowLength,int offx,int off
 	return true;
 }
 
-bool texture_gl::initWithData(const void *data, int rowLength, CCTexture2DPixelFormat pixelFormat, int pixelsWide, int pixelsHigh, int width, int height)
+bool texture_gl::init_data(const void *data, int rowLength, CCTexture2DPixelFormat pixelFormat, int pixelsWide, int pixelsHigh, int width, int height)
 {
-	// XXX: 32 bits or POT textures uses UNPACK of 4 (is this correct ??? )
 	const formatinfo* info = get_formatinfo(pixelFormat);
 	if (!info)
 		return false;
 
 	glGenTextures(1, &m_textureId);
-	//glActiveTexture(GL_TEXTURE0 );
 	glBindTexture(GL_TEXTURE_2D, m_textureId);
-
-	//int align = ( info->unpack_aliment == 4 || ( is_2_mi(pixelsWide) && is_2_mi(pixelsHigh) )) ? 4 : 1;
-	//glPixelStorei(GL_UNPACK_ALIGNMENT,align);
 
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 
@@ -111,8 +99,6 @@ bool texture_gl::initWithData(const void *data, int rowLength, CCTexture2DPixelF
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-	// Specify OpenGL texture image
 
 	glTexImage2D(GL_TEXTURE_2D, 0, info->internalformat, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, info->glformat, info->gltype, data);	
 
@@ -136,8 +122,6 @@ formatinfo c_formatinfos[] = {
 	{kCCTexture2DPixelFormat_AI88,true,16,GL_LUMINANCE_ALPHA,GL_LUMINANCE_ALPHA,GL_UNSIGNED_BYTE,1},
 	{kCCTexture2DPixelFormat_RGBA4444,true,16,GL_RGBA,GL_RGBA,GL_UNSIGNED_SHORT_4_4_4_4,1},
 	{kCCTexture2DPixelFormat_RGB5A1,true,16,GL_RGBA,GL_RGBA,GL_UNSIGNED_SHORT_5_5_5_1,1},
-	//{kCCTexture2DPixelFormat_PVRTC4,false,4,GL_RGBA,GL_RGBA,GL_UNSIGNED_BYTE,1},
-	//{kCCTexture2DPixelFormat_PVRTC2,false,2,GL_RGBA,GL_RGBA,GL_UNSIGNED_BYTE,1},
 };
 
 const formatinfo* get_formatinfo(CCTexture2DPixelFormat format)

@@ -1,7 +1,7 @@
 抱歉只有中文的说明
 
 特色
-1. c++层仅有系统相关的部分（仅仅实现了渲染，并且是gdi渲染）
+1. c++层仅有系统相关的部分（仅仅实现了渲染包括gdi和opengl）
 2. 所有游戏对象和逻辑都在lua
 	a. lua的游戏对象，在c++层没有对应物，两边也不通过get set相互设置
 	b. 每一帧，所有的渲染对象按照排序组成一个table传到c++，c++遍历整个table来渲染
@@ -47,7 +47,8 @@ graph
 	所有的资源cache
 image_db
 	定义一个image+frame是来自一个图片的某个rect——常见的是把所有ui资源做到一个大图中。
-
+device
+	平台相关的部分，现有gdi和opengl两个实现
 
 输入常用命令(在main.lua)
 r reload 比如改了一个button；r button，会遍历root，把所有button对象的metatable替换成新的。

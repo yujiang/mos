@@ -3,7 +3,7 @@
 
 #include "window_render.h"
 #include <windows.h>
-class CCDirector;
+class director;
 
 class window_render_gl : public window_render
 {
@@ -27,7 +27,7 @@ public:
 	void swapBuffers();
 
 	HGLRC m_hRC;
-	CCDirector* m_director;
+	director* m_director;
 };
 
 #endif
