@@ -31,7 +31,7 @@ bool texture_font::create_texture_font(int width,int height,const stFont* st_fon
 	int col = width / maxw;
 	int line = height / maxh;
 
-	printf(__FUNCTION__" w %d h %d fw %d fh %d\n",width,height,st_font->max_width(),st_font->max_height());
+	//printf(__FUNCTION__" w %d h %d fw %d fh %d\n",width,height,st_font->max_width(),st_font->max_height());
 
 	for (int y = 0; y<line; y++)
 	for (int x = 0; x<col; x++)

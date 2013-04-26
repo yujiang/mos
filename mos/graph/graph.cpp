@@ -130,9 +130,9 @@ void graph::auto_clear_resource()
 	for (auto it = image_map.begin(); it != image_map.end(); )
 	{
 		image* img = it->second;
-		if (TIME_NOTUSE(img,m_clear_image) && img->m_ref == 1)
+		if (img && TIME_NOTUSE(img,m_clear_image) && img->m_ref == 1)
 		{
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 			std::cout << "clear image " << it->first << " time: " << TIME(img) << std::endl;
 #endif
 			delete img;
@@ -140,10 +140,10 @@ void graph::auto_clear_resource()
 		}
 		else 
 		{
-			if (TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
+			if (img && TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
 			{
 				img->compress();
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 				std::cout << "compress image " << it->first << " time: " << TIME(img) 
 					<< " size " << img->get_buf_size()/1024 << "->" << img->get_compress_size()/1024 << std::endl;
 #endif
@@ -154,9 +154,9 @@ void graph::auto_clear_resource()
 	for (auto it = texture_map.begin(); it != texture_map.end();)
 	{
 		const texture* tex = it->second;
-		if (TIME_NOTUSE(tex,m_clear_texture))
+		if (tex && TIME_NOTUSE(tex,m_clear_texture))
 		{
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 			std::cout << "clear texture " << it->first << " time: " << TIME(tex) << std::endl;
 #endif
 			delete tex;
@@ -173,7 +173,7 @@ void graph::auto_clear_resource()
 			const texture_char* tc = it2->second;
 			if (TIME_NOTUSE(tc,m_clear_texturefont))
 			{
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 				std::cout << "clear font " << it->first << " char " << core::UnicodeCharToANSI(it2->first) << " time: " << TIME(tc) << std::endl;
 #endif
 				delete tc;
@@ -339,6 +339,8 @@ g_size graph::get_text_size(const st_cell& text,const g_size& sz_father)
 
 	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
+	if (af.ptr == 0)
+		return g_size(0,0);
 	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
 	g_size sz = get_text_size(text,sz_father,font,af.ptr);
 	//free((void*)str0);
@@ -381,6 +383,8 @@ int graph::get_text_line(const st_cell& text,const g_size& sz_father)
 
 	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
+	if (af.ptr == 0)
+		return 0;
 	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
 	int line = get_text_line(text,sz_father,font,af.ptr);
 	//free((void*)str0);
@@ -398,6 +402,8 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 
 	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
+	if (af.ptr == 0)
+		return -1;
 	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
 	const wchar_t* str = af.ptr;
 

@@ -107,6 +107,8 @@ changelog
 	但是image必须是剪裁并且紧凑的，否则blt太浪费了，image还是有个off。
 4.19-4.26
 	实现了opengl的渲染。
+4.27
+	把初始化拆分到test.lua去。
 	
 Todo：
 	1. 支持其他animation格式。比如天龙的文件格式(256色rle)。

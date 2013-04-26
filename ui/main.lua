@@ -1,9 +1,9 @@
 --c++ 的初始化和消息入口
+require "test"
 
 function init_libs(dir,files)
 	for _,file in ipairs(files) do
-		--dofile(file)
-		print("require",dir.."."..file)
+		--print("require",dir.."."..file)
 		if dir == "ex" then
 			require(dir.."."..file)
 		else
@@ -90,13 +90,6 @@ function safe_on_key_down(key,alt,ctrl,shift)
 	end
 end
 
-function init_ui(w,h)
-	--write your custom function 
-	--now we use test_ui()
-	ui:regist_font(0,"simhei.ttf",16,16,1,2);
-	return test_ui(w,h);
-end
-
 function reload(file)
     --print("reload",file)
 	local dir_files = {
@@ -150,11 +143,16 @@ function safe_on_init()
 	local h = 600
 	cdriver.create_window("main","test",100,100,w,h,0);
 
-	g_root = init_ui(w,h)
+	ui:regist_font(0,"simhei.ttf",16,16,1,2);
+	g_root = root()
+	g_root:create_root(w,h)
 	
 	g_camera = camera()
 	g_camera:create_camera(g_root:get_map())
 	g_camera:run_normal()
+
+	test_fps()
+	test_win2()
 end
 
 --init()

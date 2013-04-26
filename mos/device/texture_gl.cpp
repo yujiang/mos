@@ -82,6 +82,7 @@ bool texture_gl::updateWithData(const void* data, int rowLength,int offx,int off
 	//glGenTextures(1, &m_textureId);
 	//glActiveTexture(GL_TEXTURE0 );
 	glBindTexture(GL_TEXTURE_2D, m_textureId);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, offx, offy, width, height, info->glformat, info->gltype, data);	
 
@@ -104,8 +105,7 @@ bool texture_gl::initWithData(const void *data, int rowLength, CCTexture2DPixelF
 	//int align = ( info->unpack_aliment == 4 || ( is_2_mi(pixelsWide) && is_2_mi(pixelsHigh) )) ? 4 : 1;
 	//glPixelStorei(GL_UNPACK_ALIGNMENT,align);
 
-	if (rowLength > 0)
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );

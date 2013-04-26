@@ -154,7 +154,7 @@ function cell:set_caption(text,font,offx,offy)
 	offx = offx or 0
 	offy = offy or 0
 	local lb = label()
-	assert(self.w > 0 and self.h > 0)
+	assert(self.w >= 0 and self.h >= 0)
 	lb:create_label("caption",offx,offy,1000,self.w-2*offx,self.h-2*offy,text,font,nil,ALIGN_CENTER)
 	self:add_child(lb)
 end

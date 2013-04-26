@@ -4,7 +4,7 @@ local image = class(cell,"image")
 
 function image:create_image(name,x,y,z,image_file,frame)
 	local w,h = cdriver.get_image_size(image_file,frame) --从文件得到w，h
-	assert(w > 0 and h > 0)
+	assert(w >= 0 and h >= 0)
 	cell.create_cell(self,name,x,y,z,w,h)
 	self:set_image(image_file,frame)
 	self._disable = true;

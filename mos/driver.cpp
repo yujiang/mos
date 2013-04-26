@@ -73,11 +73,10 @@ static int lua_get_image_size (lua_State *L) {
 		lua_pushinteger(L,sz.h);
 		return 2;
 	}
-	else
-	{
-		printf("error! get_image_size %s %d\n",file,frame);
-	}
-	return 0;
+	printf("error! get_image_size %s %d\n",file,frame);
+	lua_pushinteger(L,0);
+	lua_pushinteger(L,0);
+	return 2;
 }
 
 static int  lua_create_window (lua_State *L) {
