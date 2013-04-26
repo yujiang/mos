@@ -55,4 +55,4 @@ l load window
 s show window
 df dofile 常用df main.lua 
 dump cdriver.dump_resource 看c++的cache
-其他执行dostring
+其他执行dostring: test()获得常见测试

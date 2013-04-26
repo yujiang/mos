@@ -20,7 +20,9 @@ function ani_data:regist_ani_data(shape,name,image_file,ani_speed,frame_start,fr
 end
 
 function ani_data:find_ani_data(shape,name)
-	return self.shapes[shape][name]
+	if self.shapes[shape] then
+		return self.shapes[shape][name]
+	end
 end
 
 return ani_data

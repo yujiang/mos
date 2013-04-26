@@ -260,7 +260,7 @@ function test_fps()
 end
 
 function test()
-	print("window\ttest_win1,test_win2,test_win3,test_win4")
-	print("game\ttest_map,test_sprite")
-	print("other\ttest_fps,test_msgbox")
+	print("window:\ttest_win1(),test_win2(),test_win3(),test_win4()")
+	print("game:\ttest_map(),test_sprite()")
+	print("other:\ttest_fps(),test_msgbox()")
 end

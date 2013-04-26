@@ -144,6 +144,7 @@ function safe_on_init()
 	cdriver.create_window("main","test",100,100,w,h,0);
 
 	ui:regist_font(0,"simhei.ttf",16,16,1,2);
+
 	g_root = root()
 	g_root:create_root(w,h)
 	
@@ -151,8 +152,15 @@ function safe_on_init()
 	g_camera:create_camera(g_root:get_map())
 	g_camera:run_normal()
 
+	--cdriver.regist_image("dog",1,"dog.png",0,0,105,95)
+	--cdriver.regist_image("dog",2,"dog.png",105,0,210,95)
+	--cdriver.regist_image("dog",3,"dog.png",105,0,210,95)
+	--g_ani_data:regist_ani_data(101,"stand","dog",0,1,1,false,50,80)
+	--g_ani_data:regist_ani_data(101,"walk","dog",0.25,1,3,true,50,80)
+
 	test_fps()
-	test_win2()
+	print("input ? or test() get example.")
+	--test_win2()
 end
 
 --init()
@@ -162,7 +170,14 @@ function safe_on_input(s)
 	--print("on_input",s)
 	--print(string.split(s))
 	local t = split(s, " ")
-	if t[1] == 's' then
+	if t[1] == '?' then
+		print("r reload ")
+		print("l load window ")	
+		print("s show window ")
+		print("df dofile  ")
+		print("dump cdriver.dump_resource ")
+		print("test() get example.")
+	elseif t[1] == 's' then
 		show(t[2],t[3])
 	elseif t[1] == 'r' then
 		reload(t[2])
