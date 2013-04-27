@@ -81,7 +81,7 @@ function safe_on_key_down(key,alt,ctrl,shift)
 	if rt then
 		return
 	end
-	print("safe_on_key_down",key,alt,ctrl,shift)
+	--print("safe_on_key_down",key,alt,ctrl,shift)
 	if is_keyboard(key,'M') and not ctrl then
 		t_msgbox()
 	end
@@ -152,15 +152,11 @@ function safe_on_init()
 	g_camera:create_camera(g_root:get_map())
 	g_camera:run_normal()
 
-	--cdriver.regist_image("dog",1,"dog.png",0,0,105,95)
-	--cdriver.regist_image("dog",2,"dog.png",105,0,210,95)
-	--cdriver.regist_image("dog",3,"dog.png",105,0,210,95)
-	--g_ani_data:regist_ani_data(101,"stand","dog",0,1,1,false,50,80)
-	--g_ani_data:regist_ani_data(101,"walk","dog",0.25,1,3,true,50,80)
-
 	test_fps()
-	print("input ? or test() get example.")
 	--test_win2()
+	test_notice()
+
+	print("input ? or test() get example.")
 end
 
 --init()
@@ -179,6 +175,8 @@ function safe_on_input(s)
 		print("test() get example.")
 	elseif t[1] == 's' then
 		show(t[2],t[3])
+	elseif t[1] == 'pr' then
+		g_root:print_render()
 	elseif t[1] == 'r' then
 		reload(t[2])
 	elseif t[1] == 'l' then

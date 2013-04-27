@@ -259,8 +259,34 @@ function test_fps()
 	l1:add_child(label1)
 end
 
+function test_notice()
+	local r = g_root
+	local l1 = r:find_child("top")
+
+	local label1 = label()
+	label1:create_label("notice",100,20,0,250,20,"long long text long long text abcdefg")
+	label1._disable = true
+	local text = label1:get_text()
+	text:set_color(0xffff00)
+	text:set_pos(250,0)
+	label1:set_box(0x808080,128)
+	l1:add_child(label1)
+
+	g_timer:add_timer(
+		0.03,
+		function() 
+			local x,y = text:get_pos()
+			if x < -text.text_w then
+				text:set_pos(250,0)
+				return true
+			end
+			text:set_pos(x-1,0)
+			return true
+		end)
+end
+
 function test()
 	print("window:\ttest_win1(),test_win2(),test_win3(),test_win4()")
 	print("game:\ttest_map(),test_sprite()")
-	print("other:\ttest_fps(),test_msgbox()")
+	print("other:\ttest_fps(),test_msgbox(),test_notice()")
 end

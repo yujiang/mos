@@ -298,7 +298,7 @@ bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_r
 		offx = clip.l;
 	}
 	else if (offx >= clip.r)
-		return -1;
+		return false;
 	if (offx + rect.width() > clip.r)
 		rect.r -= offx + rect.width() - clip.r;
 
