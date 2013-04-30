@@ -1,7 +1,8 @@
 #include "window_render_gl.h"
-#include "window.h"
+#include "../window.h"
 #include "graph/texture.h"
 #include "graph/image.h"
+#include "graph/graph.h"
 #include <windows.h>
 #include "OGLES/GL/glew.h"
 #include "director.h"
@@ -143,8 +144,13 @@ struct s_uv
 	GLfloat v;
 };
 
-
 int window_render_gl::draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
+{
+	s_texture_render++;
+	return _draw_texture_cell(cell,_tex,rc);
+}
+
+int window_render_gl::_draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
 {
 	return draw_texture(cell.x,cell.y,cell.color,cell.alpha,_tex,rc);
 }
@@ -158,6 +164,8 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 
 	if (!get_cliped_rect(rect,rc,x,y,m_rc_clip))
 		return -1;
+
+	s_triangle_render += 2;
 
 	s_f2 f3[4];
 	s_uv uv[4];
@@ -204,6 +212,7 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 
 int window_render_gl::draw_box_cell(const st_cell& cell,int w,int h)
 {
+	s_box_render ++;
 	return draw_box(cell.x,cell.y,cell.color,cell.alpha,w,h);
 }
 
@@ -211,6 +220,8 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 {
 	if (!get_cliped_box(x,y,w,h,m_window->m_width,m_window->m_height))
 		return -1;
+
+	s_triangle_render += 2;
 
 	s_f2 f3[4];
 
@@ -241,5 +252,25 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 
 	CHECK_GL_ERROR_DEBUG();
 
+	return 0;
+}
+
+int window_render_gl::draw_text_cell(const st_cell& cell,texture* tex,const g_rect* rc)
+{
+	s_text_render++;
+	return _draw_texture_cell(cell,tex,rc);
+}
+
+int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc)
+{
+	s_image_render++;
+	texture* p = get_graph()->find_texture(file);
+	if (p)
+		return draw_text_cell(cell,p,rc);
+	texture_gl* gl = new texture_gl;
+	if (!gl->create_texture(img,0))
+		return -1;
+	get_graph()->maped_texture(file,gl);
+	_draw_texture_cell(cell,gl,rc);
 	return 0;
 }

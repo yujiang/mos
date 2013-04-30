@@ -7,6 +7,7 @@
 struct st_window_param : public g_rect
 {
 	int style;
+	std::string render_type;
 };
 
 class window_render;

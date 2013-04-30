@@ -42,8 +42,8 @@ function sprite:do_ani(ani_name)
 	self:set_bg(tb.image_file,tb.frame_start)
 
 	local bg = self:get_bg() 
-	bg.x = -tb.cx
-	bg.y = -tb.cy
+	--bg.x = -tb.cx
+	--bg.y = -tb.cy
 	
 	--print(ani_name,tb.image_file,tb.frame_start,tb.ani_speed)
 	--print(debug.traceback())

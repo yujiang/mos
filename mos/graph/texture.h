@@ -57,15 +57,24 @@ const formatinfo* get_formatinfo(CCTexture2DPixelFormat format);
 unsigned int bitsPerPixelForFormat(CCTexture2DPixelFormat format);
 bool hasAlpha(CCTexture2DPixelFormat format);
 
+
 class texture
 {
 public:
+	texture();
+	virtual ~texture();
+	
+	static int s_texture_id ;
+	static int s_texture_num ;
+
+	int m_id;
+
 	virtual bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) = 0;
-	virtual bool create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) = 0;
+	//virtual bool create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) = 0;
 
 	virtual int draw_image_ontexture(int x,int y,const image* img) = 0;
 
-	int draw_cell(const st_cell& cell,const g_rect* rc );
+	//int draw_cell(const st_cell& cell,const g_rect* rc );
 
 	unsigned int m_time_use;
 	void mark_use_texture(unsigned int time){

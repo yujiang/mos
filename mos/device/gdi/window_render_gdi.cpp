@@ -1,8 +1,9 @@
 #include "window_render_gdi.h"
-#include "window.h"
+#include "../window.h"
 #include "texture_gdi.h"
 #include "graph/image.h"
 #include <windows.h>
+#include <assert.h>
 
 window_render_gdi::window_render_gdi(window* w) : window_render(w)
 {
@@ -68,12 +69,32 @@ void window_render_gdi::render_end()
 	ReleaseDC((HWND)m_window->m_hWnd,dc);
 }
 
-int window_render_gdi::draw_texture_cell(const st_cell& cell,texture* tex, const g_rect* rc)
+int window_render_gdi::draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc)
 {
-	return m_image->draw_image_cell(cell,((texture_gdi*)tex)->m_image,rc,m_rc_clip);
+	s_image_render++;
+	return m_image->draw_image_cell(cell,img,rc,m_rc_clip);
+}
+
+int window_render_gdi::draw_texture_cell(const st_cell& cell,texture* _tex, const g_rect* rc)
+{
+	s_texture_render++;
+	return _draw_texture_cell(cell,_tex,rc);
+}
+
+int window_render_gdi::_draw_texture_cell(const st_cell& cell,texture* _tex, const g_rect* rc)
+{
+	texture_gdi* tex = (texture_gdi* )(_tex);
+	return m_image->draw_image_cell(cell,tex->m_image,rc,m_rc_clip);
 }
 
 int window_render_gdi::draw_box_cell(const st_cell& cell,int w,int h)
 {
+	s_box_render++;
 	return m_image->draw_box_cell(cell,w,h);
+}
+
+int window_render_gdi::draw_text_cell(const st_cell& cell,texture* tex,const g_rect* rc)
+{
+	s_text_render++;
+	return _draw_texture_cell(cell,tex,rc);
 }

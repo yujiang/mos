@@ -37,7 +37,7 @@ texture_gl::~texture_gl()
 	}
 }
 
-bool texture_gl::create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
+bool texture_gl::create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
 {
 	g_rect rect = rc ? *rc : img->get_rect();
 

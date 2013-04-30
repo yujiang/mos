@@ -1,7 +1,7 @@
 #include "director.h"
 #include "window_render_gl.h"
 #include "OGLES/GL/glew.h"
-#include "window.h"
+#include "../window.h"
 #include "gl_macro.h"
 
 

@@ -70,7 +70,7 @@ function ui:on_every_frame()
 	local fps = g_timer:get_fps()
 	local l = g_root:find_control("top.fps")
 	if l then
-		l:set_string("fps:"..fps)
+		l:set_string("fps:"..fps.." "..cdriver:get_graph_trace())
 	end
 end
 

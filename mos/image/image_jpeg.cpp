@@ -1,4 +1,4 @@
-#include "image.h"
+#include "../graph/image.h"
 #include "cc.h"
 #include <stdio.h>
 #include <setjmp.h>

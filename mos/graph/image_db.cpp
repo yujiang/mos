@@ -28,14 +28,16 @@ std::unordered_map<int,st_redirect> g_hm_redirect;
 const char* my_itoa(int num)
 {
 	static char buf[64];
-	itoa(num,buf,10);
+	//itoa(num,buf,10);
+	sprintf(buf,"%04d",num);
 	return buf;
 }
 
 void regist_image_file(const char* file,int frame, st_redirect& rc)
 {
 	assert(frame < 1000);
-	rc.file_texture = (std::string)(file) + my_itoa(frame);
+	//保证唯一性
+	rc.id_texture = (std::string)(file) + my_itoa(frame);
 	g_hm_redirect[get_file_hash(file)*1000+frame] = rc;
 }
 

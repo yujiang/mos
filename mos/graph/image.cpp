@@ -8,8 +8,14 @@
 #include <map>
 #include <string>
 
+int image::s_image_id = 0;
+int image::s_image_num = 0;
+
 image::image()
 {
+	m_id = s_image_id++;
+	s_image_num++;
+
 	m_width = m_height = 0;
 	m_buffer = 0;
 	m_ref = 1;
@@ -22,6 +28,8 @@ image::image()
 
 image::~image()
 {
+	s_image_num--;
+
 	delete m_buffer;
 	m_buffer = 0;
 
@@ -42,10 +50,10 @@ bool image::in_image(int x, int y)
 	return false;
 }
 
-std::map<std::string,load_image_func> g_imageLoad;
+std::map<std::string,load_image_func> s_imageLoad;
 void image::register_image_file(const char* fileext,load_image_func func)
 {
-	g_imageLoad[fileext] = func;
+	s_imageLoad[fileext] = func;
 }
 
 image* image::create_image_file(const char* file)
@@ -58,7 +66,7 @@ image* image::create_image_file(const char* file)
 	if (len <= 3)
 		return false;
 	const char* ext = file+len-3;
-	load_image_func func = g_imageLoad[ext];
+	load_image_func func = s_imageLoad[ext];
 	if (!func)
 		return false;
 	image* i = new image();
@@ -432,8 +440,7 @@ void image::compress()
 	assert(rt == Z_OK);
 
 	m_sz_compress = size;
-	m_buffer_compress = new unsigned char[size];
-	memcpy(m_buffer_compress,des,size);
+	m_buffer_compress = des;
 
 	delete m_buffer;
 	m_buffer = NULL;

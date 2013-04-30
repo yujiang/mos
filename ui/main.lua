@@ -141,7 +141,9 @@ function safe_on_init()
 	init_main()
 	local w = 600
 	local h = 600
-	cdriver.create_window("main","test",100,100,w,h,0);
+	local render = "gdi"
+	local render = "opengl"
+	cdriver.create_window("main","test",100,100,w,h,0,render);
 
 	ui:regist_font(0,"simhei.ttf",16,16,1,2);
 
@@ -153,8 +155,10 @@ function safe_on_init()
 	g_camera:run_normal()
 
 	test_fps()
+	test_map()
+	test_sprite()
 	--test_win2()
-	test_notice()
+	--test_notice()
 
 	print("input ? or test() get example.")
 end
@@ -170,13 +174,17 @@ function safe_on_input(s)
 		print("r reload ")
 		print("l load window ")	
 		print("s show window ")
-		print("df dofile  ")
+		print("df dofile ")
+		print("pr g_root print ")
+		print("pr g_root print_render")
 		print("dump cdriver.dump_resource ")
 		print("test() get example.")
 	elseif t[1] == 's' then
 		show(t[2],t[3])
 	elseif t[1] == 'pr' then
 		g_root:print_render()
+	elseif t[1] == 'p' then
+		g_root:print()
 	elseif t[1] == 'r' then
 		reload(t[2])
 	elseif t[1] == 'l' then

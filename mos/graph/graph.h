@@ -29,7 +29,9 @@ public:
 	//所有资源。
 	std::unordered_map<std::string,image*> image_map;
 	image* find_image(const char* file,int frame);
+	
 	bool get_image_size(const char* file,int frame,g_size& sz);
+	bool get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg);
 
 	std::unordered_map<std::string,texture*> texture_map;
 	texture* find_texture(const char* file,int frame);
@@ -67,10 +69,12 @@ protected:
 	g_size get_text_size(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 
 	image* find_image_raw(const char* file);
-	texture* find_texture(const char* file);
 
 	texture_font* find_texture_font(int font,bool bold);
 	bool find_texture_font_rc(const st_cell& text,int char_value,text_char& tc);
+public:
+	texture* find_texture(const char* file);
+	void maped_texture(const char* file,texture* p);
 };
 
 graph* get_graph();

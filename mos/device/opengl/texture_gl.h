@@ -38,7 +38,7 @@ public:
 		return m_tex_height;
 	}
 
-	bool create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) ;
+	bool create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) ;
 	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
 	int draw_image_ontexture(int x,int y,const image* img) ;
 

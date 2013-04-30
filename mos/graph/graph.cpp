@@ -70,6 +70,32 @@ bool graph::get_image_size(const char* file,int frame,g_size& sz)
 	return false;
 }
 
+bool graph::get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg)
+{
+	const st_redirect* r = redirect_image_file(file,frame);
+	if (r && !r->rc.is_empty())
+	{
+		sz = r->rc.get_size();
+		cg = r->cg;
+		return true;
+	}
+	if (r)
+		file = r->file_image.c_str();
+
+	image* i = find_image_raw(file);
+	if (i)
+	{
+		sz = i->get_size();
+		return true;
+	}
+	return false;
+}
+
+void graph::maped_texture(const char* file,texture* p)
+{
+	texture_map[file] = p;
+}
+
 texture* graph::find_texture(const char* file)
 {
 	texture* t = texture_map[file];
@@ -138,18 +164,20 @@ void graph::auto_clear_resource()
 			delete img;
 			it = image_map.erase(it);
 		}
-		else 
-		{
-			if (img && TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
-			{
-				img->compress();
-#ifdef _DEBUG_RESOURCE
-				std::cout << "compress image " << it->first << " time: " << TIME(img) 
-					<< " size " << img->get_buf_size()/1024 << "->" << img->get_compress_size()/1024 << std::endl;
-#endif
-			}			
+		else
 			++it;
-		}
+//		else 
+//		{
+//			if (img && TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
+//			{
+//				img->compress();
+//#ifdef _DEBUG_RESOURCE
+//				std::cout << "compress image " << it->first << " time: " << TIME(img) 
+//					<< " size " << img->get_buf_size()/1024 << "->" << img->get_compress_size()/1024 << std::endl;
+//#endif
+//			}			
+//			++it;
+//		}
 	}	
 	for (auto it = texture_map.begin(); it != texture_map.end();)
 	{
@@ -252,31 +280,24 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 {
 	const char* file = file0;
 	const st_redirect* r = redirect_image_file(file,frame);
+	//if (r)
+	//	file = r->id_texture.c_str();
 	if (r)
-		file = r->file_texture.c_str();
+		file = r->file_image.c_str();
 
-	texture* t = find_texture(file);
-	if (!t)
-	{
-		image* img = find_image(file0,frame);
-		if (!img)
-			return -1;
+	//texture* t = find_texture(file);
+	//if (t)
+	//	return get_render()->draw_texture_cell(cell,t,0);
 
-		const g_rect* rc = NULL;
-		if (r && !r->rc.is_empty())
-			rc = &r->rc;
+	image* img = find_image_raw(file);
+	if (!img)
+		return -1;
 
-		t = get_render()->create_texture();
-		if (!t->create_texture(img,rc))
-		{
-			delete t;
-			return -1;
-		}
+	const g_rect* rc = NULL;
+	if (r && !r->rc.is_empty())
+		rc = &r->rc;
 
-		t->mark_use_texture(g_time_now);
-		texture_map[file] = t;
-	}
-	return t->draw_cell(cell,0);
+	return get_render()->draw_image_cell(cell,img,file,rc);
 }
 
 int graph::draw_box(const st_cell& cell,int w,int h)
@@ -422,7 +443,7 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 		c.y = cell.y + y;
 		c.color = text.color;
 		c.alpha = text.alpha;
-		tc.texture->m_texture->draw_cell(c,tc.rc_texture);
+		get_render()->draw_text_cell(c,tc.texture->m_texture,tc.rc_texture);
 
 		x += tc.advance;
 	}
@@ -457,6 +478,7 @@ void graph::draw_win_end()
 //device
 bool create_image_png(image*,void* data,int size);
 bool create_image_jpg(image*,void* data,int size);
+bool create_image_zgp(image*,void* data,int size);
 
 void graph::init_graph()
 {
@@ -464,6 +486,7 @@ void graph::init_graph()
 	init_font();
 	image::register_image_file("png",create_image_png);
 	image::register_image_file("jpg",create_image_jpg);
+	image::register_image_file("zgp",create_image_zgp);
 }
 
 void graph::close_graph()

@@ -46,6 +46,11 @@ void init_cell()
 	//assert(cell.y == 12);
 }
 
+st_cell::st_cell()
+{
+	init();
+};
+
 void st_cell::init()
 {
 	memset(this,0,sizeof(st_cell));

@@ -4,8 +4,17 @@
 #include "device/window_render.h"
 #include "mos.h"
 
-int texture::draw_cell(const st_cell& cell,const g_rect* rc )
+int texture::s_texture_id = 0;
+int texture::s_texture_num = 0;
+
+texture::texture()
 {
-	return get_render()->draw_texture_cell(cell,this,rc);
+	m_id = s_texture_id++;
+	s_texture_num++;
+}
+
+texture::~texture()
+{
+	s_texture_num--;
 }
 

@@ -113,12 +113,13 @@ function test_tableex()
 	print(table.show(t, "t"))            -- most typical use
 end
 
+function regist_dog()
+	cdriver.regist_image("dog",1,"dog.png",0,0,105,95,50,80)
+	cdriver.regist_image("dog",2,"dog.png",105,0,210,95,50,80)
+	cdriver.regist_image("dog",3,"dog.png",105,0,210,95,50,80)
+end
 --test
 function test_win3()
-	cdriver.regist_image("dog",1,"dog.png",0,0,105,95)
-	cdriver.regist_image("dog",2,"dog.png",105,0,210,95)
-	cdriver.regist_image("dog",3,"dog.png",105,0,210,95)
-
 	local r = g_root
 	local l1 = r:find_child("top")
 	local win3 = window()
@@ -174,9 +175,7 @@ function test_win1()
 	cdriver.regist_image("play",1,"play-button.png")
 	cdriver.regist_image("play",2,"play-button.png")
 	cdriver.regist_image("play",3,"play-button-down.png")
-	cdriver.regist_image("dog",1,"dog.png",0,0,105,95)
-	cdriver.regist_image("dog",2,"dog.png",105,0,210,95)
-	cdriver.regist_image("dog",3,"dog.png",105,0,210,95)
+	regist_dog()
 
 	local r = g_root
 	local l2 = r:find_child("normal")
@@ -230,13 +229,10 @@ function test_map()
 end
 
 function test_sprite()
-	cdriver.regist_image("dog",1,"dog.png",0,0,105,95)
-	cdriver.regist_image("dog",2,"dog.png",105,0,210,95)
-	cdriver.regist_image("dog",3,"dog.png",105,0,210,95)
-
+	regist_dog()
 	local r = g_root
-	g_ani_data:regist_ani_data(101,"stand","dog",0,1,1,false,50,80)
-	g_ani_data:regist_ani_data(101,"walk","dog",0.25,1,3,true,50,80)
+	g_ani_data:regist_ani_data(101,"stand","dog",0,1,1,false)
+	g_ani_data:regist_ani_data(101,"walk","dog",0.25,1,3,true)
 
 	local sp = sprite()
 	sp:create_sprite(nil,100,100,0,101)
@@ -253,7 +249,7 @@ function test_fps()
 	local l1 = r:find_child("top")
 
 	local label1 = label()
-	label1:create_label("fps",0,0,0,100,20,"fps:100")
+	label1:create_label("fps",0,0,0,300,20,"fps:100")
 	label1._disable = false
 	label1:get_text():set_color(-1)
 	l1:add_child(label1)

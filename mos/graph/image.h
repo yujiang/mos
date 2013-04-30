@@ -13,6 +13,9 @@ class image
 public:
 	image();
 	~image();
+	static int s_image_id ;
+	static int s_image_num ;
+	int m_id;
 
 	enum enum_createtype{
 		image_create_null,
@@ -30,10 +33,10 @@ public:
 	bool create_image_image(const image* i,const g_rect* rc);
 
 	int m_ref;
-	int add_ref(){
+	int image_add_ref(){
 		return ++m_ref;
 	}
-	int release(){
+	int image_release(){
 		return --m_ref;
 	}
 
@@ -111,5 +114,12 @@ protected:
 
 bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_rect* rc_clip);
 bool get_cliped_box(int& offx,int& offy,int& w,int& h, int width,int height);
+
+
+struct image_ref
+{
+	image* image;
+	g_rect* rc;
+};
 
 #endif

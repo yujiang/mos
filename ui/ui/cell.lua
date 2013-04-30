@@ -11,7 +11,7 @@ function cell:create_cell(name,x,y,z,w,h)
 	self.z = z
 	self.w = w
 	self.h = h
-	self.childs = {}
+	self.childs = {} 
 end
 
 --create and destroy
@@ -81,10 +81,6 @@ function cell:set_size(w,h)
 	self.w,self.h = w,h
 end
 
-function cell:get_rect()
-	return self.x,self.y,self.x + self.w,self.y + self.h
-end
-
 function cell:in_rect_all(x,y)
 	local ox,oy = self:get_offset_all()
 	return self:in_rect(x-ox, y-oy)
@@ -102,8 +98,14 @@ function cell:in_size(x,y)
 	return x >= 0 and x < self.w and y >= 0 and y < self.h
 end
 
+function cell:get_rect()
+	return self.x,self.y,self.x + self.w,self.y + self.h
+end
+
 function cell:_in_rect(x,y)
-	return x >= self.x and x < self.x + self.w and y >= self.y and y < self.y + self.h
+	local l,t,r,b = self:get_rect()
+	--return x >= self.x and x < self.x + self.w and y >= self.y and y < self.y + self.h
+	return x >= l and x < r and y >= t and y < b
 end
 
 --只有image重载这两个函数，所以没有写成in_rect_override的形式？

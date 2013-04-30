@@ -8,13 +8,23 @@ texture_gdi::~texture_gdi()
 {
 	delete m_image;
 	m_image = NULL;
+
+	if (m_image_src)
+	{
+		m_image_src->image_release();
+		m_image_src= 0;
+	}
 }
 
-bool texture_gdi::create_texture(const image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
+bool texture_gdi::create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
 {
 	assert(m_image == 0);
-	m_image = new image;
-	m_image->create_image_image(img,rc);
+	//m_image = new image;
+	//m_image->create_image_image(img,rc);
+	m_image_src = img;
+	m_image_src->image_add_ref();
+	m_rc_image = rc;
+
 	return true;
 }
 

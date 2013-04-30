@@ -38,7 +38,7 @@ public:
 	int is_box;		//for box
 	int is_window;	//for window use，一个window上的图素可以一次绘制。
 
-	st_cell(){init();};
+	st_cell();
 	void init();
 	st_cell(const st_cell& r1,const st_cell r2);
 
