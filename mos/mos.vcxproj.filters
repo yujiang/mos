@@ -176,9 +176,6 @@
     <ClCompile Include="image\image_png.cpp">
       <Filter>image</Filter>
     </ClCompile>
-    <ClCompile Include="image\image_zgp.cpp">
-      <Filter>image</Filter>
-    </ClCompile>
     <ClCompile Include="device\opengl\director.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>

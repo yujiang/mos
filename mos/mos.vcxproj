@@ -140,7 +140,6 @@
     <ClCompile Include="graph\texture_font.cpp" />
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
-    <ClCompile Include="image\image_zgp.cpp" />
     <ClCompile Include="mos.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="stdafx.cpp" />

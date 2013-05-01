@@ -41,12 +41,25 @@ bool texture_gl::create_texture(image* img,const g_rect* rc,CCTexture2DPixelForm
 {
 	g_rect rect = rc ? *rc : img->get_rect();
 
-	unsigned char* buf = img->get_buf_offset(rect.l,rect.t);
+	colorbyte* buf = img->get_buf_offset(rect.l,rect.t);
 	
-	//buf = new unsigned char[rect.width()*rect.height()*4];
+	//buf = new colorbyte[rect.width()*rect.height()*4];
 	//memset(buf,255,rect.width()*rect.height()*4);
-	format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
-	bool rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+	bool rt ;
+	if (img->m_bits_pixel == 1) 
+	{
+		//256色的调色板。
+		//first we not use shader.
+		colorbyte* buf = img->render_256_argb();
+		format = kCCTexture2DPixelFormat_RGBA8888;
+		rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+		delete buf;
+	}
+	else
+	{
+		format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
+		rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+	}
 	//delete buf;
 	return rt;
 }
@@ -64,7 +77,7 @@ bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFor
 
 int texture_gl::draw_image_ontexture(int x,int y,const image* img) 
 {
-	unsigned char* buf = img->get_buffer();
+	colorbyte* buf = img->get_buffer();
 	return update_data(buf,img->m_width,x,y,img->m_width,img->m_height);
 }
 

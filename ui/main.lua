@@ -155,8 +155,9 @@ function safe_on_init()
 	g_camera:run_normal()
 
 	test_fps()
-	test_map()
-	test_sprite()
+	test_png8()
+	--test_map()
+	--test_sprite()
 	--test_win2()
 	--test_notice()
 

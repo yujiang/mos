@@ -93,6 +93,7 @@ bool graph::get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg)
 
 void graph::maped_texture(const char* file,texture* p)
 {
+	p->mark_use_texture(g_time_now);
 	texture_map[file] = p;
 }
 
@@ -128,10 +129,10 @@ bool graph::find_texture_font_rc(const st_cell& text,int char_value,text_char& t
 	texture_font* tf = find_texture_font(text.font,text.bold);
 	if (tf)
 	{
+		tf->mark_use_texturefont(g_time_now);
 		texture_char* t = tf->find_char(char_value);
 		if (t)
 		{
-			tf->mark_use_texturefont(g_time_now);
 			t->mark_use_char(g_time_now);
 			tc.rc_texture = &t->rc;
 			tc.advance = t->advance;
@@ -478,7 +479,6 @@ void graph::draw_win_end()
 //device
 bool create_image_png(image*,void* data,int size);
 bool create_image_jpg(image*,void* data,int size);
-bool create_image_zgp(image*,void* data,int size);
 
 void graph::init_graph()
 {
@@ -486,7 +486,6 @@ void graph::init_graph()
 	init_font();
 	image::register_image_file("png",create_image_png);
 	image::register_image_file("jpg",create_image_jpg);
-	image::register_image_file("zgp",create_image_zgp);
 }
 
 void graph::close_graph()

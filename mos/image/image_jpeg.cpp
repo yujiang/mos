@@ -112,8 +112,8 @@ bool create_image_jpg(image* img,void* data,int nSize)
         /* init image info */
 		img->m_width  = (short)(cinfo.output_width);
         img->m_height = (short)(cinfo.output_height);
-        img->m_alpha = false;
-        img->m_premul_alpha = false;
+        //img->m_alpha = false;
+        //img->m_premul_alpha = false;
         img->m_bits_component = 8;
 		img->m_bits_pixel = cinfo.output_components;
         row_pointer[0] = new unsigned char[cinfo.output_width*cinfo.output_components];

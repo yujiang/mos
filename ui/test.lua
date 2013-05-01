@@ -171,6 +171,17 @@ function test_win2()
 	win2:set_bg("menu2.png")
 end
 
+function test_png8()
+	local r = g_root
+	local l2 = r:find_child("normal")
+
+	local win2 = window()
+	--win2.is_chain = true
+	win2:create_window("win2",100,100,10,300,300)
+	l2:add_window(win2)
+	win2:set_bg("girl8.png")
+end
+
 function test_win1()
 	cdriver.regist_image("play",1,"play-button.png")
 	cdriver.regist_image("play",2,"play-button.png")
@@ -284,5 +295,5 @@ end
 function test()
 	print("window:\ttest_win1(),test_win2(),test_win3(),test_win4()")
 	print("game:\ttest_map(),test_sprite()")
-	print("other:\ttest_fps(),test_msgbox(),test_notice()")
+	print("other:\ttest_fps(),test_msgbox(),test_notice(),test_png8")
 end

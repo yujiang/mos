@@ -266,10 +266,13 @@ int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char*
 	s_image_render++;
 	texture* p = get_graph()->find_texture(file);
 	if (p)
-		return draw_text_cell(cell,p,rc);
+		return _draw_texture_cell(cell,p,rc);
 	texture_gl* gl = new texture_gl;
 	if (!gl->create_texture(img,0))
+	{
+		delete gl;
 		return -1;
+	}
 	get_graph()->maped_texture(file,gl);
 	_draw_texture_cell(cell,gl,rc);
 	return 0;

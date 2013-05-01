@@ -83,37 +83,56 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 		png_uint_32 color_type = png_get_color_type(png_ptr, info_ptr);
 
 		//CCLOG("color type %u", color_type);
+		printf("w:%d h:%d type:%d bits:%d pixel:%d\n",
+			img->m_width,img->m_height,color_type,img->m_bits_component,img->m_bits_pixel);
 
 		// force palette images to be expanded to 24-bit RGB
 		// it may include alpha channel
 		if (color_type == PNG_COLOR_TYPE_PALETTE)
 		{
-			png_set_palette_to_rgb(png_ptr);
+			//png_set_palette_to_rgb(png_ptr);
+			png_color *palette = NULL;
+			int num_palette;
+			png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
+			img->set_palette_color((color_palette*)palette,num_palette);
 		}
+
 		// low-bit-depth grayscale images are to be expanded to 8 bits
 		if (color_type == PNG_COLOR_TYPE_GRAY && img->m_bits_component < 8)
 		{
+			assert(0); //not support
 			png_set_expand_gray_1_2_4_to_8(png_ptr);
 		}
 		// expand any tRNS chunk data into a full alpha channel
 		if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 		{
-			png_set_tRNS_to_alpha(png_ptr);
+			//assert(0); //not support
+			//png_set_tRNS_to_alpha(png_ptr);
+			png_bytep trans_alpha;
+			int num_trans;
+			png_color_16p trans_color;
+			if (png_get_tRNS(png_ptr, info_ptr, &trans_alpha, &num_trans,&trans_color))
+			{
+				img->set_palette_alpha(trans_alpha,num_trans);
+			}
 		}  
 		// reduce images with 16-bit samples to 8 bits
 		if (img->m_bits_component == 16)
 		{
+			assert(0); //not support
 			png_set_strip_16(png_ptr);            
 		} 
 		// expand grayscale images to RGB
 		if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
 		{
+			assert(0); //not support
 			png_set_gray_to_rgb(png_ptr);
 		}
 
 		// read png data
 		// m_bits_component will always be 8
-		img->m_bits_component = 8;
+		//img->m_bits_component = 8;
+
 		png_uint_32 rowbytes;
 		png_bytep* row_pointers = (png_bytep*)malloc( sizeof(png_bytep) * img->m_height );
 
@@ -136,22 +155,22 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 
 		png_read_end(png_ptr, NULL);
 
-		png_uint_32 channel = rowbytes/img->m_width;
-		if (channel == 4)
-		{
-			img->m_alpha = true;
-			unsigned int *tmp = (unsigned int *)img->m_buffer;
-			for(unsigned short i = 0; i < img->m_height; i++)
-			{
-				for(unsigned int j = 0; j < rowbytes; j += 4)
-				{
-					*tmp++ = CC_RGB_PREMULTIPLY_ALPHA( row_pointers[i][j], row_pointers[i][j + 1], 
-						row_pointers[i][j + 2], row_pointers[i][j + 3] );
-				}
-			}
+		//png_uint_32 channel = rowbytes/img->m_width;
+		//if (channel == 4)
+		//{
+		//	//img->m_alpha = true;
+		//	unsigned int *tmp = (unsigned int *)img->m_buffer;
+		//	for(unsigned short i = 0; i < img->m_height; i++)
+		//	{
+		//		for(unsigned int j = 0; j < rowbytes; j += 4)
+		//		{
+		//			*tmp++ = CC_RGB_PREMULTIPLY_ALPHA( row_pointers[i][j], row_pointers[i][j + 1], 
+		//				row_pointers[i][j + 2], row_pointers[i][j + 3] );
+		//		}
+		//	}
 
-			img->m_premul_alpha = true;
-		}
+		//	//img->m_premul_alpha = true;
+		//}
 
 		CC_SAFE_FREE(row_pointers);
 

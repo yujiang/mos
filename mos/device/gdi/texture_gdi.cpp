@@ -34,7 +34,7 @@ bool texture_gdi::create_texture_dynamic(int width,int height,CCTexture2DPixelFo
 	m_image = new image;
 	int m_bits_component = bitsPerPixelForFormat(format)/8;
 	bool rt = m_image->create_image_dynamic(width,height,m_bits_component);
-	m_image->m_alpha = hasAlpha(format);
+	//m_image->m_alpha = hasAlpha(format);
 	return true;
 }
 
