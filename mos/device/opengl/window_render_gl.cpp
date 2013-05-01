@@ -4,22 +4,28 @@
 #include "graph/image.h"
 #include "graph/graph.h"
 #include <windows.h>
-#include "OGLES/GL/glew.h"
+#include "GL/glew.h"
 #include "director.h"
 #include "texture_gl.h"
 #include "graph/cell.h"
 #include "graph/color.h"
 #include "gl_macro.h"
+#include "glsl.h"
+
+//using namespace cwc;
 
 window_render_gl::window_render_gl(window* w):window_render(w)
 {
 	m_director = new director(this);
+	m_shader_manager = 0;
 }
 
 window_render_gl::~window_render_gl()
 {
 	delete m_director;
 	m_director = 0;
+	delete m_shader_manager;
+	m_shader_manager = 0;
 }
 
 static void SetupPixelFormat(HDC hDC)
@@ -97,7 +103,33 @@ bool window_render_gl::create_render(int width,int height)
 	}
 
 	m_director->create_director();
+
+	create_shaders();
+
 	return true;
+}
+
+void window_render_gl::create_shaders() 
+{
+//-----------------------------------------------------------------------------
+// Simple GLSL Vertex Shader:
+	const char* palette_vertex_prog = "varying vec2 coord;\
+									  void main()\
+									  {\
+									  coord = gl_MultiTexCoord0.xy;\
+									  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\
+									  }";
+
+	const char* palette_fragment_prog = "uniform sampler2D texture;\
+										uniform sampler2D palette;\
+										varying vec2 coord;\
+										void main()\
+										{\
+										gl_FragColor = texture2D(palette, vec2(texture2D(texture, coord).r, 0));\
+										}";
+
+	m_shader_manager = new glShaderManager();
+	m_shader_palette = m_shader_manager->loadfromMemory(palette_vertex_prog,palette_fragment_prog);
 }
 
 texture* window_render_gl::create_texture() 
@@ -165,8 +197,6 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 	if (!get_cliped_rect(rect,rc,x,y,m_rc_clip))
 		return -1;
 
-	s_triangle_render += 2;
-
 	s_f2 f3[4];
 	s_uv uv[4];
 
@@ -188,7 +218,26 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 	uv[2].u = uv[3].u;
 	uv[2].v = uv[0].v;
 
-	glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
+	if (tex->m_shader == shader_null)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
+	}
+	else if(tex->m_shader == shader_256)
+	{
+		m_shader_palette->begin();
+		//m_shader_palette->setUniform1f("MyFloat", 1.123);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
+		int texid = m_shader_palette->GetUniformLocation("texture");
+		glUniform1i(texid,0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, tex->m_textureId_pal);
+		int palette = m_shader_palette->GetUniformLocation("palette");
+		glUniform1i(palette,1);
+	}
 
 	unsigned char r,g,b;
 	G_GET_RGB(color,r,g,b);
@@ -202,7 +251,17 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 	}
 	glEnd();
 
-	glFlush();
+	if (tex->m_shader == shader_null)
+	{
+	}
+	else if (tex->m_shader == shader_256)
+	{
+		glActiveTexture(GL_TEXTURE1);
+		glDisable(GL_TEXTURE_2D);
+		m_shader_palette->end();
+	}
+	//glFlush();
+	s_triangle_render += 2;
 
 	CHECK_GL_ERROR_DEBUG();
 
@@ -240,7 +299,7 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 
 	glColor4ub(r,g,b,alpha);
 	//glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 	glBegin(GL_TRIANGLE_STRIP);	
 	for(int i=0;i<4;i++)
 	{
@@ -248,7 +307,7 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 	}
 	glEnd();
 
-	glFlush();
+	//glFlush();
 
 	CHECK_GL_ERROR_DEBUG();
 

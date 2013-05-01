@@ -22,7 +22,9 @@ image::image()
 
 	m_buffer = 0;
 	m_pal_color = 0;
+	m_pal_color_num = 0;
 	m_pal_alpha = 0;
+	m_pal_alpha_num = 0;
 	
 //	m_buffer_compress = 0;
 //	m_sz_compress = 0;
@@ -551,10 +553,48 @@ colorbyte* image::render_256_argb() const
 		*des ++ = pal->red;
 		*des ++ = pal->green;
 		*des ++ = pal->blue;
-		if (index < m_pal_alpha_num)		
+		if (index < m_pal_alpha_num )		
 			*des++ = m_pal_alpha[index];
 		else
 			*des++ = 255;
+	}
+
+	return buf;
+}
+
+colorbyte* image::render_256_index() const
+{
+	int size = m_width*m_height;
+	colorbyte* buf;
+	if (has_alpha())
+	{
+		buf = new colorbyte[size*4];
+		colorbyte* des = buf;
+		const colorbyte* src = m_buffer;
+		for (int i=0;i<size;i++)
+		{
+			colorbyte index = *src++;
+			*des ++ = index;
+			*des ++ = 0;
+			*des ++ = 0;
+			if (index < m_pal_alpha_num )		
+				*des++ = m_pal_alpha[index];
+			else
+				*des++ = 255;
+		}
+	}
+	else
+	{
+		buf = new colorbyte[size*3];
+		colorbyte* des = buf;
+		const colorbyte* src = m_buffer;
+		for (int i=0;i<size;i++)
+		{
+			colorbyte index = *src++;
+			*des ++ = index;
+			*des ++ = 0;
+			*des ++ = 0;
+		}
 	}
 
 	return buf;

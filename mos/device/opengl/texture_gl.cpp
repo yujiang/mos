@@ -4,6 +4,7 @@
 #include "graph/image.h"
 #include <assert.h>
 #include "gl_macro.h"
+#include "window_render_gl.h"
 
 bool is_2_mi(unsigned int n)
 {
@@ -26,6 +27,8 @@ unsigned long ccNextPOT(unsigned long x)
 texture_gl::texture_gl()
 {
 	m_textureId = 0;
+	m_textureId_pal = 0;
+	m_shader = shader_null;
 }
 
 texture_gl::~texture_gl()
@@ -34,6 +37,11 @@ texture_gl::~texture_gl()
 	{
 		glDeleteTextures(1, &m_textureId);
 		m_textureId = 0;
+	}
+	if(m_textureId_pal)
+	{
+		glDeleteTextures(1, &m_textureId_pal);
+		m_textureId_pal = 0;
 	}
 }
 
@@ -50,10 +58,32 @@ bool texture_gl::create_texture(image* img,const g_rect* rc,CCTexture2DPixelForm
 	{
 		//256色的调色板。
 		//first we not use shader.
-		colorbyte* buf = img->render_256_argb();
-		format = kCCTexture2DPixelFormat_RGBA8888;
-		rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
-		delete buf;
+		if (img->is_256())
+		{
+			//colorbyte* buf = img->render_256_argb();
+			//format = kCCTexture2DPixelFormat_RGBA8888;
+			//rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+			//delete buf;
+			
+			colorbyte* buf = img->render_256_index();
+			format = img->has_alpha() ? kCCTexture2DPixelFormat_RGBA8888 : kTexture2DPixelFormat_RGB888;
+			rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+			delete buf;
+
+			glGenTextures(1, &m_textureId_pal);
+			glBindTexture(GL_TEXTURE_2D, m_textureId_pal);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, img->get_width()); //fuck! this is very important.
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+			const formatinfo* info = get_formatinfo(kCCTexture2DPixelFormat_RGB888);
+			glTexImage2D(GL_TEXTURE_2D, 0, info->internalformat, img->m_pal_color_num, 1, 0, info->glformat, info->gltype, img->m_pal_color);	
+
+			CHECK_GL_ERROR_DEBUG();
+
+			m_shader = shader_256;
+		}
 	}
 	else
 	{

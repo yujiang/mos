@@ -62,7 +62,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rd/libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;winmm.lib;freetype2411.lib;libiconv.lib;libzlib.lib;libjpeg.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Glu32.lib;opengl32.lib;glew32.lib;winmm.lib;freetype2411.lib;libiconv.lib;libzlib.lib;libjpeg.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -95,6 +95,7 @@
     <ClInclude Include="core\utf8.h" />
     <ClInclude Include="device\opengl\director.h" />
     <ClInclude Include="device\file.h" />
+    <ClInclude Include="device\opengl\glsl.h" />
     <ClInclude Include="device\opengl\gl_macro.h" />
     <ClInclude Include="device\gdi\texture_gdi.h" />
     <ClInclude Include="device\opengl\texture_gl.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="device\opengl\director.cpp" />
     <ClCompile Include="device\file.cpp" />
     <ClCompile Include="device\gdi\texture_gdi.cpp" />
+    <ClCompile Include="device\opengl\glsl.cpp" />
     <ClCompile Include="device\opengl\texture_gl.cpp" />
     <ClCompile Include="device\window.cpp" />
     <ClCompile Include="device\window_render.cpp" />

@@ -5,6 +5,15 @@
 #include <windows.h>
 class director;
 
+class glShaderManager;
+class glShader;
+
+enum CShaderType 
+{
+	shader_null,
+	shader_256,
+};
+
 class window_render_gl : public window_render
 {
 public:
@@ -12,6 +21,8 @@ public:
 	~window_render_gl();
 
 	bool create_render(int width,int height);
+	void create_shaders();
+
 	texture* create_texture() ;
 	void on_destroy();
 
@@ -32,6 +43,11 @@ public:
 
 	HGLRC m_hRC;
 	director* m_director;
+
+	unsigned int m_program_palette;
+
+	glShaderManager* m_shader_manager;
+	glShader*	m_shader_palette;
 };
 
 #endif

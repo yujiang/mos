@@ -82,17 +82,18 @@ public:
 	bool has_alpha() const {
 		if (is_256())
 			return m_pal_alpha != 0;
+			//return false;
 		return m_bits_pixel != 3;
 	}
 	bool is_256() const{
 		return m_pal_color != 0;
 	}
 
-
 	void set_palette_color(const color_palette* colors,int num_palette);
 	void set_palette_alpha(const colorbyte* alphas,int num_palette);
 
 	colorbyte* render_256_argb() const;
+	colorbyte* render_256_index() const;
 
 	int m_bits_component;
 	int m_bits_pixel; //3 or 4 or 1 or (1 and 256 color)

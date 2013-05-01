@@ -117,6 +117,9 @@
     <ClInclude Include="device\opengl\gl_macro.h">
       <Filter>device\gl</Filter>
     </ClInclude>
+    <ClInclude Include="device\opengl\glsl.h">
+      <Filter>device\gl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="device\gdi\window_render_gdi.cpp">
       <Filter>device\gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="device\opengl\glsl.cpp">
+      <Filter>device\gl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
