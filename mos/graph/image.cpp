@@ -53,8 +53,19 @@ bool image::in_image(int x, int y)
 		if (!has_alpha())
 			return true;
 		colorbyte* des = get_buf_offset(x,y);
-		colorbyte a = *(des + 3);
-		return a > 127;
+		if (is_256())
+		{
+			colorbyte index = *des++;
+			if (index < m_pal_alpha_num)
+				return m_pal_alpha[index] > 127;
+			else
+				return true;
+		}
+		else
+		{
+			colorbyte a = *(des + 3);
+			return a > 127;
+		}
 	}
 	return false;
 }
@@ -82,6 +93,7 @@ image* image::create_image_file(const char* file)
 	if (func(i,buf,sz))
 	{
 		i->m_create_type = image_create_file;
+		i->m_file = file;
 		return i;
 	}
 	else 
@@ -209,8 +221,8 @@ void image::render_image_1_3(int offx,int offy,colorbyte* buf, int w, int h,int 
 			}
 			else
 			{					
-				*desy ++ = (r * a + *desy * (255-a)) / 255;;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (r * a + *desy * (255-a)) / 255;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;
 				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 		}
@@ -276,9 +288,51 @@ void image::render_image_4_3(int offx,int offy,colorbyte* buf, int w, int h,int 
 			}
 			else
 			{					
-				*desy ++ = (r * a + *desy * (255-a)) / 255;;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (r * a + *desy * (255-a)) / 255;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;
 				*desy ++ = (b * a + *desy * (255-a)) / 255;
+			}
+		}
+		src += line_pitch;
+		des += get_line_pitch();
+	}
+}
+
+void image::render_image_256_3(const image* img,int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha)
+{
+	assert(img->is_256());
+	assert(offx >= 0 && offy >= 0 && offx + w <= m_width && offy + h <= m_height);
+	colorbyte* src = buf;
+	colorbyte* des = get_buf_offset(offx,offy);
+	colorbyte a;
+	for (int y=0; y<h; y++)
+	{
+		colorbyte* srcy = src;
+		colorbyte* desy = des;
+		for (int x=0; x<w; x++)
+		{
+			colorbyte index = *srcy++;
+			color_palette* pal = img->m_pal_color+index;
+			if (index < img->m_pal_alpha_num)
+				a = img->m_pal_alpha[index] * alpha / 255;
+			else
+				a = alpha;
+			//a = 255;
+			if (a == 0)
+			{
+				desy += 3;
+			}
+			else if (a == 255)
+			{
+				*desy ++ = pal->red;
+				*desy ++ = pal->green;
+				*desy ++ = pal->blue;
+			}
+			else
+			{
+				*desy ++ = (pal->red * a + *desy * (255-a)) / 255;
+				*desy ++ = (pal->green * a + *desy * (255-a)) / 255;
+				*desy ++ = (pal->blue * a + *desy * (255-a)) / 255;
 			}
 		}
 		src += line_pitch;
@@ -353,25 +407,27 @@ int image::draw_image(int offx,int offy,int color,int alpha,const image* img,con
 	if (!img->has_alpha() && alpha == 255)
 	{
 		assert(img->m_bits_pixel == m_bits_pixel);
-		if (img->m_bits_pixel == m_bits_pixel)
-			copy_image(offx,offy,src,w,h,img->get_line_pitch());
+		//if (img->m_bits_pixel == m_bits_pixel)
+		copy_image(offx,offy,src,w,h,img->get_line_pitch());
 	}
 	else
 	{
 		if (m_bits_pixel == 3)
 		{
-			if (img->m_bits_pixel == 1)
+			if (img->is_256())
+				render_image_256_3(img,offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
+			else if (img->m_bits_pixel == 1)
 				render_image_1_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 			else if (img->m_bits_pixel == 3)
 				render_image_3_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 			else if (img->m_bits_pixel == 4)
 				render_image_4_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 		}
-		else if (m_bits_pixel == 4)
+		else //if (m_bits_pixel == 4)
 		{
 			assert(img->m_bits_pixel == m_bits_pixel);
-			if (alpha == 255)
-				copy_image(offx,offy,src,w,h,img->get_line_pitch());
+			assert(alpha == 255);
+			copy_image(offx,offy,src,w,h,img->get_line_pitch());
 		}
 	}
 	return 0;
@@ -430,8 +486,8 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 			colorbyte* desy = des;
 			for (int x=0; x<w; x++)
 			{
-				*desy ++ = (r * a + *desy * (255-a)) / 255;;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (r * a + *desy * (255-a)) / 255;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;
 				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 			des += get_line_pitch();
@@ -484,7 +540,7 @@ void image::set_palette_alpha(const colorbyte* alphas,int num_palette)
 
 colorbyte* image::render_256_argb() const
 {
-	int size = m_width*m_width;
+	int size = m_width*m_height;
 	colorbyte* buf = new colorbyte[size*4];
 	colorbyte* des = buf;
 	const colorbyte* src = m_buffer;
@@ -495,11 +551,8 @@ colorbyte* image::render_256_argb() const
 		*des ++ = pal->red;
 		*des ++ = pal->green;
 		*des ++ = pal->blue;
-		if (index < m_pal_alpha_num)
-		{
-			colorbyte* alpha = m_pal_alpha+index;
-			*des++ = *alpha;
-		}
+		if (index < m_pal_alpha_num)		
+			*des++ = m_pal_alpha[index];
 		else
 			*des++ = 255;
 	}

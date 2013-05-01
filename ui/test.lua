@@ -180,6 +180,7 @@ function test_png8()
 	win2:create_window("win2",100,100,10,300,300)
 	l2:add_window(win2)
 	win2:set_bg("girl8.png")
+	win2:get_bg().alpha = 200
 end
 
 function test_win1()

@@ -2,6 +2,7 @@
 #define __GRAPH_IMAGE_H_
 
 #include "rect.h"
+#include <string>
 class st_cell;
 //image of file
 
@@ -33,6 +34,7 @@ public:
 	};
 
 	enum_createtype m_create_type;
+	std::string m_file; //for debug
 	
 	static image* create_image_file(const char* file);
 	static void register_image_file(const char* fileext,load_image_func func);
@@ -78,15 +80,22 @@ public:
 	int m_pal_color_num;
 	color_palette* m_pal_color;
 	bool has_alpha() const {
-		return m_bits_pixel == 4 || m_bits_pixel == 1 && m_pal_alpha;
+		if (is_256())
+			return m_pal_alpha != 0;
+		return m_bits_pixel != 3;
 	}
+	bool is_256() const{
+		return m_pal_color != 0;
+	}
+
+
 	void set_palette_color(const color_palette* colors,int num_palette);
 	void set_palette_alpha(const colorbyte* alphas,int num_palette);
 
 	colorbyte* render_256_argb() const;
 
 	int m_bits_component;
-	int m_bits_pixel; //3 or 4 or 1(256 color)
+	int m_bits_pixel; //3 or 4 or 1 or (1 and 256 color)
 
 	int get_line_pitch() const{
 		return m_width * m_bits_pixel;
@@ -118,6 +127,7 @@ protected:
 	void render_image_1_3(int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha);
 	void render_image_3_3(int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha);
 	void render_image_4_3(int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha);
+	void render_image_256_3(const image* img,int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha);
 
 //public:
 //	bool is_compress() const{
