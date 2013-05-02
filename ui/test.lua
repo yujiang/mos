@@ -172,6 +172,12 @@ function test_win2()
 end
 
 function test_png8()
+	--use pal render do some pal swap 
+	--or just use png for diskspace.
+	--local file = "girl8.png"
+	local file = "test-fs8.png"
+	cdriver.regist_image_palette(file,"")
+
 	local r = g_root
 	local l2 = r:find_child("normal")
 
@@ -179,7 +185,7 @@ function test_png8()
 	--win2.is_chain = true
 	win2:create_window("win2",100,100,10,300,300)
 	l2:add_window(win2)
-	win2:set_bg("girl8.png")
+	win2:set_bg(file)
 	win2:get_bg().alpha = 200
 end
 

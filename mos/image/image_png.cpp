@@ -8,7 +8,7 @@
 
 typedef struct 
 {
-	unsigned char* data;
+	colorbyte* data;
 	int size;
 	int offset;
 }tImageSource;
@@ -29,10 +29,23 @@ static void pngReadCallback(png_structp png_ptr, png_bytep data, png_size_t leng
 }
 
 #define CC_RGB_PREMULTIPLY_ALPHA(vr, vg, vb, va) \
-	(unsigned)(((unsigned)((unsigned char)(vr) * ((unsigned char)(va) + 1)) >> 8) | \
-	((unsigned)((unsigned char)(vg) * ((unsigned char)(va) + 1) >> 8) << 8) | \
-	((unsigned)((unsigned char)(vb) * ((unsigned char)(va) + 1) >> 8) << 16) | \
-	((unsigned)(unsigned char)(va) << 24))
+	(unsigned)(((unsigned)((colorbyte)(vr) * ((colorbyte)(va) + 1)) >> 8) | \
+	((unsigned)((colorbyte)(vg) * ((colorbyte)(va) + 1) >> 8) << 8) | \
+	((unsigned)((colorbyte)(vb) * ((colorbyte)(va) + 1) >> 8) << 16) | \
+	((unsigned)(colorbyte)(va) << 24))
+
+//µÚ1¸ö2bit
+inline colorbyte get_bit(colorbyte c,int index,int bits_component)
+{
+	//return 1;
+	int mask = 0;
+	for (int i=0;i<bits_component;i++)
+		mask = (mask << 1) + 1;
+	int shift = (8/bits_component - 1 - index)*bits_component;
+	for (int i=0;i<shift;i++)
+		c >>= 1;
+	return c & mask;
+}
 
 bool create_image_png(image* img, void* pData,int nDatalen)
 {
@@ -66,7 +79,7 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 
 		// set the read call back function
 		tImageSource imageSource;
-		imageSource.data    = (unsigned char*)pData;
+		imageSource.data    = (colorbyte*)pData;
 		imageSource.size    = nDatalen;
 		imageSource.offset  = 0;
 		png_set_read_fn(png_ptr, &imageSource, pngReadCallback);
@@ -121,6 +134,7 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 		{
 			assert(0); //not support
 			png_set_strip_16(png_ptr);            
+			img->m_bits_component = 8;
 		} 
 		// expand grayscale images to RGB
 		if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
@@ -133,27 +147,51 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 		// m_bits_component will always be 8
 		//img->m_bits_component = 8;
 
-		png_uint_32 rowbytes;
-		png_bytep* row_pointers = (png_bytep*)malloc( sizeof(png_bytep) * img->m_height );
-
 		png_read_update_info(png_ptr, info_ptr);
 
+		png_uint_32 rowbytes;
 		rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-		assert(rowbytes == img->get_line_pitch());
+		assert(rowbytes * 8 / img->m_bits_component == img->get_line_pitch());
 
 		//printf("%d %d %d %d\n",rowbytes,m_height,rowbytes*m_height,get_buf_size());
-		//m_buffer = new unsigned char[rowbytes * m_height];
-		assert(rowbytes * img->m_height == img->get_buf_size());
-		img->m_buffer = new unsigned char[img->get_buf_size()];
-		CC_BREAK_IF(!img->m_buffer);
+		//m_buffer = new colorbyte[rowbytes * m_height];
+		//assert(rowbytes * img->m_height == img->get_buf_size());
 
-		for (unsigned short i = 0; i < img->m_height; ++i)
+		//img->m_buffer = new colorbyte[img->get_buf_size()];
+		//CC_BREAK_IF(!img->m_buffer);
+		
+		png_bytep* row_pointers = (png_bytep*)malloc( sizeof(png_bytep) * img->m_height );
+		colorbyte* buf = new colorbyte[rowbytes * img->m_height];
+		CC_BREAK_IF(!buf);
+		for (int i = 0; i < img->m_height; ++i)
 		{
-			row_pointers[i] = img->m_buffer + i*rowbytes;
+			row_pointers[i] = buf + i*rowbytes;
 		}
 		png_read_image(png_ptr, row_pointers);
 
+		if (img->m_bits_component == 8)
+		{
+			img->m_buffer = buf;
+		}
+		else
+		{
+			img->m_buffer = new colorbyte[img->get_buf_size()];
+			//memset(img->m_buffer,255,img->get_buf_size());
+			colorbyte* des = img->m_buffer;
+			colorbyte* src = buf;
+			int bits = img->m_bits_component;
+			for (int i=0; i<img->get_buf_size(); )
+			{
+				*des++ = get_bit(*src,i,bits);
+				i++;
+				if (i % (8/bits) == 0)
+					src ++;
+			}
+			delete buf;
+		}
+
 		png_read_end(png_ptr, NULL);
+		CC_SAFE_FREE(row_pointers);
 
 		//png_uint_32 channel = rowbytes/img->m_width;
 		//if (channel == 4)
@@ -172,7 +210,6 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 		//	//img->m_premul_alpha = true;
 		//}
 
-		CC_SAFE_FREE(row_pointers);
 
 		bRet = true;
 	} while (0);

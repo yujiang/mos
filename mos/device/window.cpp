@@ -205,6 +205,6 @@ unsigned long get_time()
 
 bool is_key_down(int key)
 {
-	return GetKeyState(key)&0x8000;
+	return (GetKeyState(key)&0x8000) != 0;
 }
 

@@ -36,13 +36,6 @@ const stFont* get_font(int font_id)
 	return &it->second;
 }
 
-const char* get_windows_font(const char* file)
-{
-	static char buf[128];
-	sprintf(buf,"c:/Windows/Fonts/%s",file);
-	return buf;
-}
-
 bool regist_font(int font_id,const char* name,int width,int height,int xspace,int yspace)
 {
 	if (g_font_types.find(font_id) != g_font_types.end())

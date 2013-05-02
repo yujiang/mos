@@ -47,12 +47,9 @@ texture_gl::~texture_gl()
 
 bool texture_gl::create_texture_gl(image* img) 
 {
-	g_rect rect = img->get_rect();
+	int width = img->get_width();
+	int height = img->get_height();
 
-	colorbyte* buf = img->get_buf_offset(rect.l,rect.t);
-	
-	//buf = new colorbyte[rect.width()*rect.height()*4];
-	//memset(buf,255,rect.width()*rect.height()*4);
 	bool rt ;
 	if (img->m_bits_pixel == 1) 
 	{
@@ -63,21 +60,23 @@ bool texture_gl::create_texture_gl(image* img)
 			if (!img->use_palette())
 			{
 				colorbyte* buf = img->render_256_argb();
-				rt = init_data(buf,img->get_width(),kCCTexture2DPixelFormat_RGBA8888,rect.width(),rect.height(),rect.width(),rect.height());
+				rt = init_data(buf,img->get_width(),kCCTexture2DPixelFormat_RGBA8888,width,height,width,height);
 				delete buf;
 			}
 			else
 			{
-				colorbyte* buf = img->get_buf_offset(rect.l,rect.t);
-				rt = init_data(buf,img->get_width(),kCCTexture2DPixelFormat_A8,rect.width(),rect.height(),rect.width(),rect.height());
+				colorbyte* buf = img->get_buf_offset(0,0);
+				//buf = img->render_256_index();
+				rt = init_data(buf,img->get_width(),kCCTexture2DPixelFormat_A8,width,height,width,height);
+				//delete buf;
 
 				glGenTextures(1, &m_textureId_pal);
 				glBindTexture(GL_TEXTURE_2D, m_textureId_pal);
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, img->m_pal_color_num); //fuck! this is very important.
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, img->m_pal_color_num); 
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
 				
 				CCTexture2DPixelFormat format = img->has_alpha() ? kCCTexture2DPixelFormat_RGBA8888 : kTexture2DPixelFormat_RGB888;
@@ -99,8 +98,9 @@ bool texture_gl::create_texture_gl(image* img)
 	}
 	else
 	{
+		colorbyte* buf = img->get_buf_offset(0,0);
 		CCTexture2DPixelFormat format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
-		rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
+		rt = init_data(buf,img->get_width(),format,width,height,width,height);
 	}
 	//delete buf;
 	return rt;

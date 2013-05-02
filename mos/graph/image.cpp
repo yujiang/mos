@@ -1,4 +1,5 @@
 #include "image.h"
+#include "image_db.h"
 #include <string.h>
 #include "device/file.h"
 #include "color.h"
@@ -25,10 +26,11 @@ image::image()
 	m_pal_color_num = 0;
 	m_pal_alpha = 0;
 	m_pal_alpha_num = 0;
-	
+	m_use_palette = false;
+
 //	m_buffer_compress = 0;
 //	m_sz_compress = 0;
-
+	
 	m_create_type = image_create_null;
 }	
 
@@ -96,6 +98,8 @@ image* image::create_image_file(const char* file)
 	{
 		i->m_create_type = image_create_file;
 		i->m_file = file;
+		if (i->is_256())
+			i->m_use_palette = is_image_use_palette(file);
 		return i;
 	}
 	else 
@@ -528,8 +532,9 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 
 void image::set_palette_color(const color_palette* colors,int num_palette)
 {
-	m_pal_color_num = num_palette;
-	m_pal_color = new color_palette[num_palette];
+	assert(num_palette <= 256);
+	m_pal_color_num = 256;
+	m_pal_color = new color_palette[256];
 	memcpy(m_pal_color,colors,sizeof(color_palette)*num_palette);
 }
 
@@ -558,18 +563,6 @@ colorbyte* image::render_256_argb() const
 		else
 			*des++ = 255;
 	}
-
-	return buf;
-}
-
-colorbyte* image::render_256_index() const
-{
-	int size = m_width*m_height;
-	colorbyte* buf = new colorbyte[size];
-	colorbyte* des = buf;
-	const colorbyte* src = m_buffer;
-	for (int i=0;i<size;i++)
-		*des ++ = *src++;
 
 	return buf;
 }

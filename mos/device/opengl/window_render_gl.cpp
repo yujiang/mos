@@ -123,8 +123,14 @@ void window_render_gl::create_shaders()
 										uniform sampler2D palette;\
 										void main()\
 										{\
-										gl_FragColor = texture2D(palette, vec2(texture2D(texture, vec2(gl_TexCoord[0])).a, 0));\
+										gl_FragColor = texture2D(palette, vec2(texture2D(texture, gl_TexCoord[0].st).a, 0));\
 										}";
+
+	//float c = texture2D(texture, gl_TexCoord[0].st).a;\
+	//gl_FragColor = vec4(c,c,c,1);\
+	gl_FragColor = texture2D(palette, vec2(2.01/3,0));\
+	gl_FragColor = texture2D(palette, vec2(0.334, 0));\
+	gl_FragColor = texture2D(palette, vec2(texture2D(texture, vec2(gl_TexCoord[0])).a, 0));\
 
 	m_shader_manager = new glShaderManager();
 	m_shader_palette = m_shader_manager->loadfromMemory(palette_vertex_prog,palette_fragment_prog);

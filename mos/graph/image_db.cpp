@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <assert.h>
 
+using namespace std;
+
 //button.jpg 1 --> ui.jpg (200,300,64,32)
 struct st_file_frame
 {
@@ -25,14 +27,6 @@ int get_file_hash(const char* file)
 
 std::unordered_map<int,st_redirect> g_hm_redirect;
 
-const char* my_itoa(int num)
-{
-	static char buf[64];
-	//itoa(num,buf,10);
-	sprintf(buf,"%04d",num);
-	return buf;
-}
-
 void regist_image_file(const char* file,int frame, st_redirect& rc)
 {
 	assert(frame < 1000);
@@ -46,5 +40,25 @@ const st_redirect* redirect_image_file(const char* file,int frame)
 	auto it = g_hm_redirect.find(get_file_hash(file)*1000+frame);
 	if (it != g_hm_redirect.end())
 		return &it->second;
+	return 0;
+}
+
+std::unordered_map<string,string> g_hm_image_palette;
+
+void regist_image_palette(const char* image,const char* palette_file)
+{
+	g_hm_image_palette[image] = palette_file;
+}
+
+bool is_image_use_palette(const char* image)
+{
+	return get_image_palette(image) != 0;
+}
+
+const char* get_image_palette(const char* image)
+{
+	auto it = g_hm_image_palette.find(image);
+	if (it != g_hm_image_palette.end())
+		return it->second.c_str();
 	return 0;
 }

@@ -126,7 +126,7 @@ texture_font* graph::find_texture_font(int font,bool bold)
 
 bool graph::find_texture_font_rc(const st_cell& text,int char_value,text_char& tc)
 {
-	texture_font* tf = find_texture_font(text.font,text.bold);
+	texture_font* tf = find_texture_font(text.font,text.bold != 0);
 	if (tf)
 	{
 		tf->mark_use_texturefont(g_time_now);

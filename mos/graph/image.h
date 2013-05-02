@@ -88,15 +88,15 @@ public:
 	bool is_256() const{
 		return m_pal_color != 0;
 	}
+	bool m_use_palette;
 	bool use_palette() const{
-		return true;
+		return m_use_palette;
 	}
 
 	void set_palette_color(const color_palette* colors,int num_palette);
 	void set_palette_alpha(const colorbyte* alphas,int num_palette);
 
 	colorbyte* render_256_argb() const;
-	colorbyte* render_256_index() const;
 	colorbyte* render_256_palette_alpha() const;
 
 	int m_bits_component;

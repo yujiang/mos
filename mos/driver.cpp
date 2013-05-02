@@ -157,6 +157,13 @@ static int  lua_regist_image (lua_State *L) {
 	return 0;
 }
 
+static int  lua_regist_image_palette (lua_State *L) {
+	const char* file = luaL_checkstring(L,1);
+	const char* pal = luaL_checkstring(L,2);
+	regist_image_palette(file,pal);
+	return 0;
+}
+
 static int  lua_dump_resource (lua_State *L) {
 	const char* type = luaL_checkstring(L,1);
 	get_graph()->dump_resource(type);
@@ -187,6 +194,7 @@ static const luaL_reg driver_lib[] = {
 	{"in_image",			lua_in_image},
 	{"regist_font",			lua_regist_font},
 	{"regist_image",		lua_regist_image},
+	{"regist_image_palette",lua_regist_image_palette},
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},
 	{NULL, NULL}
