@@ -22,14 +22,14 @@
     <Filter Include="core">
       <UniqueIdentifier>{ed77c0e0-c3ba-4020-9ad3-e57126119dd1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rd">
-      <UniqueIdentifier>{88e9e535-ec04-4321-a70e-9f67ab5918e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="device\gdi">
       <UniqueIdentifier>{71e3c098-6b98-4a52-99be-d349d7a5c320}</UniqueIdentifier>
     </Filter>
     <Filter Include="device\gl">
       <UniqueIdentifier>{3f35ba2a-4ef2-4555-afb7-82d5f282a7f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="image">
+      <UniqueIdentifier>{88e9e535-ec04-4321-a70e-9f67ab5918e6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +87,6 @@
     <ClInclude Include="graph\image_db.h">
       <Filter>graph</Filter>
     </ClInclude>
-    <ClInclude Include="core\utf8.h">
-      <Filter>3rd</Filter>
-    </ClInclude>
     <ClInclude Include="mos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,22 +96,28 @@
     <ClInclude Include="device\window_render.h">
       <Filter>device</Filter>
     </ClInclude>
-    <ClInclude Include="device\texture_gdi.h">
+    <ClInclude Include="core\utf8.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="device\opengl\director.h">
+      <Filter>device\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="device\opengl\texture_gl.h">
+      <Filter>device\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="device\opengl\window_render_gl.h">
+      <Filter>device\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="device\gdi\texture_gdi.h">
       <Filter>device\gdi</Filter>
     </ClInclude>
-    <ClInclude Include="device\window_render_gdi.h">
+    <ClInclude Include="device\gdi\window_render_gdi.h">
       <Filter>device\gdi</Filter>
     </ClInclude>
-    <ClInclude Include="device\director.h">
+    <ClInclude Include="device\opengl\gl_macro.h">
       <Filter>device\gl</Filter>
     </ClInclude>
-    <ClInclude Include="device\texture_gl.h">
-      <Filter>device\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="device\window_render_gl.h">
-      <Filter>device\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="device\gl_macro.h">
+    <ClInclude Include="device\opengl\glsl.h">
       <Filter>device\gl</Filter>
     </ClInclude>
   </ItemGroup>
@@ -164,31 +167,34 @@
     <ClCompile Include="graph\image_db.cpp">
       <Filter>graph</Filter>
     </ClCompile>
-    <ClCompile Include="core\utf8.cpp">
-      <Filter>3rd</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\image_png.cpp">
-      <Filter>3rd</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\image_jpeg.cpp">
-      <Filter>3rd</Filter>
-    </ClCompile>
     <ClCompile Include="device\window_render.cpp">
       <Filter>device</Filter>
     </ClCompile>
-    <ClCompile Include="device\texture_gdi.cpp">
-      <Filter>device\gdi</Filter>
+    <ClCompile Include="core\utf8.cpp">
+      <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="device\window_render_gdi.cpp">
-      <Filter>device\gdi</Filter>
+    <ClCompile Include="image\image_jpeg.cpp">
+      <Filter>image</Filter>
     </ClCompile>
-    <ClCompile Include="device\director.cpp">
+    <ClCompile Include="image\image_png.cpp">
+      <Filter>image</Filter>
+    </ClCompile>
+    <ClCompile Include="device\opengl\director.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>
-    <ClCompile Include="device\texture_gl.cpp">
+    <ClCompile Include="device\opengl\texture_gl.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>
-    <ClCompile Include="device\window_render_gl.cpp">
+    <ClCompile Include="device\opengl\window_render_gl.cpp">
+      <Filter>device\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="device\gdi\texture_gdi.cpp">
+      <Filter>device\gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="device\gdi\window_render_gdi.cpp">
+      <Filter>device\gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="device\opengl\glsl.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>
   </ItemGroup>

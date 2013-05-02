@@ -70,6 +70,33 @@ bool graph::get_image_size(const char* file,int frame,g_size& sz)
 	return false;
 }
 
+bool graph::get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg)
+{
+	const st_redirect* r = redirect_image_file(file,frame);
+	if (r && !r->rc.is_empty())
+	{
+		sz = r->rc.get_size();
+		cg = r->cg;
+		return true;
+	}
+	if (r)
+		file = r->file_image.c_str();
+
+	image* i = find_image_raw(file);
+	if (i)
+	{
+		sz = i->get_size();
+		return true;
+	}
+	return false;
+}
+
+void graph::maped_texture(const char* file,texture* p)
+{
+	p->mark_use_texture(g_time_now);
+	texture_map[file] = p;
+}
+
 texture* graph::find_texture(const char* file)
 {
 	texture* t = texture_map[file];
@@ -102,10 +129,10 @@ bool graph::find_texture_font_rc(const st_cell& text,int char_value,text_char& t
 	texture_font* tf = find_texture_font(text.font,text.bold);
 	if (tf)
 	{
+		tf->mark_use_texturefont(g_time_now);
 		texture_char* t = tf->find_char(char_value);
 		if (t)
 		{
-			tf->mark_use_texturefont(g_time_now);
 			t->mark_use_char(g_time_now);
 			tc.rc_texture = &t->rc;
 			tc.advance = t->advance;
@@ -130,33 +157,35 @@ void graph::auto_clear_resource()
 	for (auto it = image_map.begin(); it != image_map.end(); )
 	{
 		image* img = it->second;
-		if (TIME_NOTUSE(img,m_clear_image) && img->m_ref == 1)
+		if (img && TIME_NOTUSE(img,m_clear_image) && img->m_ref == 1)
 		{
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 			std::cout << "clear image " << it->first << " time: " << TIME(img) << std::endl;
 #endif
 			delete img;
 			it = image_map.erase(it);
 		}
-		else 
-		{
-			if (TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
-			{
-				img->compress();
-#ifdef _DEBUG
-				std::cout << "compress image " << it->first << " time: " << TIME(img) 
-					<< " size " << img->get_buf_size()/1024 << "->" << img->get_compress_size()/1024 << std::endl;
-#endif
-			}			
+		else
 			++it;
-		}
+//		else 
+//		{
+//			if (img && TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
+//			{
+//				img->compress();
+//#ifdef _DEBUG_RESOURCE
+//				std::cout << "compress image " << it->first << " time: " << TIME(img) 
+//					<< " size " << img->get_buf_size()/1024 << "->" << img->get_compress_size()/1024 << std::endl;
+//#endif
+//			}			
+//			++it;
+//		}
 	}	
 	for (auto it = texture_map.begin(); it != texture_map.end();)
 	{
 		const texture* tex = it->second;
-		if (TIME_NOTUSE(tex,m_clear_texture))
+		if (tex && TIME_NOTUSE(tex,m_clear_texture))
 		{
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 			std::cout << "clear texture " << it->first << " time: " << TIME(tex) << std::endl;
 #endif
 			delete tex;
@@ -173,7 +202,7 @@ void graph::auto_clear_resource()
 			const texture_char* tc = it2->second;
 			if (TIME_NOTUSE(tc,m_clear_texturefont))
 			{
-#ifdef _DEBUG
+#ifdef _DEBUG_RESOURCE
 				std::cout << "clear font " << it->first << " char " << core::UnicodeCharToANSI(it2->first) << " time: " << TIME(tc) << std::endl;
 #endif
 				delete tc;
@@ -252,31 +281,24 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 {
 	const char* file = file0;
 	const st_redirect* r = redirect_image_file(file,frame);
+	//if (r)
+	//	file = r->id_texture.c_str();
 	if (r)
-		file = r->file_texture.c_str();
+		file = r->file_image.c_str();
 
-	texture* t = find_texture(file);
-	if (!t)
-	{
-		image* img = find_image(file0,frame);
-		if (!img)
-			return -1;
+	//texture* t = find_texture(file);
+	//if (t)
+	//	return get_render()->draw_texture_cell(cell,t,0);
 
-		const g_rect* rc = NULL;
-		if (r && !r->rc.is_empty())
-			rc = &r->rc;
+	image* img = find_image_raw(file);
+	if (!img)
+		return -1;
 
-		t = get_render()->create_texture();
-		if (!t->create_texture(img,rc))
-		{
-			delete t;
-			return -1;
-		}
+	const g_rect* rc = NULL;
+	if (r && !r->rc.is_empty())
+		rc = &r->rc;
 
-		t->mark_use_texture(g_time_now);
-		texture_map[file] = t;
-	}
-	return t->draw_cell(cell,0);
+	return get_render()->draw_image_cell(cell,img,file,rc);
 }
 
 int graph::draw_box(const st_cell& cell,int w,int h)
@@ -337,11 +359,10 @@ g_size graph::get_text_size(const st_cell& text,const g_size& sz_father)
 	if (!font)
 		return g_size(0,0);
 
-	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
-	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
+	if (af.ptr == 0)
+		return g_size(0,0);
 	g_size sz = get_text_size(text,sz_father,font,af.ptr);
-	//free((void*)str0);
 	return sz;
 }
 
@@ -379,11 +400,10 @@ int graph::get_text_line(const st_cell& text,const g_size& sz_father)
 	if (!font)
 		return 0;
 
-	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
-	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
+	if (af.ptr == 0)
+		return 0;
 	int line = get_text_line(text,sz_father,font,af.ptr);
-	//free((void*)str0);
 	return line;
 }
 
@@ -396,9 +416,9 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 	get_render()->text_start(rc_father);
 	st_cell c = cell;
 
-	//const wchar_t* str0 = core::UTF8ToUnicode(text.text);
 	auto_free af(core::UTF8ToUnicode(text.text));
-	//const wchar_t* str0 = core::ANSIToUnicode("aÄãbºÃ");
+	if (af.ptr == 0)
+		return -1;
 	const wchar_t* str = af.ptr;
 
 	text_char tc;
@@ -424,13 +444,12 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 		c.y = cell.y + y;
 		c.color = text.color;
 		c.alpha = text.alpha;
-		tc.texture->m_texture->draw_cell(c,tc.rc_texture);
+		get_render()->draw_text_cell(c,tc.texture->m_texture,tc.rc_texture);
 
 		x += tc.advance;
 	}
 
 	get_render()->text_end();
-	//free((void*)str0);
 	return 0;
 }
 
@@ -458,11 +477,6 @@ void graph::draw_win_end()
 
 //////////////////////////////////////////////////////////////////////////
 //device
-//HDC graph::get_dc()
-//{
-//	return GetDC(m_hWnd);
-//}
-
 bool create_image_png(image*,void* data,int size);
 bool create_image_jpg(image*,void* data,int size);
 

@@ -46,6 +46,11 @@ void init_cell()
 	//assert(cell.y == 12);
 }
 
+st_cell::st_cell()
+{
+	init();
+};
+
 void st_cell::init()
 {
 	memset(this,0,sizeof(st_cell));
@@ -218,7 +223,6 @@ int lua_render(lua_State *L)
 	//printf("\n");
 	st_cell st;
 	root->draw(0,st);
-	//delete root;
 	g_cells.clear_all();
 
 	get_graph()->render_end();

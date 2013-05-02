@@ -1,9 +1,9 @@
 --c++ 的初始化和消息入口
+require "test"
 
 function init_libs(dir,files)
 	for _,file in ipairs(files) do
-		--dofile(file)
-		print("require",dir.."."..file)
+		--print("require",dir.."."..file)
 		if dir == "ex" then
 			require(dir.."."..file)
 		else
@@ -81,20 +81,13 @@ function safe_on_key_down(key,alt,ctrl,shift)
 	if rt then
 		return
 	end
-	print("safe_on_key_down",key,alt,ctrl,shift)
+	--print("safe_on_key_down",key,alt,ctrl,shift)
 	if is_keyboard(key,'M') and not ctrl then
 		t_msgbox()
 	end
 	if is_keyboard(key,'M') and ctrl then
 		dofile_lua("main")
 	end
-end
-
-function init_ui(w,h)
-	--write your custom function 
-	--now we use test_ui()
-	ui:regist_font(0,"simhei.ttf",16,16,1,2);
-	return test_ui(w,h);
 end
 
 function reload(file)
@@ -148,13 +141,27 @@ function safe_on_init()
 	init_main()
 	local w = 600
 	local h = 600
-	cdriver.create_window("main","test",100,100,w,h,0);
+	local render = "gdi"
+	local render = "opengl"
+	cdriver.create_window("main","test",100,100,w,h,0,render);
 
-	g_root = init_ui(w,h)
+	ui:regist_font(0,"simhei.ttf",16,16,1,2);
+
+	g_root = root()
+	g_root:create_root(w,h)
 	
 	g_camera = camera()
 	g_camera:create_camera(g_root:get_map())
 	g_camera:run_normal()
+
+	test_fps()
+	test_png8()
+	--test_map()
+	test_sprite()
+	--test_win2()
+	--test_notice()
+
+	print("input ? or test() get example.")
 end
 
 --init()
@@ -164,8 +171,21 @@ function safe_on_input(s)
 	--print("on_input",s)
 	--print(string.split(s))
 	local t = split(s, " ")
-	if t[1] == 's' then
+	if t[1] == '?' then
+		print("r reload ")
+		print("l load window ")	
+		print("s show window ")
+		print("df dofile ")
+		print("pr g_root print ")
+		print("pr g_root print_render")
+		print("dump cdriver.dump_resource ")
+		print("test() get example.")
+	elseif t[1] == 's' then
 		show(t[2],t[3])
+	elseif t[1] == 'pr' then
+		g_root:print_render()
+	elseif t[1] == 'p' then
+		g_root:print()
 	elseif t[1] == 'r' then
 		reload(t[2])
 	elseif t[1] == 'l' then

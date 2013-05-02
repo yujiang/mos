@@ -8,11 +8,6 @@
 
 #include <freetype/ft2build.h>
 #include FT_FREETYPE_H
-//#ifdef _DEBUG
-//#pragma comment(lib,"freetype2411_d.lib")
-//#else
-//#pragma comment(lib,"freetype2411.lib")
-//#endif
 
 int stFont::max_width() const
 {

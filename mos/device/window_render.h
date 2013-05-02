@@ -12,6 +12,12 @@ class window;
 class window_render
 {
 public:
+	static int s_texture_render;
+	static int s_box_render;
+	static int s_text_render;
+	static int s_image_render;
+	static int s_triangle_render;
+
 	window_render(window* w);
 	virtual ~window_render();
 	window* m_window;
@@ -20,6 +26,7 @@ public:
 	virtual bool create_render(int width,int height) = 0;
 	virtual void on_destroy() = 0;
 
+	void render_start0();
 	virtual void render_start() = 0;
 	virtual void render_end() = 0;
 
@@ -48,9 +55,12 @@ public:
 	}
 
 	virtual int draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc) = 0;
+	
+	virtual int draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc) = 0;
+
 	virtual int draw_box_cell(const st_cell& cell,int w,int h) = 0;
-	//int draw_text(const st_cell& cell,const st_cell& text);
-	//image* m_image;
+
+	virtual int draw_text_cell(const st_cell& cell,texture* tex,const g_rect* rc) = 0;
 };
 
 

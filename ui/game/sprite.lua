@@ -42,8 +42,8 @@ function sprite:do_ani(ani_name)
 	self:set_bg(tb.image_file,tb.frame_start)
 
 	local bg = self:get_bg() 
-	bg.x = -tb.cx
-	bg.y = -tb.cy
+	--bg.x = -tb.cx
+	--bg.y = -tb.cy
 	
 	--print(ani_name,tb.image_file,tb.frame_start,tb.ani_speed)
 	--print(debug.traceback())
@@ -62,7 +62,7 @@ function sprite:get_move()
 		self.move = move()
 		self.move:create_move(self)
 		self.move.on_reached = function(is_reached)
-			print("sprite.move.on_reached",self.name,is_reached)
+			--print("sprite.move.on_reached",self.name,is_reached)
 			if is_reached then	--否则可能是上一个的退出。
 				self:do_ani("stand")
 			end

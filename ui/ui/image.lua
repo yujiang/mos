@@ -3,19 +3,19 @@
 local image = class(cell,"image")
 
 function image:create_image(name,x,y,z,image_file,frame)
-	local w,h = cdriver.get_image_size(image_file,frame) --从文件得到w，h
-	assert(w > 0 and h > 0)
-	cell.create_cell(self,name,x,y,z,w,h)
 	self:set_image(image_file,frame)
+	cell.create_cell(self,name,x,y,z,self.w,self.h)
 	self._disable = true;
 end
 
 function image:set_image(image_file,frame)
 	self.image_file = image_file
 	self.frame = frame 
-	local w,h = cdriver.get_image_size(image_file,frame) --从文件得到w，h
+	local w,h,cx,cy = cdriver.get_image_sizecg(image_file,frame) --从文件得到w,h,cx,cy
 	self.w = w
 	self.h = h
+	self.cx = cx
+	self.cy = cy
 end
 
 function image:get_render_override()
@@ -54,11 +54,8 @@ function image:is_jpg()
 	return string.sub(self.image_file,#self.image_file - 3) == ".jpg"
 end
 
-
-function image:in_rect(x,y)
-	--x = x + (self.cx or 0)
-	--y = y + (self.cy or 0)
-	return cell.in_rect(self,x,y)
+function image:get_rect()
+	return self.x - self.cx,self.y - self.cy,self.x + self.w - self.cx,self.y + self.h - self.cy
 end
 
 function image:in_rect_pixel(x,y)
@@ -68,9 +65,7 @@ function image:in_rect_pixel(x,y)
 	if  self:is_jpg() then --jpg没有alpha通道
 		return true
 	else
-		x = x + (self.cx or 0)
-		y = y + (self.cy or 0)
-		return cdriver.in_image(self.image_file,self.frame,x - self.x,y - self.y)
+		return cdriver.in_image(self.image_file,self.frame,x + self.cx - self.x,y + self.cy - self.y)
 	end
 end
 

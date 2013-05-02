@@ -42,7 +42,6 @@ bool window_run()
 	{
 		if (s == "q" || s == "quit")
 			return false;
-		//lua_dostring(s.c_str());
 		lua_call_va("on_input","s",s.c_str());
 	}
 
@@ -51,7 +50,7 @@ bool window_run()
 		return false;
 
 	g_time_now = get_time();
-	get_render()->render_start();
+	get_render()->render_start0();
 	lua_call_function("on_every_frame");
 	get_render()->render_end();
 

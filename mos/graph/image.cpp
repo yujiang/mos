@@ -8,49 +8,78 @@
 #include <map>
 #include <string>
 
+int image::s_image_id = 0;
+int image::s_image_num = 0;
+
 image::image()
 {
-	m_width = m_height = 0;
-	m_buffer = 0;
+	m_id = s_image_id++;
+	s_image_num++;
+
 	m_ref = 1;
+
+	m_width = m_height = 0;
+
+	m_buffer = 0;
+	m_pal_color = 0;
+	m_pal_color_num = 0;
+	m_pal_alpha = 0;
+	m_pal_alpha_num = 0;
 	
-	m_buffer_compress = 0;
-	m_sz_compress = 0;
+//	m_buffer_compress = 0;
+//	m_sz_compress = 0;
 
 	m_create_type = image_create_null;
 }	
 
 image::~image()
 {
+	s_image_num--;
+
 	delete m_buffer;
 	m_buffer = 0;
 
-	delete m_buffer_compress;
-	m_buffer_compress = 0;
+	delete m_pal_color;
+	m_pal_color = 0;
+	delete m_pal_alpha;
+	m_pal_alpha = 0;
+//	delete m_buffer_compress;
+//	m_buffer_compress = 0;
 }
+
 
 bool image::in_image(int x, int y) 
 {
 	if (x >= 0 && x<m_width && y >= 0 && y<m_height)
 	{
-		if (!m_alpha)
+		if (!has_alpha())
 			return true;
-		unsigned char* des = get_buf_offset(x,y);
-		unsigned char a = *(des + 3);
-		return a > 127;
+		colorbyte* des = get_buf_offset(x,y);
+		if (is_256())
+		{
+			colorbyte index = *des++;
+			if (index < m_pal_alpha_num)
+				return m_pal_alpha[index] >= 255;
+			else
+				return true;
+		}
+		else
+		{
+			colorbyte a = *(des + 3);
+			return a >= 255/2;
+		}
 	}
 	return false;
 }
 
-std::map<std::string,load_image_func> g_imageLoad;
+std::map<std::string,load_image_func> s_imageLoad;
 void image::register_image_file(const char* fileext,load_image_func func)
 {
-	g_imageLoad[fileext] = func;
+	s_imageLoad[fileext] = func;
 }
 
 image* image::create_image_file(const char* file)
 {
-	//m_create_type = image_create_file;
 	size_t sz;
 	char* buf = read_imagefile(file,sz);
 	if (!buf)
@@ -59,13 +88,14 @@ image* image::create_image_file(const char* file)
 	if (len <= 3)
 		return false;
 	const char* ext = file+len-3;
-	load_image_func func = g_imageLoad[ext];
+	load_image_func func = s_imageLoad[ext];
 	if (!func)
 		return false;
 	image* i = new image();
 	if (func(i,buf,sz))
 	{
 		i->m_create_type = image_create_file;
+		i->m_file = file;
 		return i;
 	}
 	else 
@@ -82,9 +112,9 @@ bool image::create_image_dynamic(int width,int height,int bits)
 	m_height = height;
 	m_bits_pixel = bits;
 	m_bits_component = 8;
-	m_premul_alpha = false;
-	m_alpha = false;
-	m_buffer = new unsigned char[get_buf_size()];
+	//m_premul_alpha = false;
+	//m_alpha = false;
+	m_buffer = new colorbyte[get_buf_size()];
 	return true;
 }
 
@@ -103,8 +133,8 @@ bool image::create_image_image(const image* i,const g_rect* rc)
 		h = rc->height();
 	}
 	create_image_dynamic(w,h,i->m_bits_pixel);
-	m_premul_alpha = i->m_premul_alpha;
-	m_alpha = i->m_alpha;
+	//m_premul_alpha = i->m_premul_alpha;
+	//m_alpha = i->m_alpha;
 	if (!rc)
 	{
 		int size = get_buf_size();
@@ -112,17 +142,17 @@ bool image::create_image_image(const image* i,const g_rect* rc)
 	}
 	else
 	{
-		//st_cell cell;
 		draw_image(0,0,-1,255,i,rc,NULL);
 	}
 	return true;
 }
 
+//图片是rgb的顺序，而dc是bgr，所以有此函数
 void image::rgb2bgr()
 {
 	assert(m_bits_pixel == 3);
-	unsigned char* p = m_buffer;
-	unsigned char r;
+	colorbyte* p = m_buffer;
+	colorbyte r;
 	for (int i=0; i<m_width*m_height; ++i)
 	{
 		r = *p;
@@ -134,14 +164,14 @@ void image::rgb2bgr()
 
 void image::clear(unsigned long color)
 {
-	unsigned char a,r,g,b;
+	colorbyte a,r,g,b;
 	G_GET_ARGB(color,a,r,g,b);
 	if (r == g && g == b)
 		memset(m_buffer,r,get_buf_size());
 	else
 	{
 		assert(m_bits_pixel == 3);
-		unsigned char* p = m_buffer;
+		colorbyte* p = m_buffer;
 		for (int i=0; i<m_width*m_height; ++i)
 		{
 			*p ++ = r;
@@ -151,11 +181,11 @@ void image::clear(unsigned long color)
 	}
 }
 
-int image::copy_image(int offx,int offy,unsigned char* buf, int w,int h,int line_pitch)
+int image::copy_image(int offx,int offy,colorbyte* buf, int w,int h,int line_pitch)
 {
 	assert(offx >= 0 && offy >= 0 && offx + w <= m_width && offy + h <= m_height);
-	unsigned char* src = buf;
-	unsigned char* des = get_buf_offset(offx,offy);
+	colorbyte* src = buf;
+	colorbyte* des = get_buf_offset(offx,offy);
 
 	for (int y=0; y<h; y++)
 	{
@@ -166,24 +196,23 @@ int image::copy_image(int offx,int offy,unsigned char* buf, int w,int h,int line
 	return 0;
 }
 
-void image::render_image_1_3(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch,int color,int alpha)
+void image::render_image_1_3(int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color,int alpha)
 {
 	assert(offx >= 0 && offy >= 0 && offx + w <= m_width && offy + h <= m_height);
-	unsigned char* src = buf;
-	unsigned char* des = get_buf_offset(offx,offy);
+	colorbyte* src = buf;
+	colorbyte* des = get_buf_offset(offx,offy);
 
-	unsigned char r,g,b,a;
+	colorbyte r,g,b,a;
 	G_GET_ARGB(color,a,r,g,b);
 	for (int y=0; y<h; y++)
 	{
-		unsigned char* srcy = src;
-		unsigned char* desy = des;
+		colorbyte* srcy = src;
+		colorbyte* desy = des;
 		for (int x=0; x<w; x++)
 		{
 			a = *srcy ++;
 			if (a == 0)
 			{
-				//srcy += 3;
 				desy += 3;
 			}
 			else if(a == 255)
@@ -194,8 +223,8 @@ void image::render_image_1_3(int offx,int offy,unsigned char* buf, int w, int h,
 			}
 			else
 			{					
-				*desy ++ = (r * a + *desy * (255-a)) / 255;;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (r * a + *desy * (255-a)) / 255;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;
 				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 		}
@@ -204,24 +233,23 @@ void image::render_image_1_3(int offx,int offy,unsigned char* buf, int w, int h,
 	}			
 }
 
-void image::render_image_3_3(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch,int color, int alpha)
+void image::render_image_3_3(int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha)
 {
 	assert(offx >= 0 && offy >= 0 && offx + w <= m_width && offy + h <= m_height);
-	unsigned char* src = buf;
-	unsigned char* des = get_buf_offset(offx,offy);
+	colorbyte* src = buf;
+	colorbyte* des = get_buf_offset(offx,offy);
 
-	unsigned char r,g,b,a;
+	colorbyte r,g,b,a;
 	a = alpha;				
 	for (int y=0; y<h; y++)
 	{
-		unsigned char* srcy = src;
-		unsigned char* desy = des;
+		colorbyte* srcy = src;
+		colorbyte* desy = des;
 		for (int x=0; x<w; x++)
 		{
 			r = *srcy ++;
 			g = *srcy ++;
 			b = *srcy ++;
-			//图片是rgb的顺序，而dc是bgr
 			*desy ++ = (r * a + *desy * (255-a)) / 255;
 			*desy ++ = (g * a + *desy * (255-a)) / 255;
 			*desy ++ = (b * a + *desy * (255-a)) / 255;
@@ -231,17 +259,17 @@ void image::render_image_3_3(int offx,int offy,unsigned char* buf, int w, int h,
 	}			
 }
 
-void image::render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,int line_pitch,int color, int alpha)
+void image::render_image_4_3(int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha)
 {
 	assert(offx >= 0 && offy >= 0 && offx + w <= m_width && offy + h <= m_height);
-	unsigned char* src = buf;
-	unsigned char* des = get_buf_offset(offx,offy);
+	colorbyte* src = buf;
+	colorbyte* des = get_buf_offset(offx,offy);
 
-	unsigned char r,g,b,a;
+	colorbyte r,g,b,a;
 	for (int y=0; y<h; y++)
 	{
-		unsigned char* srcy = src;
-		unsigned char* desy = des;
+		colorbyte* srcy = src;
+		colorbyte* desy = des;
 		for (int x=0; x<w; x++)
 		{
 			r = *srcy ++;
@@ -262,8 +290,8 @@ void image::render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,
 			}
 			else
 			{					
-				*desy ++ = (r * a + *desy * (255-a)) / 255;;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (r * a + *desy * (255-a)) / 255;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;
 				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 		}
@@ -272,6 +300,47 @@ void image::render_image_4_3(int offx,int offy,unsigned char* buf, int w, int h,
 	}
 }
 
+void image::render_image_256_3(const image* img,int offx,int offy,colorbyte* buf, int w, int h,int line_pitch,int color, int alpha)
+{
+	assert(img->is_256());
+	assert(offx >= 0 && offy >= 0 && offx + w <= m_width && offy + h <= m_height);
+	colorbyte* src = buf;
+	colorbyte* des = get_buf_offset(offx,offy);
+	colorbyte a;
+	for (int y=0; y<h; y++)
+	{
+		colorbyte* srcy = src;
+		colorbyte* desy = des;
+		for (int x=0; x<w; x++)
+		{
+			colorbyte index = *srcy++;
+			color_palette* pal = img->m_pal_color+index;
+			if (index < img->m_pal_alpha_num)
+				a = img->m_pal_alpha[index] * alpha / 255;
+			else
+				a = alpha;
+			//a = 255;
+			if (a == 0)
+			{
+				desy += 3;
+			}
+			else if (a == 255)
+			{
+				*desy ++ = pal->red;
+				*desy ++ = pal->green;
+				*desy ++ = pal->blue;
+			}
+			else
+			{
+				*desy ++ = (pal->red * a + *desy * (255-a)) / 255;
+				*desy ++ = (pal->green * a + *desy * (255-a)) / 255;
+				*desy ++ = (pal->blue * a + *desy * (255-a)) / 255;
+			}
+		}
+		src += line_pitch;
+		des += get_line_pitch();
+	}
+}
 
 int image::draw_image_cell(const st_cell& cell,const image* img,const g_rect* rc_img,const g_rect* rc_clip)
 {
@@ -302,7 +371,7 @@ bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_r
 		offx = clip.l;
 	}
 	else if (offx >= clip.r)
-		return -1;
+		return false;
 	if (offx + rect.width() > clip.r)
 		rect.r -= offx + rect.width() - clip.r;
 
@@ -333,34 +402,34 @@ int image::draw_image(int offx,int offy,int color,int alpha,const image* img,con
 	if (!get_cliped_rect(rect,rc,offx,offy,rc_clip))
 		return -1;
 
-	unsigned char* src = (const_cast<image*>(img))->get_buf_offset(rect.l,rect.t);
-	//unsigned char* des = get_buf_offset(offx,offy);
+	colorbyte* src = (const_cast<image*>(img))->get_buf_offset(rect.l,rect.t);
 	int w = rect.width();
 	int h = rect.height();
 	
-	//not use cell.alpha and cell.color
-	if (!img->m_alpha && alpha == 255)
+	if (!img->has_alpha() && alpha == 255)
 	{
 		assert(img->m_bits_pixel == m_bits_pixel);
-		if (img->m_bits_pixel == m_bits_pixel)
-			copy_image(offx,offy,src,w,h,img->get_line_pitch());
+		//if (img->m_bits_pixel == m_bits_pixel)
+		copy_image(offx,offy,src,w,h,img->get_line_pitch());
 	}
 	else
 	{
 		if (m_bits_pixel == 3)
 		{
-			if (img->m_bits_pixel == 1)
+			if (img->is_256())
+				render_image_256_3(img,offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
+			else if (img->m_bits_pixel == 1)
 				render_image_1_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 			else if (img->m_bits_pixel == 3)
 				render_image_3_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 			else if (img->m_bits_pixel == 4)
 				render_image_4_3(offx,offy,src,w,h,img->get_line_pitch(),color,alpha);
 		}
-		else if (m_bits_pixel == 4)
+		else //if (m_bits_pixel == 4)
 		{
 			assert(img->m_bits_pixel == m_bits_pixel);
-			if (alpha == 255)
-				copy_image(offx,offy,src,w,h,img->get_line_pitch());
+			assert(alpha == 255);
+			copy_image(offx,offy,src,w,h,img->get_line_pitch());
 		}
 	}
 	return 0;
@@ -394,15 +463,15 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 {
 	if (!get_cliped_box(offx,offy,w,h,get_width(),get_height()))
 		return -1;
-	unsigned char* des = get_buf_offset(offx,offy);
-	unsigned char a,r,g,b;
+	colorbyte* des = get_buf_offset(offx,offy);
+	colorbyte a,r,g,b;
 	G_GET_ARGB(color,a,r,g,b);
 	a = alpha;
 	if (a == 255)
 	{
 		for (int y=0; y<h; y++)
 		{
-			unsigned char* desy = des;
+			colorbyte* desy = des;
 			for (int x=0; x<w; x++)
 			{
 				*desy ++ = r;
@@ -416,11 +485,11 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 	{
 		for (int y=0; y<h; y++)
 		{
-			unsigned char* desy = des;
+			colorbyte* desy = des;
 			for (int x=0; x<w; x++)
 			{
-				*desy ++ = (r * a + *desy * (255-a)) / 255;;
-				*desy ++ = (g * a + *desy * (255-a)) / 255;;
+				*desy ++ = (r * a + *desy * (255-a)) / 255;
+				*desy ++ = (g * a + *desy * (255-a)) / 255;
 				*desy ++ = (b * a + *desy * (255-a)) / 255;
 			}
 			des += get_line_pitch();
@@ -429,31 +498,98 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 	return 0;
 }
 
-void image::compress()
+//void image::compress()
+//{
+//	assert(m_buffer && !m_buffer_compress);
+//	uLong size = max(compressBound(get_buf_size()),get_buf_size());
+//	colorbyte* des = new colorbyte[size];
+//	int rt = ::compress(des,&size,m_buffer,get_buf_size());
+//	assert(rt == Z_OK);
+//
+//	m_sz_compress = size;
+//	m_buffer_compress = des;
+//
+//	delete m_buffer;
+//	m_buffer = NULL;
+//}
+//
+//void image::uncompress() 
+//{
+//	assert(!m_buffer && m_buffer_compress);
+//	uLong size = get_buf_size();
+//	m_buffer = new colorbyte[size];
+//
+//	int rt = ::uncompress(m_buffer,&size,m_buffer_compress,m_sz_compress);
+//	assert(rt == Z_OK);
+//
+//	delete m_buffer_compress;
+//	m_buffer_compress = NULL;
+//}
+
+void image::set_palette_color(const color_palette* colors,int num_palette)
 {
-	assert(m_buffer && !m_buffer_compress);
-	uLong size = max(compressBound(get_buf_size()),get_buf_size());
-	unsigned char* des = new unsigned char[size];
-	int rt = ::compress(des,&size,m_buffer,get_buf_size());
-	assert(rt == Z_OK);
-
-	m_sz_compress = size;
-	m_buffer_compress = new unsigned char[size];
-	memcpy(m_buffer_compress,des,size);
-
-	delete m_buffer;
-	m_buffer = NULL;
+	m_pal_color_num = num_palette;
+	m_pal_color = new color_palette[num_palette];
+	memcpy(m_pal_color,colors,sizeof(color_palette)*num_palette);
 }
 
-void image::uncompress() 
+void image::set_palette_alpha(const colorbyte* alphas,int num_palette)
 {
-	assert(!m_buffer && m_buffer_compress);
-	uLong size = get_buf_size();
-	m_buffer = new unsigned char[size];
+	m_pal_alpha_num = num_palette;
+	m_pal_alpha = new colorbyte[num_palette];
+	memcpy(m_pal_alpha,alphas,sizeof(colorbyte)*num_palette);
+}
 
-	int rt = ::uncompress(m_buffer,&size,m_buffer_compress,m_sz_compress);
-	assert(rt == Z_OK);
+colorbyte* image::render_256_argb() const
+{
+	int size = m_width*m_height;
+	colorbyte* buf = new colorbyte[size*4];
+	colorbyte* des = buf;
+	const colorbyte* src = m_buffer;
+	for (int i=0;i<size;i++)
+	{
+		colorbyte index = *src++;
+		color_palette* pal = m_pal_color+index;
+		*des ++ = pal->red;
+		*des ++ = pal->green;
+		*des ++ = pal->blue;
+		if (index < m_pal_alpha_num )		
+			*des++ = m_pal_alpha[index];
+		else
+			*des++ = 255;
+	}
 
-	delete m_buffer_compress;
-	m_buffer_compress = NULL;
+	return buf;
+}
+
+colorbyte* image::render_256_index() const
+{
+	int size = m_width*m_height;
+	colorbyte* buf = new colorbyte[size];
+	colorbyte* des = buf;
+	const colorbyte* src = m_buffer;
+	for (int i=0;i<size;i++)
+		*des ++ = *src++;
+
+	return buf;
+}
+
+colorbyte* image::render_256_palette_alpha() const
+{
+	assert(is_256() && has_alpha());
+	colorbyte* buf = new colorbyte[256*4];
+	color_palette* p = m_pal_color;
+	colorbyte* des = buf;
+	//color_palette* m_pal_color;
+	for(int i = 0;i<m_pal_color_num; i++,p++)
+	{
+		*des ++ = p->red;
+		*des ++ = p->green;
+		*des ++ = p->blue;
+		if (i<m_pal_alpha_num)
+			*des ++ = m_pal_alpha[i];
+		else
+			*des ++ = 255;
+	}
+	return buf;
 }

@@ -60,6 +60,4 @@ protected:
 	bool create_char(texture_char* tc,int char_value);
 };
 
-//bool find_texture_font_rc(const st_cell& text,int char_value,text_char& tc);
-
 #endif

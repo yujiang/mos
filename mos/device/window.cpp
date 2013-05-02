@@ -1,13 +1,12 @@
 #include "window.h"
-#include "window_render_gdi.h"
-#include "window_render_gl.h"
+#include "gdi/window_render_gdi.h"
+#include "opengl/window_render_gl.h"
 #include <windows.h>
 #include "script.h"
 #include <string>
 #include <conio.h>
 #include "windowsx.h"
 #include "mos.h"
-//#pragma comment(lib,"winmm.lib")
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -124,8 +123,7 @@ HWND InitInstance(HINSTANCE hInstance, const char* szWindowClass, const char* sz
 window::window() 
 {
 	m_destroy = false;
-	//m_render = new window_render_gdi(this);
-	m_render = new window_render_gl(this);
+	m_render = 0;
 }
 
 window::~window()
@@ -161,6 +159,10 @@ bool window::create_window(const char* name,const char* title,st_window_param& s
 	m_width = (rc.right-rc.left);
 	m_height = (rc.bottom-rc.top);
 
+	if (st.render_type == "opengl")
+		m_render = new window_render_gl(this);
+	else
+		m_render = new window_render_gdi(this);
 	return m_render->create_render(m_width,m_height);
 }
 
