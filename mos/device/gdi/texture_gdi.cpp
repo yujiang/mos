@@ -16,17 +16,17 @@ texture_gdi::~texture_gdi()
 	}
 }
 
-bool texture_gdi::create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
-{
-	assert(m_image == 0);
-	//m_image = new image;
-	//m_image->create_image_image(img,rc);
-	m_image_src = img;
-	m_image_src->image_add_ref();
-	m_rc_image = rc;
-
-	return true;
-}
+//bool texture_gdi::create_texture_gdi(image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
+//{
+//	assert(m_image == 0);
+//	//m_image = new image;
+//	//m_image->create_image_image(img,rc);
+//	m_image_src = img;
+//	m_image_src->image_add_ref();
+//	m_rc_image = rc;
+//
+//	return true;
+//}
 
 bool texture_gdi::create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) 
 {

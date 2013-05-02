@@ -113,19 +113,17 @@ void window_render_gl::create_shaders()
 {
 //-----------------------------------------------------------------------------
 // Simple GLSL Vertex Shader:
-	const char* palette_vertex_prog = "varying vec2 coord;\
-									  void main()\
+	const char* palette_vertex_prog = "void main()\
 									  {\
-									  coord = gl_MultiTexCoord0.xy;\
+									  gl_TexCoord[0] = gl_MultiTexCoord0;\
 									  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\
 									  }";
 
 	const char* palette_fragment_prog = "uniform sampler2D texture;\
 										uniform sampler2D palette;\
-										varying vec2 coord;\
 										void main()\
 										{\
-										gl_FragColor = texture2D(palette, vec2(texture2D(texture, coord).r, 0));\
+										gl_FragColor = texture2D(palette, vec2(texture2D(texture, vec2(gl_TexCoord[0])).a, 0));\
 										}";
 
 	m_shader_manager = new glShaderManager();
@@ -327,7 +325,7 @@ int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char*
 	if (p)
 		return _draw_texture_cell(cell,p,rc);
 	texture_gl* gl = new texture_gl;
-	if (!gl->create_texture(img,0))
+	if (!gl->create_texture_gl(img))
 	{
 		delete gl;
 		return -1;

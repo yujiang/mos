@@ -59,14 +59,14 @@ bool image::in_image(int x, int y)
 		{
 			colorbyte index = *des++;
 			if (index < m_pal_alpha_num)
-				return m_pal_alpha[index] > 127;
+				return m_pal_alpha[index] >= 255;
 			else
 				return true;
 		}
 		else
 		{
 			colorbyte a = *(des + 3);
-			return a > 127;
+			return a >= 255/2;
 		}
 	}
 	return false;
@@ -565,37 +565,31 @@ colorbyte* image::render_256_argb() const
 colorbyte* image::render_256_index() const
 {
 	int size = m_width*m_height;
-	colorbyte* buf;
-	if (has_alpha())
-	{
-		buf = new colorbyte[size*4];
-		colorbyte* des = buf;
-		const colorbyte* src = m_buffer;
-		for (int i=0;i<size;i++)
-		{
-			colorbyte index = *src++;
-			*des ++ = index;
-			*des ++ = 0;
-			*des ++ = 0;
-			if (index < m_pal_alpha_num )		
-				*des++ = m_pal_alpha[index];
-			else
-				*des++ = 255;
-		}
-	}
-	else
-	{
-		buf = new colorbyte[size*3];
-		colorbyte* des = buf;
-		const colorbyte* src = m_buffer;
-		for (int i=0;i<size;i++)
-		{
-			colorbyte index = *src++;
-			*des ++ = index;
-			*des ++ = 0;
-			*des ++ = 0;
-		}
-	}
+	colorbyte* buf = new colorbyte[size];
+	colorbyte* des = buf;
+	const colorbyte* src = m_buffer;
+	for (int i=0;i<size;i++)
+		*des ++ = *src++;
 
+	return buf;
+}
+
+colorbyte* image::render_256_palette_alpha() const
+{
+	assert(is_256() && has_alpha());
+	colorbyte* buf = new colorbyte[256*4];
+	color_palette* p = m_pal_color;
+	colorbyte* des = buf;
+	//color_palette* m_pal_color;
+	for(int i = 0;i<m_pal_color_num; i++,p++)
+	{
+		*des ++ = p->red;
+		*des ++ = p->green;
+		*des ++ = p->blue;
+		if (i<m_pal_alpha_num)
+			*des ++ = m_pal_alpha[i];
+		else
+			*des ++ = 255;
+	}
 	return buf;
 }

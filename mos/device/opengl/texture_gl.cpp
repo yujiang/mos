@@ -45,9 +45,9 @@ texture_gl::~texture_gl()
 	}
 }
 
-bool texture_gl::create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format) 
+bool texture_gl::create_texture_gl(image* img) 
 {
-	g_rect rect = rc ? *rc : img->get_rect();
+	g_rect rect = img->get_rect();
 
 	colorbyte* buf = img->get_buf_offset(rect.l,rect.t);
 	
@@ -60,34 +60,46 @@ bool texture_gl::create_texture(image* img,const g_rect* rc,CCTexture2DPixelForm
 		//first we not use shader.
 		if (img->is_256())
 		{
-			//colorbyte* buf = img->render_256_argb();
-			//format = kCCTexture2DPixelFormat_RGBA8888;
-			//rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
-			//delete buf;
-			
-			colorbyte* buf = img->render_256_index();
-			format = img->has_alpha() ? kCCTexture2DPixelFormat_RGBA8888 : kTexture2DPixelFormat_RGB888;
-			rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
-			delete buf;
+			if (!img->use_palette())
+			{
+				colorbyte* buf = img->render_256_argb();
+				rt = init_data(buf,img->get_width(),kCCTexture2DPixelFormat_RGBA8888,rect.width(),rect.height(),rect.width(),rect.height());
+				delete buf;
+			}
+			else
+			{
+				colorbyte* buf = img->get_buf_offset(rect.l,rect.t);
+				rt = init_data(buf,img->get_width(),kCCTexture2DPixelFormat_A8,rect.width(),rect.height(),rect.width(),rect.height());
 
-			glGenTextures(1, &m_textureId_pal);
-			glBindTexture(GL_TEXTURE_2D, m_textureId_pal);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, img->get_width()); //fuck! this is very important.
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			const formatinfo* info = get_formatinfo(kCCTexture2DPixelFormat_RGB888);
-			glTexImage2D(GL_TEXTURE_2D, 0, info->internalformat, img->m_pal_color_num, 1, 0, info->glformat, info->gltype, img->m_pal_color);	
+				glGenTextures(1, &m_textureId_pal);
+				glBindTexture(GL_TEXTURE_2D, m_textureId_pal);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, img->m_pal_color_num); //fuck! this is very important.
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-			CHECK_GL_ERROR_DEBUG();
+				
+				CCTexture2DPixelFormat format = img->has_alpha() ? kCCTexture2DPixelFormat_RGBA8888 : kTexture2DPixelFormat_RGB888;
+				const formatinfo* info = get_formatinfo(format);
+				if (img->has_alpha())
+				{
+					colorbyte* pal = img->render_256_palette_alpha();
+					glTexImage2D(GL_TEXTURE_2D, 0, info->internalformat, img->m_pal_color_num, 1, 0, info->glformat, info->gltype, pal);	
+					delete pal;
+				}
+				else
+					glTexImage2D(GL_TEXTURE_2D, 0, info->internalformat, img->m_pal_color_num, 1, 0, info->glformat, info->gltype, img->m_pal_color);	
 
-			m_shader = shader_256;
+				CHECK_GL_ERROR_DEBUG();
+
+				m_shader = shader_256;
+			}
 		}
 	}
 	else
 	{
-		format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
+		CCTexture2DPixelFormat format = img->m_bits_pixel == 3 ? kCCTexture2DPixelFormat_RGB888 : kCCTexture2DPixelFormat_RGBA8888;
 		rt = init_data(buf,img->get_width(),format,rect.width(),rect.height(),rect.width(),rect.height());
 	}
 	//delete buf;

@@ -15,7 +15,7 @@ public:
 	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
 	int draw_image_ontexture(int x,int y,const image* img) ;
 
-	bool create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format) ;
+	//bool create_texture_gdi(image* img,const g_rect* rc,CCTexture2DPixelFormat format) ;
 	image* m_image_src;
 	const g_rect* m_rc_image;
 };

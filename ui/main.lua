@@ -142,7 +142,7 @@ function safe_on_init()
 	local w = 600
 	local h = 600
 	local render = "gdi"
-	--local render = "opengl"
+	local render = "opengl"
 	cdriver.create_window("main","test",100,100,w,h,0,render);
 
 	ui:regist_font(0,"simhei.ttf",16,16,1,2);

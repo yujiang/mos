@@ -42,7 +42,7 @@ public:
 	}
 
 	CShaderType m_shader;
-	bool create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) ;
+	bool create_texture_gl(image* img) ;
 
 	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
 	int draw_image_ontexture(int x,int y,const image* img) ;
