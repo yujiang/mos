@@ -44,7 +44,7 @@ const stFont* get_font(int font_id)
 const char* get_windows_font(const char* file)
 {
 	static char buf[128];
-	sprintf(buf,"Fonts/%s",file);
+	sprintf(buf,"c:/Windows/Fonts/%s",file);
 	return buf;
 }
 
