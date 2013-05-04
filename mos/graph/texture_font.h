@@ -45,6 +45,8 @@ public:
 
 	std::unordered_map<int,texture_char*> m_map_char;
 	std::vector<texture_char*> m_char_free;
+	int m_free_num;
+
 
 	texture_char* find_char(int char_value);
 

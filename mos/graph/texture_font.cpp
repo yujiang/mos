@@ -7,6 +7,7 @@
 #include "font.h"
 #include "device/window_render.h"
 #include "mos.h"
+#include <assert.h>
 
 texture_font::~texture_font()
 {
@@ -35,25 +36,30 @@ bool texture_font::create_texture_font(int width,int height,const stFont* st_fon
 		texture_char* p = new texture_char(x*maxw,y*maxh,maxw,maxh);
 		m_char_free.push_back(p);
 	}
+	m_free_num = m_char_free.size();
 
 	return true;
 }
 
 texture_char* texture_font::find_char(int char_value)
 {
-	texture_char* p = m_map_char[char_value];
-	if (p)
-		return p;
+	auto it = m_map_char.find(char_value);
+	if (it != m_map_char.end())
+		return it->second;
+
 	if (m_char_free.empty())
 		return NULL;
 	
-	p = m_char_free.back();
+	texture_char* p = m_char_free.back();
 	
 	if (!create_char(p,char_value))
 		return NULL;
 
 	m_char_free.pop_back();
 	m_map_char[char_value] = p;
+
+	assert(m_map_char.size() + m_char_free.size() == m_free_num);
+	
 	return p;
 }
 

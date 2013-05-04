@@ -174,8 +174,8 @@ end
 function test_png8()
 	--use pal render do some pal swap 
 	--or just use png for diskspace.
-	--local file = "girl8.png"
-	local file = "test-fs8.png"
+	local file = "girl8.png"
+	--local file = "test-fs8.png"
 	cdriver.regist_image_palette(file,"")
 
 	local r = g_root
