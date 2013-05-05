@@ -41,7 +41,11 @@ public:
 		return m_tex_height;
 	}
 
-	CShaderType m_shader;
+	bool m_use_palette;
+	bool use_palette() const{
+		return m_use_palette;
+	}
+
 	bool create_texture_gl(image* img) ;
 
 	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;

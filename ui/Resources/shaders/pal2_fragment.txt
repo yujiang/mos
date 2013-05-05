@@ -1,0 +1,7 @@
+uniform sampler2D texture;
+uniform sampler2D palette;
+void main()
+{
+	vec4 v = texture2D(palette, vec2(texture2D(texture, gl_TexCoord[0].st).a, 0));
+	gl_FragColor = vec4(v.g,v.b,v.r,v.a);
+}

@@ -28,7 +28,7 @@ texture_gl::texture_gl()
 {
 	m_textureId = 0;
 	m_textureId_pal = 0;
-	m_shader = shader_null;
+	m_use_palette = false;
 }
 
 texture_gl::~texture_gl()
@@ -57,6 +57,7 @@ bool texture_gl::create_texture_gl(image* img)
 		//first we not use shader.
 		if (img->is_256())
 		{
+			m_use_palette = img->use_palette();
 			if (!img->use_palette())
 			{
 				colorbyte* buf = img->render_256_argb();
@@ -91,8 +92,6 @@ bool texture_gl::create_texture_gl(image* img)
 					glTexImage2D(GL_TEXTURE_2D, 0, info->internalformat, img->m_pal_color_num, 1, 0, info->glformat, info->gltype, img->m_pal_color);	
 
 				CHECK_GL_ERROR_DEBUG();
-
-				m_shader = shader_256;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 #include "window_render_gl.h"
 #include "../window.h"
+#include "../file.h"
 #include "graph/texture.h"
 #include "graph/image.h"
 #include "graph/graph.h"
@@ -22,10 +23,6 @@ window_render_gl::window_render_gl(window* w):window_render(w)
 
 window_render_gl::~window_render_gl()
 {
-	delete m_director;
-	m_director = 0;
-	delete m_shader_manager;
-	m_shader_manager = 0;
 }
 
 static void SetupPixelFormat(HDC hDC)
@@ -127,7 +124,8 @@ void window_render_gl::create_shaders()
 										}";
 
 	m_shader_manager = new glShaderManager();
-	m_shader_palette = m_shader_manager->loadfromMemory(palette_vertex_prog,palette_fragment_prog);
+	m_shader_palette = m_shader_manager->loadfromMemoryName("shader_palette",palette_vertex_prog,palette_fragment_prog);
+	m_shader_manager->SetPath(RESOURCE_PATH"/shaders");
 }
 
 texture* window_render_gl::create_texture() 
@@ -137,6 +135,11 @@ texture* window_render_gl::create_texture()
 
 void window_render_gl::on_destroy()
 {
+	delete m_director;
+	m_director = 0;
+	delete m_shader_manager;
+	m_shader_manager = 0;
+
 	if (m_hDC != NULL && m_hRC != NULL)
 	{
 		// deselect rendering context and delete it
@@ -151,11 +154,6 @@ void window_render_gl::render_start()
 }
 
 void window_render_gl::render_end()
-{
-	swapBuffers();
-}
-
-void window_render_gl::swapBuffers()
 {
 	if (m_hDC != NULL)
 	{
@@ -182,10 +180,10 @@ int window_render_gl::draw_texture_cell(const st_cell& cell,texture* _tex,const 
 
 int window_render_gl::_draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
 {
-	return draw_texture(cell.x,cell.y,cell.color,cell.alpha,_tex,rc);
+	return draw_texture(cell.x,cell.y,cell.color,cell.alpha,cell.shader,_tex,rc);
 }
 
-int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex,const g_rect* rc_tex)
+int window_render_gl::draw_texture(int x,int y,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc_tex)
 {
 	texture_gl* tex = (texture_gl*)_tex;
 	g_rect rect = rc_tex ? *rc_tex : tex->get_rect();
@@ -216,25 +214,35 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 	uv[2].u = uv[3].u;
 	uv[2].v = uv[0].v;
 
-	if (tex->m_shader == shader_null)
+
+	glShader* cur_shader = NULL;
+	if (shader)
+		cur_shader = m_shader_manager->getShader(shader);
+	if (cur_shader == NULL && tex->use_palette())
+		cur_shader = m_shader_palette;
+
+	if (cur_shader)
 	{
+		cur_shader->begin();
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
+
+		if (tex->use_palette())
+		{
+			int texid = cur_shader->GetUniformLocation("texture");
+			glUniform1i(texid,0);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, tex->m_textureId_pal);
+			int palette = cur_shader->GetUniformLocation("palette");
+			glUniform1i(palette,1);
+		}
 	}
-	else if(tex->m_shader == shader_256)
+	else
 	{
-		m_shader_palette->begin();
-		//m_shader_palette->setUniform1f("MyFloat", 1.123);
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
-		int texid = m_shader_palette->GetUniformLocation("texture");
-		glUniform1i(texid,0);
-
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, tex->m_textureId_pal);
-		int palette = m_shader_palette->GetUniformLocation("palette");
-		glUniform1i(palette,1);
 	}
 
 	unsigned char r,g,b;
@@ -249,15 +257,16 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,texture* _tex
 	}
 	glEnd();
 
-	if (tex->m_shader == shader_null)
+	if (cur_shader)
 	{
+		if (tex->use_palette())
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glDisable(GL_TEXTURE_2D);
+		}
+		cur_shader->end();
 	}
-	else if (tex->m_shader == shader_256)
-	{
-		glActiveTexture(GL_TEXTURE1);
-		glDisable(GL_TEXTURE_2D);
-		m_shader_palette->end();
-	}
+
 	//glFlush();
 	s_triangle_render += 2;
 

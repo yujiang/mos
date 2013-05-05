@@ -22,6 +22,12 @@
     <Filter Include="db">
       <UniqueIdentifier>{92fce7d8-8c58-4f72-b50e-1c952b4a10a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{51b971a4-1a4c-4de9-bae7-c7d7115e2f0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\shaders">
+      <UniqueIdentifier>{32ae5cb4-b2f0-4f60-b84a-16cfd98cf819}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ui\window.lua">
@@ -131,5 +137,11 @@
       <Filter>db</Filter>
     </None>
     <None Include="..\readme.txt" />
+    <None Include="Resources\shaders\palette_fragment.txt">
+      <Filter>resources\shaders</Filter>
+    </None>
+    <None Include="Resources\shaders\palette_vertex.txt">
+      <Filter>resources\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
