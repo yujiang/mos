@@ -6,8 +6,8 @@
 class st_cell;
 //image of file
 
-class image;
-typedef bool (*load_image_func)(image* ,void* ,int );
+struct image_struct;
+typedef bool (*load_image_func)(image_struct* ,void* ,int ,const char* );
 
 typedef unsigned char colorbyte;
 struct color_palette
@@ -17,7 +17,71 @@ struct color_palette
 	colorbyte blue;
 };
 
-class image
+const int c_pal_size = 256; //256ɫ
+
+struct image_struct
+{
+	int m_width,m_height;
+	int get_width() const{
+		return m_width;
+	}
+	int get_height() const{
+		return m_height;
+	}
+	g_size get_size() const{
+		return g_size(m_width,m_height);
+	}
+	g_rect get_rect() const{
+		return g_rect(0,0,m_width,m_height);
+	}
+
+	colorbyte* m_buffer;
+	colorbyte* get_buffer() const{
+		//		if (is_compress())
+		//			const_cast<image*>(this)->uncompress();
+		return m_buffer;
+	}
+
+	//bool m_alpha;
+	//bool m_premul_alpha;
+	//colorbyte* m_buffer;
+
+	int m_pal_alpha_num;
+	colorbyte* m_pal_alpha;
+	int m_pal_color_num;
+	color_palette* m_pal_color;
+	bool has_alpha() const {
+		if (is_256())
+			return m_pal_alpha != 0;
+		//return false;
+		return m_bits_pixel != 3;
+	}
+	bool is_256() const{
+		return m_pal_color != 0;
+	}
+	bool m_use_palette;
+	bool use_palette() const{
+		return m_use_palette;
+	}
+
+	int m_bits_component;
+	int m_bits_pixel; //3 or 4 or 1 or (1 and 256 color)
+
+	int get_line_pitch() const{
+		return m_width * m_bits_pixel;
+	}
+	int get_buf_size() const{
+		return get_line_pitch() * get_height();
+	}
+	colorbyte* get_buf_offset(int x,int y) const{
+		return get_buffer() + (y * get_line_pitch() + x * m_bits_pixel);
+	}
+
+	void set_palette_color(const color_palette* colors,int num_palette);
+	void set_palette_alpha(const colorbyte* alphas,int num_palette);
+};
+
+class image : public image_struct
 {
 public:
 	image();
@@ -50,67 +114,8 @@ public:
 		return --m_ref;
 	}
 
-	int m_width,m_height;
-	int get_width() const{
-		return m_width;
-	}
-	int get_height() const{
-		return m_height;
-	}
-	g_size get_size() const{
-		return g_size(m_width,m_height);
-	}
-	g_rect get_rect() const{
-		return g_rect(0,0,m_width,m_height);
-	}
-
-	colorbyte* m_buffer;
-	colorbyte* get_buffer() const{
-//		if (is_compress())
-//			const_cast<image*>(this)->uncompress();
-		return m_buffer;
-	}
-
-	//bool m_alpha;
-	//bool m_premul_alpha;
-	//colorbyte* m_buffer;
-
-	int m_pal_alpha_num;
-	colorbyte* m_pal_alpha;
-	int m_pal_color_num;
-	color_palette* m_pal_color;
-	bool has_alpha() const {
-		if (is_256())
-			return m_pal_alpha != 0;
-			//return false;
-		return m_bits_pixel != 3;
-	}
-	bool is_256() const{
-		return m_pal_color != 0;
-	}
-	bool m_use_palette;
-	bool use_palette() const{
-		return m_use_palette;
-	}
-
-	void set_palette_color(const color_palette* colors,int num_palette);
-	void set_palette_alpha(const colorbyte* alphas,int num_palette);
-
 	colorbyte* render_256_argb() const;
 	colorbyte* render_256_palette_alpha() const;
-
-	int m_bits_component;
-	int m_bits_pixel; //3 or 4 or 1 or (1 and 256 color)
-
-	int get_line_pitch() const{
-		return m_width * m_bits_pixel;
-	}
-	int get_buf_size() const{
-		return get_line_pitch() * get_height();
-	}
-	colorbyte* get_buf_offset(int x,int y) const{
-		return get_buffer() + (y * get_line_pitch() + x * m_bits_pixel);
-	}
 
 	unsigned int m_time_use;
 	void mark_use_image(unsigned int time){

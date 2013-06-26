@@ -120,6 +120,9 @@
     <ClInclude Include="device\opengl\glsl.h">
       <Filter>device\gl</Filter>
     </ClInclude>
+    <ClInclude Include="graph\dir.h">
+      <Filter>graph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="device\opengl\glsl.cpp">
       <Filter>device\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="image\image_zgp.cpp">
+      <Filter>image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

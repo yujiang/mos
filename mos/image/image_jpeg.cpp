@@ -55,7 +55,7 @@ my_error_exit (j_common_ptr cinfo)
 }
 
 
-bool create_image_jpg(image* img,void* data,int nSize)
+bool create_image_jpg(image_struct* img,void* data,int nSize,const char* name)
 {
     /* these are standard libjpeg structures for reading(decompression) */
     struct jpeg_decompress_struct cinfo;

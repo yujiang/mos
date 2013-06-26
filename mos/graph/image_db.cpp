@@ -2,6 +2,7 @@
 #include <string>
 #include "device/file.h"
 #include <unordered_map>
+#include <fstream>
 #include <assert.h>
 
 using namespace std;
@@ -41,6 +42,27 @@ const st_redirect* redirect_image_file(const char* file,int frame)
 	if (it != g_hm_redirect.end())
 		return &it->second;
 	return 0;
+}
+
+bool regist_image_ini(const char* file,int& dir,int& frame)
+{
+	string s = file;
+	string ini_file = s.substr(0,s.size()-3) + "ini";	
+	ifstream f(get_resourcefile(ini_file.c_str()));
+	if (!f.is_open())
+		return false;
+	f >> dir >> frame;
+	int num = dir * frame;
+	st_redirect st;
+	st.file_image = file;
+	for (int frame = 0; frame < num; frame++)
+	{
+		int x,y,w,h;
+		f >> x >> y >> w >> h >> st.cg.x >> st.cg.y;
+		st.rc.set_xywh(x,y,w,h);
+		regist_image_file(file,frame,st);
+	}
+	return true;
 }
 
 std::unordered_map<string,string> g_hm_image_palette;

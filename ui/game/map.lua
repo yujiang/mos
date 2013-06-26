@@ -56,7 +56,7 @@ function map:on_mouse_msg(mouse_event,x,y,param)
 	end
 	if mouse_event == WM_LBUTTONDOWN then
 		if g_root.play then
-			g_root.play:walk_to(x-self.x,y-self.y,100)
+			g_root.play:walk_to(x-self.x,y-self.y,150)
 		end
 		--self:topest()
 	elseif mouse_event == WM_RBUTTONDOWN then

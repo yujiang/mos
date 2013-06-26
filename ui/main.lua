@@ -139,7 +139,7 @@ end
 
 function safe_on_init()
 	init_main()
-	local w = 600
+	local w = 800
 	local h = 600
 	local render = "gdi"
 	local render = "opengl"

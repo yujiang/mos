@@ -94,7 +94,7 @@ image* image::create_image_file(const char* file)
 	if (!func)
 		return false;
 	image* i = new image();
-	if (func(i,buf,sz))
+	if (func(i,buf,sz,file))
 	{
 		i->m_create_type = image_create_file;
 		i->m_file = file;
@@ -530,15 +530,15 @@ int image::draw_box(int offx,int offy,int color,int alpha,int w,int h)
 //	m_buffer_compress = NULL;
 //}
 
-void image::set_palette_color(const color_palette* colors,int num_palette)
+void image_struct::set_palette_color(const color_palette* colors,int num_palette)
 {
-	assert(num_palette <= 256);
-	m_pal_color_num = 256;
-	m_pal_color = new color_palette[256];
+	assert(num_palette <= c_pal_size);
+	m_pal_color_num = c_pal_size;
+	m_pal_color = new color_palette[c_pal_size];
 	memcpy(m_pal_color,colors,sizeof(color_palette)*num_palette);
 }
 
-void image::set_palette_alpha(const colorbyte* alphas,int num_palette)
+void image_struct::set_palette_alpha(const colorbyte* alphas,int num_palette)
 {
 	m_pal_alpha_num = num_palette;
 	m_pal_alpha = new colorbyte[num_palette];

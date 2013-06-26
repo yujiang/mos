@@ -477,8 +477,9 @@ void graph::draw_win_end()
 
 //////////////////////////////////////////////////////////////////////////
 //device
-bool create_image_png(image*,void* data,int size);
-bool create_image_jpg(image*,void* data,int size);
+bool create_image_png(image_struct*,void* data,int size,const char* name);
+bool create_image_jpg(image_struct*,void* data,int size,const char* name);
+//bool create_image_zgp(image_struct*,void* data,int size,const char* name);
 
 void graph::init_graph()
 {
@@ -486,6 +487,7 @@ void graph::init_graph()
 	init_font();
 	image::register_image_file("png",create_image_png);
 	image::register_image_file("jpg",create_image_jpg);
+	//image::register_image_file("zgp",create_image_zgp);
 }
 
 void graph::close_graph()

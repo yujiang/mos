@@ -41,6 +41,10 @@ function move:add_timer()
 	self.timer = g_timer:add_timer_everyframe(move.on_timer_updatepos,self)		
 end
 
+function dir_xy(x0,y0,x,y)
+	
+end
+
 --speed 每秒多少像素？
 function move:move_to(x,y,speed)
 	assert(speed > 0)
@@ -61,6 +65,7 @@ function move:move_to(x,y,speed)
 	--print("move:move_to",x,y,speed,self.x_speed,self.y_speed)
 
 	self:add_timer()
+	return cdriver.get_dir(x-x0,y-y0)
 end
 
 --支持一个coroutine的方法。

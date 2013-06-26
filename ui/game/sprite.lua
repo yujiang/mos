@@ -11,7 +11,7 @@ function sprite:create_sprite(id,x,y,z,ani_id)
 	cell.create_cell(self,tostring(id),x,y,z or 0,0,0)
 	self.ani_id = ani_id
 	self.emitter = emitter()
-
+	--self.dir = 0
 	self:get_move()
 end
 
@@ -32,29 +32,24 @@ function sprite:get_z()
 	return self.y + self.x / 10000
 end
 
+function sprite:get_bg_ani()
+	return self:get_bg().ani
+end
+
 function sprite:do_ani(ani_name)
 	local tb = g_ani_data:find_ani_data(self.ani_id,ani_name)	
 	if not tb then
 		print("error! sprite:do_ani ",self.ani_id,ani_name)
 		return
 	end
-	--self:set_center(tb.cx,tb.cy)
-	self:set_bg(tb.image_file,tb.frame_start)
+	
+	if not self:get_bg() then
+		self:set_bg(tb.image_file,tb.frame_start)
+	end
 
 	local bg = self:get_bg() 
-	--bg.x = -tb.cx
-	--bg.y = -tb.cy
-	
-	--print(ani_name,tb.image_file,tb.frame_start,tb.ani_speed)
-	--print(debug.traceback())
-
-	if tb.ani_speed > 0 then
-		bg:set_ani(tb.ani_speed,tb.frame_start,tb.frame_end,tb.loop)
-	else	
-		if bg.ani then
-			bg.ani:stop_ani()
-		end
-	end
+	--print("do_ani bg",bg)
+	bg:set_ani_tb(tb)
 end
 
 function sprite:get_move()
@@ -64,7 +59,24 @@ function sprite:get_move()
 		self.move.on_reached = function(is_reached)
 			--print("sprite.move.on_reached",self.name,is_reached)
 			if is_reached then	--否则可能是上一个的退出。
-				self:do_ani("stand")
+				self:stand() 
+				--需要把ani完成，快速播放完成，之后再stand
+				--效果并不好，所以去掉了。
+--				local tb = g_ani_data:find_ani_data(self.ani_id,"walkend")
+--				if tb and false then
+--					local ani = self:get_bg().ani
+--					ani:set_ani_tb(tb,false)
+--					ani.on_aniend = function(ended)
+--						local tb = g_ani_data:find_ani_data(self.ani_id,"walkend2")
+--						ani:set_ani_tb(tb,false)
+--						ani.on_aniend = function(ended)
+--							self:do_ani("stand")
+--							ani.on_aniend = nil
+--						end
+--					end
+--				else
+--					self:do_ani("stand")
+--				end
 			end
 			self.emitter:emit("reach",is_reached)
 		end
@@ -84,11 +96,43 @@ function sprite:walk_to(x,y,speed)
 	assert(speed > 0)
 	self:do_ani("walk")
 	local m = self:get_move()
-	m:move_to(x,y,speed)
+	local dir = m:move_to(x,y,speed)
+	if dir then
+		self:set_dir(dir)
+	end
+end
+
+function sprite:set_dir(dir)
+	local bg = self:get_bg() 
+	if bg then
+		--print("sprite:set_dir",dir)
+		bg.ani:set_ani_dir(dir)
+	end
+end
+
+function sprite:on_timer_stand()
+	print("sprite:on_timer_stand()")
+	local ani = self:get_bg_ani()
+	if ani.ani_tb.name == "stand" then
+		ani.ani_tb = nil
+		self:stand()
+	end
+end
+
+function sprite:stand()
+	self:do_ani("stand")
+	local ani = self:get_bg_ani()
+	ani.on_aniend = 
+		function(ended)
+			--add a random timer to do again
+			local tm = math.random(1,100) / 10 + 3
+			g_timer:add_timer(tm,self.on_timer_stand,self)
+		end
+	return false
 end
 
 function sprite:stop()
-	self:do_ani("stand")
+	self:stand()
 	if self.move then
 		self.move:stop_move()
 	end

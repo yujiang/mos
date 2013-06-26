@@ -15,6 +15,7 @@ struct st_redirect
 //button.jpg 1 --> ui.jpg (200,300,64,32)
 const st_redirect* redirect_image_file(const char* file,int frame);
 void regist_image_file(const char* file,int frame,st_redirect& rc);
+bool regist_image_ini(const char* ini_file,int& dir,int& frame);
 
 //image file's palette
 //其实最好把file和pal合为同一个文件，但是png不支持。

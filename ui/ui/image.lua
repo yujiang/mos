@@ -9,6 +9,8 @@ function image:create_image(name,x,y,z,image_file,frame)
 end
 
 function image:set_image(image_file,frame)
+	--print(debug.traceback())
+	--print(self,"image:set_image",image_file,frame)
 	self.image_file = image_file
 	self.frame = frame 
 	local w,h,cx,cy = cdriver.get_image_sizecg(image_file,frame) --从文件得到w,h,cx,cy
@@ -33,6 +35,16 @@ function image:set_ani(ani_speed,frame_start,frame_to,loop)
 		self.ani:create_ani(self)
 	end
 	self.ani:set_ani(ani_speed,frame_start,frame_to,loop)
+end
+
+function image:set_ani_tb(tb)
+	--print("image:get_render_override()",self.name)
+	if not self.ani then
+		self.ani = ani()
+		self.ani:create_ani(self)
+	end
+	--print("image:set_ani_tb",self.ani,self.ani.image)
+	self.ani:set_ani_tb(tb,true)
 end
 
 function image:on_loaded_from_table()

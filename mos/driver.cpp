@@ -5,11 +5,14 @@
 #include "graph/image.h"
 #include "graph/image_db.h"
 #include "graph/font.h"
+#include "graph/dir.h"
 #include "graph/texture.h"
 #include "device/window.h"
 #include "device/window_render.h"
 #include "mos.h"
 
+#include <string>
+using namespace std;
 
 static int lua_in_image(lua_State *L) {
 	const char* file = luaL_checkstring(L,1);
@@ -137,6 +140,15 @@ static int  lua_regist_font (lua_State *L) {
 
 static int  lua_regist_image (lua_State *L) {
 	const char* file = luaL_checkstring(L,1);
+	if (lua_gettop(L) == 1) //regist ´óÍ¼
+	{
+		int dir,frame;
+		lua_pushboolean(L,regist_image_ini(file,dir,frame));
+		lua_pushinteger(L,dir);
+		lua_pushinteger(L,frame);
+		return 3;
+	}
+
 	int frame = luaL_checkinteger(L,2);
 	st_redirect rd;
 	rd.file_image = luaL_checkstring(L,3);
@@ -184,6 +196,13 @@ static int  lua_get_graph_trace (lua_State *L) {
 	return 1;
 }
 
+static int  lua_get_dir(lua_State *L) {
+	int x = luaL_checkinteger(L,1);
+	int y = luaL_checkinteger(L,2);
+	lua_pushinteger(L,math_get_dir8(x,y));
+	return 1;
+}
+
 static const luaL_reg driver_lib[] = {
 	{"render",				lua_render},
 	{"create_window",		lua_create_window},
@@ -197,6 +216,7 @@ static const luaL_reg driver_lib[] = {
 	{"regist_image_palette",lua_regist_image_palette},
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},
+	{"get_dir",				lua_get_dir},
 	{NULL, NULL}
 };
 

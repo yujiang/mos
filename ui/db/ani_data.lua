@@ -6,11 +6,14 @@ function ani_data:create_ani_data()
 	self.shapes = {}
 end
 
-function ani_data:regist_ani_data(shape,name,image_file,ani_speed,frame_start,frame_end,loop)
+function ani_data:regist_ani_data(shape,name,image_file,ani_speed,dir,frame_start,frame_end,loop)
 	self.shapes[shape] = self.shapes[shape] or {}
 	self.shapes[shape][name] = {
+		shape = shape,
+		name = name,
 		image_file = image_file,
 		ani_speed = ani_speed,
+		dir = dir, --方向数目。
 		frame_start = frame_start,
 		frame_end = frame_end,
 		loop = loop,

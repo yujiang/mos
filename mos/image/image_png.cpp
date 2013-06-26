@@ -28,12 +28,6 @@ static void pngReadCallback(png_structp png_ptr, png_bytep data, png_size_t leng
 	}
 }
 
-#define CC_RGB_PREMULTIPLY_ALPHA(vr, vg, vb, va) \
-	(unsigned)(((unsigned)((colorbyte)(vr) * ((colorbyte)(va) + 1)) >> 8) | \
-	((unsigned)((colorbyte)(vg) * ((colorbyte)(va) + 1) >> 8) << 8) | \
-	((unsigned)((colorbyte)(vb) * ((colorbyte)(va) + 1) >> 8) << 16) | \
-	((unsigned)(colorbyte)(va) << 24))
-
 //µÚ1¸ö2bit
 inline colorbyte get_bit(colorbyte c,int index,int bits_component)
 {
@@ -47,7 +41,7 @@ inline colorbyte get_bit(colorbyte c,int index,int bits_component)
 	return c & mask;
 }
 
-bool create_image_png(image* img, void* pData,int nDatalen)
+bool create_image_png(image_struct* img, void* pData,int nDatalen,const char* name)
 {
 	// length of bytes to check if it is a valid png file
 #define PNGSIGSIZE  8
@@ -96,7 +90,8 @@ bool create_image_png(image* img, void* pData,int nDatalen)
 		png_uint_32 color_type = png_get_color_type(png_ptr, info_ptr);
 
 		//CCLOG("color type %u", color_type);
-		printf("w:%d h:%d type:%d bits:%d pixel:%d\n",
+		printf("create_image_png %s w:%d h:%d type:%d bits:%d pixel:%d\n",
+			name,
 			img->m_width,img->m_height,color_type,img->m_bits_component,img->m_bits_pixel);
 
 		// force palette images to be expanded to 24-bit RGB

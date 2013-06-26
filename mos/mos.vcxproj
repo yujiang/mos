@@ -106,6 +106,7 @@
     <ClInclude Include="driver.h" />
     <ClInclude Include="graph\cell.h" />
     <ClInclude Include="graph\color.h" />
+    <ClInclude Include="graph\dir.h" />
     <ClInclude Include="graph\font.h" />
     <ClInclude Include="graph\graph.h" />
     <ClInclude Include="graph\image.h" />
@@ -142,6 +143,7 @@
     <ClCompile Include="graph\texture_font.cpp" />
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
+    <ClCompile Include="image\image_zgp.cpp" />
     <ClCompile Include="mos.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="stdafx.cpp" />
