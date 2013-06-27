@@ -57,7 +57,7 @@ bool image::in_image(int x, int y)
 		{
 			colorbyte index = *des++;
 			if (index < m_pal_alpha_num)
-				return m_pal_alpha[index] >= 255;
+				return m_pal_alpha[index] >= 255/2;
 			else
 				return true;
 		}

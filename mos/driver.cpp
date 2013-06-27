@@ -21,10 +21,16 @@ static int lua_in_image(lua_State *L) {
 	int x = luaL_checkinteger(L,3);
 	int y = luaL_checkinteger(L,4);
 	
-	image* img = get_graph()->find_image(file,frame);
+	const st_redirect* r = redirect_image_file(file,frame);
+	if (r)
+		file = r->file_image.c_str();
+	image* img = get_graph()->find_image_raw(file,frame);
 	if (img)
 	{
-		lua_pushboolean(L,img->in_image(x,y));
+		if (r)
+			lua_pushboolean(L,img->in_image(x+r->rc.l,y+r->rc.t));
+		else
+			lua_pushboolean(L,img->in_image(x,y));
 		return 1;
 	}
 	return 0;

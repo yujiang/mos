@@ -3,19 +3,53 @@ local sprite = class(cell,"sprite")
 
 local g_sprite_id = 1
 
+--ƒ√Œ‰∆˜£¨œ»‰÷»æ»À£¨‘Ÿ‰÷»æŒ‰∆˜°£
+--ªª…´°£
+
 function sprite:create_sprite(id,x,y,z,ani_id,use_zgp)
 	if not id then
 		id = g_sprite_id
 		g_sprite_id = id + 1
 	end
 	cell.create_cell(self,tostring(id),x,y,z or 0,0,0)
-	self.ani_id = ani_id
+	--self.ani_id = ani_id
 	self.emitter = emitter()
 	--self.dir = 0
-	self.use_zgp = use_zgp
+	--self.use_zgp = use_zgp
 
 	self:get_move()
+
+	local body = sprite_body()
+	body:create_body("body",0,0,-1000,ani_id,use_zgp)
+	self:add_child(body)
+
+	assert(self:get_body())
 end
+
+function sprite:get_body()
+	return self:find_child("body")
+end
+
+function sprite:set_weapon(weapon_id)
+	self:get_body():set_weapon(weapon_id)
+end
+
+function sprite:in_rect(x,y)
+	local body = self:get_body() 
+	if body then 
+		return body:in_rect(x-self.x,y-self.y)
+	end
+	return self:_in_rect(x,y)
+end
+
+function sprite:in_rect_pixel(x,y)
+	local body = self:get_body() 
+	if body then 
+		return body:in_rect_pixel(x-self.x,y-self.y)
+	end
+	return self:_in_rect(x,y)
+end
+
 
 function sprite:set_name(name,color)
 	name = name or "sprite_"..self.name
@@ -34,24 +68,9 @@ function sprite:get_z()
 	return self.y + self.x / 10000
 end
 
-function sprite:get_bg_ani()
-	return self:get_bg().ani
-end
-
 function sprite:do_ani(ani_name)
-	local tb = g_ani_data:find_ani_data(self.ani_id,ani_name,self.use_zgp)	
-	if not tb then
-		print("error! sprite:do_ani ",self.ani_id,ani_name)
-		return
-	end
-	
-	if not self:get_bg() then
-		self:set_bg(tb.image_file,tb.frame_start)
-	end
-
-	local bg = self:get_bg() 
-	--print("do_ani bg",bg)
-	bg:set_ani_tb(tb)
+	local body = self:get_body() 
+	body:do_ani(ani_name)
 end
 
 function sprite:get_move()
@@ -88,32 +107,11 @@ function sprite:walk_to(x,y,speed)
 end
 
 function sprite:set_dir(dir)
-	local bg = self:get_bg() 
-	if bg then
-		--print("sprite:set_dir",dir)
-		bg.ani:set_ani_dir(dir)
-	end
-end
-
-function sprite:on_timer_stand()
-	print("sprite:on_timer_stand()")
-	local ani = self:get_bg_ani()
-	if ani.ani_tb.name == "stand" then
-		ani.ani_tb = nil
-		self:stand()
-	end
+	self:get_body():set_dir(dir)
 end
 
 function sprite:stand()
-	self:do_ani("stand")
-	local ani = self:get_bg_ani()
-	ani.on_aniend = 
-		function(ended)
-			--add a random timer to do again
-			local tm = math.random(1,100) / 10 + 3
-			g_timer:add_timer(tm,self.on_timer_stand,self)
-		end
-	return false
+	self:get_body():stand()
 end
 
 function sprite:stop()

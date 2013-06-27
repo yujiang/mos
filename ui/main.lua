@@ -34,7 +34,7 @@ local db_files = {
 
 local game_files = {
 	"ani",
-	"sprite",
+	"sprite", "sprite_body",
 	"move","ai",
 	"map",
 	"camera",
@@ -157,6 +157,7 @@ function safe_on_init()
 	test_fps()
 	test_png8_shader()
 	--test_map()
+	regist_dog()
 	test_sprite()
 	--test_win2()
 	--test_notice()

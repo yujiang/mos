@@ -14,7 +14,7 @@ local magic_dirs = {
 	6,3,7,0,4,1,5,2,
 }
 
-function dir8_dirmax(dir,dirmax)
+function dir8_inverse(dir,dirmax)
 	if dirmax == 8 then 
 		return magic_dirs[dir+1]
 	elseif dirmax == 1 then 
@@ -24,9 +24,19 @@ function dir8_dirmax(dir,dirmax)
 	end
 end
 
+function dir8(dir,dirmax)
+	if dirmax == 8 then 
+		return dir
+	elseif dirmax == 1 then 
+		return 0
+	elseif dirmax == 4 then  
+		--未实现。
+	end
+end
+
 --复杂的ani
 function get_dir_base(tb,dir)
-	return tb.dir_inverse and dir8_dirmax(dir,tb.dir) or dir
+	return tb.dir_inverse and dir8_inverse(dir,tb.dir) or dir8(dir,tb.dir)
 end
 
 function ani:set_ani_tb(tb,updateimage)
@@ -46,7 +56,7 @@ function ani:set_ani_tb(tb,updateimage)
 	if tb.ani_speed > 0 then
 		self:set_ani(tb.ani_speed,base + tb.frame_start,base + tb.frame_end,tb.loop)
 	else
-		self.stop_ani()
+		self:stop_ani()
 	end
 	self.on_aniend = nil
 end
@@ -60,7 +70,8 @@ function ani:set_ani_dir(dir)
 		local tb = self.ani_tb
 		local base = get_dir_base(tb,self.ani_dir) * tb.dir_frame
 		local off = self.image.frame - self.frame_start
-		self.image.frame = base + off
+		self.image:change_frame(base + off + tb.frame_start)
+		--print("ani:set_ani_dir dir frame",dir,base + off)
 		self.frame_start = base + tb.frame_start
 		self.frame_end = base + tb.frame_end
 	end
@@ -100,12 +111,12 @@ end
 function ani:on_timer_updateframe()
 	local img = self.image
 	--print("ani:on_timer_updateframe()",img.frame)
-	img.frame = img.frame + self.step
+	img:change_frame(img.frame + self.step)
 	if img.frame >= self.frame_end then
 		if self.loop then
-			img.frame = self.frame_start
+			img:change_frame(self.frame_start)
 		else
-			img.frame = self.frame_end - 1
+			img:change_frame(self.frame_end - 1)
 			if self.on_aniend then
 				self.on_aniend(true)
 			end
@@ -113,9 +124,9 @@ function ani:on_timer_updateframe()
 		end
 	elseif img.frame < self.frame_start then --倒带。
 		if self.loop then
-			img.frame = self.frame_end - 1
+			img:change_frame(self.frame_end - 1)
 		else
-			img.frame = self.frame_start
+			img:change_frame(self.frame_start)
 			if self.on_aniend then
 				self.on_aniend(true)
 			end

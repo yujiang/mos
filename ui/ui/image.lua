@@ -12,12 +12,8 @@ function image:set_image(image_file,frame)
 	--print(debug.traceback())
 	--print(self,"image:set_image",image_file,frame)
 	self.image_file = image_file
-	self.frame = frame 
-	local w,h,cx,cy = cdriver.get_image_sizecg(image_file,frame) --从文件得到w,h,cx,cy
-	self.w = w
-	self.h = h
-	self.cx = cx
-	self.cy = cy
+	self:change_frame(frame)
+	self:update_frame_change()
 end
 
 function image:get_render_override()
@@ -38,7 +34,7 @@ function image:set_ani(ani_speed,frame_start,frame_to,loop)
 end
 
 function image:set_ani_tb(tb)
-	--print("image:get_render_override()",self.name)
+	--print("image:set_ani_tb()",self.name)
 	if not self.ani then
 		self.ani = ani()
 		self.ani:create_ani(self)
@@ -67,7 +63,19 @@ function image:is_jpg()
 end
 
 function image:get_rect()
+	self:update_frame_change()
 	return self.x - self.cx,self.y - self.cy,self.x + self.w - self.cx,self.y + self.h - self.cy
+end
+
+function image:update_frame_change()
+	if self.changed_frame then
+		local w,h,cx,cy = cdriver.get_image_sizecg(self.image_file,self.frame) --从文件得到w,h,cx,cy
+		self.w = w
+		self.h = h
+		self.cx = cx
+		self.cy = cy
+		self.changed_frame = false
+	end
 end
 
 function image:in_rect_pixel(x,y)
@@ -86,6 +94,11 @@ function image:on_reload_class(old,new)
 	if getmetatable(self.ani) == old then
 		setmetatable(self.ani,new)
 	end
+end
+
+function image:change_frame(frame)
+	self.frame = frame
+	self.changed_frame = true
 end
 
 return image

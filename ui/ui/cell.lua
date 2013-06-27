@@ -294,8 +294,12 @@ end
 --child and father
 --使用name而不用id，因为name阅读性更强，注意name不能改变并且在该层次唯一。
 function cell:add_child(child)
+	--print("cell:add_child",child.name)
 	self.childs = self.childs or {}
 	local old = self.childs[child.name]
+	if old == child then
+		return
+	end
 	if old then
 		old:destroy()
 	end
@@ -313,6 +317,7 @@ function cell:remove_child(child)
 end
 
 function cell:find_child(name)
+	--print("cell:find_child",name)
 	return self.childs[name]
 end
 
@@ -427,11 +432,24 @@ end
 function cell:get_render_override()
 end
 
+function table_copyvalue(tb)
+	local t = {}
+	for k,v in pairs(tb) do
+		if type(k) == "string" then
+			if type(v) == "string" or type(v) == "number" then
+				t[k] = v
+			end
+		end
+	end
+	return t
+end
 --render
 --虚函数 get_render_override,不用在lua层确定offset，在c++层确定即可。
 function cell:get_render_childs()
 	if self:get_childs_num() > 0 then
-		local tb = {name = self.name,x = self.x,y = self.y,z = self.z,color = self.color,alpha = self.alpha}
+		--base is here!
+		local tb = table_copyvalue(self)
+
 		local shows = self:get_sortshow_childs()
 		for _,child in pairs(shows) do
 			local t = child:get_render_childs()
@@ -557,6 +575,7 @@ function cell.assign_class(c,class_name)
 		text = text,
 		window = window,
 		sprite = sprite,
+		sprite_body = sprite_body,
 		map = map,
 	}
 	if t[class_name] then

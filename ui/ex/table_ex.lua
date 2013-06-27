@@ -84,7 +84,7 @@ function table.show(t, name, indent, ignores)
             else
                cart = cart .. " = {\n"
                for k, v in pairs(value) do
-				  if not ignores[k] then
+				  if not ignores or not ignores[k] then
 					  k = basicSerialize(k)
 					  local fname = string.format("%s[%s]", name, k)
 					  field = string.format("[%s]", k)

@@ -117,6 +117,8 @@ function regist_dog()
 	cdriver.regist_image("dog",1,"dog.png",0,0,105,95,50,80)
 	cdriver.regist_image("dog",2,"dog.png",105,0,210,95,50,80)
 	cdriver.regist_image("dog",3,"dog.png",105,0,210,95,50,80)
+	g_ani_data:regist_ani_data_simple(101,"stand","dog",0,1,1,false)
+	g_ani_data:regist_ani_data_simple(101,"walk","dog",0.25,1,3,true)
 end
 --test
 function test_win3()
@@ -213,7 +215,6 @@ function test_win1()
 	cdriver.regist_image("play",1,"play-button.png")
 	cdriver.regist_image("play",2,"play-button.png")
 	cdriver.regist_image("play",3,"play-button-down.png")
-	regist_dog()
 
 	local r = g_root
 	local l2 = r:find_child("normal")
@@ -271,6 +272,7 @@ function test_sprite()
 	rt,dir,frame = cdriver.regist_image("char/0120/stand.png")
 	--print("char/0120/stand.png",rt,dir,frame)
 	g_ani_data:regist_ani_data(0120,"stand","char/0120/stand.png",0.3,dir,frame,0,frame,1,false,true)
+	rt,dir,frame = cdriver.regist_image("char/0120/02/stand.png")
 
 	--rt,dir,frame = cdriver.regist_zgp("char/0120/walk.zgp")
 	--print("char/0120/walk.zgp",rt,dir,frame)
@@ -285,15 +287,13 @@ function test_sprite()
 	m:add_child(sp)
 	sp:stop()
 	sp:set_name("猫猫",0x00ff00)
+	sp:set_weapon(2)
 
 	r:set_play(sp)
 end
 
 function test_sprite2()
-	regist_dog()
 	local r = g_root
-	g_ani_data:regist_ani_data_simple(101,"stand","dog",0,1,1,false)
-	g_ani_data:regist_ani_data_simple(101,"walk","dog",0.25,1,3,true)
 
 	local sp = sprite()
 	sp:create_sprite(nil,100,100,0,101)

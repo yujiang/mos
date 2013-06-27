@@ -259,11 +259,6 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,const char* s
 
 	if (cur_shader)
 	{
-		if (tex->use_palette())
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glDisable(GL_TEXTURE_2D);
-		}
 		cur_shader->end();
 	}
 
@@ -304,9 +299,13 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 	unsigned char r,g,b;
 	G_GET_RGB(color,r,g,b);
 
+	//glDisable(GL_TEXTURE_2D);
+
 	glColor4ub(r,g,b,alpha);
 	//glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-	//glBindTexture(GL_TEXTURE_2D, 0);
+	//·ñÔò»­²»³öbox
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	glBegin(GL_TRIANGLE_STRIP);	
 	for(int i=0;i<4;i++)
 	{

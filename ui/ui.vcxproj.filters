@@ -143,5 +143,8 @@
     <None Include="Resources\shaders\palette_vertex.txt">
       <Filter>resources\shaders</Filter>
     </None>
+    <None Include="game\sprite_body.lua">
+      <Filter>game</Filter>
+    </None>
   </ItemGroup>
 </Project>

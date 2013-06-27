@@ -68,11 +68,11 @@ public:
 	//device
 	void init_graph();
 	void close_graph();
+	image* find_image_raw(const char* file,int frame);
 protected:
 	int get_text_line(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 	g_size get_text_size(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 
-	image* find_image_raw(const char* file,int frame);
 	image* find_image_zgp(const char* file,int frame);
 	image* create_image_zgp(const char* file,int frame);
 
