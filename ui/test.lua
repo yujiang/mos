@@ -250,16 +250,16 @@ function test_sprite()
 	local rt,dir,frame 
 	rt,dir,frame = cdriver.regist_image("char/0120/stand.png")
 	--print("char/0120/stand.png",rt,dir,frame)
-	g_ani_data:regist_ani_data(0120,"stand","char/0120/stand.png",0.3,dir,0,frame,false)
+	g_ani_data:regist_ani_data(0120,"stand","char/0120/stand.png",0.3,dir,frame,0,frame,1,false,true)
 
-	rt,dir,frame = cdriver.regist_image("char/0120/walk.png")
-	--print("char/0120/walk.png",rt,dir,frame)
-	g_ani_data:regist_ani_data(0120,"walk","char/0120/walk.png",0.1,dir,0,frame,true)
+	--rt,dir,frame = cdriver.regist_zgp("char/0120/walk.zgp")
+	--print("char/0120/walk.zgp",rt,dir,frame)
+	--g_ani_data:regist_ani_data(0120,"walk","char/0120/walk.zgp",0.1,dir,frame,0,frame,1,true,true)
 	--g_ani_data:regist_ani_data(0120,"walkend","char/0120/walk.png",0.01,dir,0,frame,false)
 	--g_ani_data:regist_ani_data(0120,"walkend2","char/0120/walk.png",0.01,dir,0,1,false)
 
 	local sp = sprite()
-	sp:create_sprite(nil,100,100,0,0120)
+	sp:create_sprite(nil,100,100,0,0120,true)
 	local r = g_root
 	local m = r:get_map()
 	m:add_child(sp)
@@ -272,8 +272,8 @@ end
 function test_sprite2()
 	regist_dog()
 	local r = g_root
-	g_ani_data:regist_ani_data(101,"stand","dog",0,1,1,1,false)
-	g_ani_data:regist_ani_data(101,"walk","dog",0.25,1,1,3,true)
+	g_ani_data:regist_ani_data_simple(101,"stand","dog",0,1,1,false)
+	g_ani_data:regist_ani_data_simple(101,"walk","dog",0.25,1,3,true)
 
 	local sp = sprite()
 	sp:create_sprite(nil,100,100,0,101)
@@ -290,7 +290,7 @@ function test_fps()
 	local l1 = r:find_child("top")
 
 	local label1 = label()
-	label1:create_label("fps",0,0,0,300,20,"fps:100")
+	label1:create_label("fps",0,0,0,400,20,"fps:100")
 	label1._disable = false
 	label1:get_text():set_color(-1)
 	l1:add_child(label1)

@@ -12,6 +12,7 @@ struct st_redirect
 	g_rect rc;
 };
 
+int get_fileframe_hash(const char* file,int frame);
 //button.jpg 1 --> ui.jpg (200,300,64,32)
 const st_redirect* redirect_image_file(const char* file,int frame);
 void regist_image_file(const char* file,int frame,st_redirect& rc);

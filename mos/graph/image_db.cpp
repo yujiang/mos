@@ -26,6 +26,11 @@ int get_file_hash(const char* file)
 	return g_file_num++;
 }
 
+int get_fileframe_hash(const char* file,int frame)
+{
+	return get_file_hash(file)*1000+frame;
+}
+
 std::unordered_map<int,st_redirect> g_hm_redirect;
 
 void regist_image_file(const char* file,int frame, st_redirect& rc)
@@ -33,7 +38,7 @@ void regist_image_file(const char* file,int frame, st_redirect& rc)
 	assert(frame < 1000);
 	//保证唯一性
 	rc.id_texture = (std::string)(file) + my_itoa(frame);
-	g_hm_redirect[get_file_hash(file)*1000+frame] = rc;
+	g_hm_redirect[get_fileframe_hash(file,frame)] = rc;
 }
 
 const st_redirect* redirect_image_file(const char* file,int frame)

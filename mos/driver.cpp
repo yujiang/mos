@@ -4,6 +4,7 @@
 #include "graph/graph.h"
 #include "graph/image.h"
 #include "graph/image_db.h"
+#include "image/image_zgp.h"
 #include "graph/font.h"
 #include "graph/dir.h"
 #include "graph/texture.h"
@@ -138,6 +139,15 @@ static int  lua_regist_font (lua_State *L) {
 	return 1;
 }
 
+static int  lua_regist_zgp(lua_State *L) {
+	const char* file = luaL_checkstring(L,1);
+	int dir,frame;
+	lua_pushboolean(L,regist_zgp(file,dir,frame));
+	lua_pushinteger(L,dir);
+	lua_pushinteger(L,frame);
+	return 3;
+}
+
 static int  lua_regist_image (lua_State *L) {
 	const char* file = luaL_checkstring(L,1);
 	if (lua_gettop(L) == 1) //regist ´óÍ¼
@@ -184,9 +194,10 @@ static int  lua_dump_resource (lua_State *L) {
 
 static int  lua_get_graph_trace (lua_State *L) {
 	static char buf[1024];
-	sprintf(buf,"img:%d,tex:%d,rd:%d %d %d %d tri:%d",
-		image::s_image_num,
-		texture::s_texture_num,
+	sprintf(buf,"img:%d tex:%d zgp:%d,rd:%d %d %d %d tri:%d",
+		counter<image>::s_count_num,
+		counter<texture>::s_count_num,
+		counter<image_zgp>::s_count_num,
 		window_render::s_texture_render,
 		window_render::s_image_render,
 		window_render::s_text_render,
@@ -213,6 +224,7 @@ static const luaL_reg driver_lib[] = {
 	{"in_image",			lua_in_image},
 	{"regist_font",			lua_regist_font},
 	{"regist_image",		lua_regist_image},
+	{"regist_zgp",			lua_regist_zgp},
 	{"regist_image_palette",lua_regist_image_palette},
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},

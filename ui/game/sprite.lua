@@ -3,7 +3,7 @@ local sprite = class(cell,"sprite")
 
 local g_sprite_id = 1
 
-function sprite:create_sprite(id,x,y,z,ani_id)
+function sprite:create_sprite(id,x,y,z,ani_id,use_zgp)
 	if not id then
 		id = g_sprite_id
 		g_sprite_id = id + 1
@@ -12,6 +12,8 @@ function sprite:create_sprite(id,x,y,z,ani_id)
 	self.ani_id = ani_id
 	self.emitter = emitter()
 	--self.dir = 0
+	self.use_zgp = use_zgp
+
 	self:get_move()
 end
 
@@ -37,7 +39,7 @@ function sprite:get_bg_ani()
 end
 
 function sprite:do_ani(ani_name)
-	local tb = g_ani_data:find_ani_data(self.ani_id,ani_name)	
+	local tb = g_ani_data:find_ani_data(self.ani_id,ani_name,self.use_zgp)	
 	if not tb then
 		print("error! sprite:do_ani ",self.ani_id,ani_name)
 		return
@@ -60,23 +62,6 @@ function sprite:get_move()
 			--print("sprite.move.on_reached",self.name,is_reached)
 			if is_reached then	--否则可能是上一个的退出。
 				self:stand() 
-				--需要把ani完成，快速播放完成，之后再stand
-				--效果并不好，所以去掉了。
---				local tb = g_ani_data:find_ani_data(self.ani_id,"walkend")
---				if tb and false then
---					local ani = self:get_bg().ani
---					ani:set_ani_tb(tb,false)
---					ani.on_aniend = function(ended)
---						local tb = g_ani_data:find_ani_data(self.ani_id,"walkend2")
---						ani:set_ani_tb(tb,false)
---						ani.on_aniend = function(ended)
---							self:do_ani("stand")
---							ani.on_aniend = nil
---						end
---					end
---				else
---					self:do_ani("stand")
---				end
 			end
 			self.emitter:emit("reach",is_reached)
 		end

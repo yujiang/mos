@@ -40,6 +40,8 @@ struct stFont;
 class texture_font 
 {
 public:
+	counter<texture_font> m_counter;
+
 	texture* m_texture;
 	~texture_font();
 

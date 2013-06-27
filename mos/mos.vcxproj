@@ -93,6 +93,7 @@
     <ClInclude Include="cc.h" />
     <ClInclude Include="core\pool.h" />
     <ClInclude Include="core\utf8.h" />
+    <ClInclude Include="counter.h" />
     <ClInclude Include="device\opengl\director.h" />
     <ClInclude Include="device\file.h" />
     <ClInclude Include="device\opengl\glsl.h" />
@@ -115,6 +116,7 @@
     <ClInclude Include="graph\rect.h" />
     <ClInclude Include="graph\texture.h" />
     <ClInclude Include="graph\texture_font.h" />
+    <ClInclude Include="image\image_zgp.h" />
     <ClInclude Include="mos.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="stdafx.h" />

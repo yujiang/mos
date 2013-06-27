@@ -1,6 +1,7 @@
 #ifndef __GRAPH_TEXTURE_H_
 #define __GRAPH_TEXTURE_H_
 
+#include "../counter.h"
 //wrap opengl texture not directx.
 struct g_rect;
 class st_cell;
@@ -61,13 +62,13 @@ bool hasAlpha(CCTexture2DPixelFormat format);
 class texture
 {
 public:
+	counter<texture> m_counter;
+
 	texture();
 	virtual ~texture();
 	
-	static int s_texture_id ;
-	static int s_texture_num ;
 
-	int m_id;
+	int m_alloc_id;
 
 	virtual bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) = 0;
 	//virtual bool create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) = 0;

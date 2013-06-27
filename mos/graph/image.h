@@ -2,7 +2,9 @@
 #define __GRAPH_IMAGE_H_
 
 #include "rect.h"
+#include "../counter.h"
 #include <string>
+
 class st_cell;
 //image of file
 
@@ -79,16 +81,23 @@ struct image_struct
 
 	void set_palette_color(const color_palette* colors,int num_palette);
 	void set_palette_alpha(const colorbyte* alphas,int num_palette);
+
+	g_point m_cg;
+	void set_cg(const g_point& cg) {m_cg = cg;}
+	g_point get_cg() const{
+		return m_cg;
+	}
 };
 
 class image : public image_struct
 {
 public:
+	counter<image> m_counter;
+
 	image();
 	~image();
-	static int s_image_id ;
-	static int s_image_num ;
-	int m_id;
+
+	int m_alloc_id;
 
 	enum enum_createtype{
 		image_create_null,

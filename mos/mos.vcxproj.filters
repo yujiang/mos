@@ -123,6 +123,12 @@
     <ClInclude Include="graph\dir.h">
       <Filter>graph</Filter>
     </ClInclude>
+    <ClInclude Include="image\image_zgp.h">
+      <Filter>image</Filter>
+    </ClInclude>
+    <ClInclude Include="counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

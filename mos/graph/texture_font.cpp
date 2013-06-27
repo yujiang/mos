@@ -8,6 +8,8 @@
 #include "device/window_render.h"
 #include "mos.h"
 
+DECLARE_COUNTER(texture_font)
+
 texture_font::~texture_font()
 {
 	delete m_texture;

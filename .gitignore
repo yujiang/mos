@@ -7,6 +7,6 @@
 *.user
 ui/*.exe
 Debug.win32
-resources/char
+ui/resources/char
 Release
 Debug

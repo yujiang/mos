@@ -8,6 +8,7 @@
 #include "font.h"
 #include "image_db.h"
 #include "mos.h"
+#include "image/image_zgp.h"
 #include <iostream>
 
 class auto_free
@@ -24,22 +25,74 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-image* graph::find_image_raw(const char* file)
+image* graph::create_image_zgp(const char* file,int frame)
 {
-	image* i = image_map[file];
-	if (i)
+	image_zgp* zgp = zgp_map[file];
+	if (!zgp)
 	{
-		i->mark_use_image(g_time_now);
-		return i;
+		zgp = new image_zgp;
+		if (zgp->loadzgp_file(file))
+		{
+			zgp_map[file] = zgp;
+		}
+		else
+		{
+			delete zgp;
+			zgp = NULL;
+		}
 	}
-	i = image::create_image_file(file);
-	if (i)
+	if (zgp)
 	{
-		image_map[file] = i;
-		i->mark_use_image(g_time_now);
-		return i;
+		zgp->mark_use_zgp(g_time_now);
+		return zgp->get_sprite_image(frame);
 	}
 	return NULL;
+}
+
+
+bool is_zgp(const char* file)
+{
+	const char* p = file + strlen(file) - 4;
+	return strcmp(p,".zgp") == 0;
+}
+
+const char* get_zgp_texture(const char* _file,int frame)
+{
+	static char file[128];
+	sprintf(file,"%s_%04d",_file,frame);
+	return file;
+}
+
+image* graph::find_image_zgp(const char* _file,int frame)
+{
+	const char* file = get_zgp_texture(_file,frame);
+	image* i = image_map[file];
+	if (!i)
+	{
+		i = create_image_zgp(_file,frame);
+		if (i)
+			image_map[file] = i;
+	}
+	if (i)
+		i->mark_use_image(g_time_now);
+	return i;
+}
+
+image* graph::find_image_raw(const char* file,int frame)
+{
+	if (is_zgp(file))
+		return find_image_zgp(file,frame);
+
+	image* i = image_map[file];
+	if (!i)
+	{
+		i = image::create_image_file(file);
+		if (i)
+			image_map[file] = i;
+	}
+	if (i)
+		i->mark_use_image(g_time_now);
+	return i;
 }
 
 image* graph::find_image(const char* file,int frame)
@@ -47,27 +100,13 @@ image* graph::find_image(const char* file,int frame)
 	const st_redirect* r = redirect_image_file(file,frame);
 	if (r)
 		file = r->file_image.c_str();
-	return find_image_raw(file);
+	return find_image_raw(file,frame);
 }
 
 bool graph::get_image_size(const char* file,int frame,g_size& sz)
 {
-	const st_redirect* r = redirect_image_file(file,frame);
-	if (r && !r->rc.is_empty())
-	{
-		sz = r->rc.get_size();
-		return true;
-	}
-	if (r)
-		file = r->file_image.c_str();
-	
-	image* i = find_image_raw(file);
-	if (i)
-	{
-		sz = i->get_size();
-		return true;
-	}
-	return false;
+	g_point cg;
+	return get_image_sizecg(file,frame,sz,cg);
 }
 
 bool graph::get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg)
@@ -82,10 +121,11 @@ bool graph::get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg)
 	if (r)
 		file = r->file_image.c_str();
 
-	image* i = find_image_raw(file);
+	image* i = find_image_raw(file,frame);
 	if (i)
 	{
 		sz = i->get_size();
+		cg = i->get_cg();
 		return true;
 	}
 	return false;
@@ -154,6 +194,21 @@ void graph::auto_clear_resource()
 {
 	unsigned long time = get_time_now();
 
+	for (auto it = zgp_map.begin(); it != zgp_map.end(); )
+	{
+		image_zgp* img = it->second;
+		if (img && TIME_NOTUSE(img,m_clear_zgp) )
+		{
+#ifdef _DEBUG_RESOURCE
+			std::cout << "clear zgp " << it->first << " time: " << TIME(img) << std::endl;
+#endif
+			delete img;
+			it = zgp_map.erase(it);
+		}
+		else
+			++it;
+	}	
+
 	for (auto it = image_map.begin(); it != image_map.end(); )
 	{
 		image* img = it->second;
@@ -167,6 +222,7 @@ void graph::auto_clear_resource()
 		}
 		else
 			++it;
+//经过测试，压缩没啥用。
 //		else 
 //		{
 //			if (img && TIME_NOTUSE(img,m_compress_image) && !img->is_compress())			
@@ -277,9 +333,9 @@ void graph::dump_resource(const std::string& type) const
 }
 
 //////////////////////////////////////////////////////////////////////////
-int graph::draw_image(const st_cell& cell,const char* file0,int frame)
+int graph::draw_image(const st_cell& cell,const char* file,int frame)
 {
-	const char* file = file0;
+	//const char* file = file0;
 	const st_redirect* r = redirect_image_file(file,frame);
 	//if (r)
 	//	file = r->id_texture.c_str();
@@ -290,13 +346,16 @@ int graph::draw_image(const st_cell& cell,const char* file0,int frame)
 	//if (t)
 	//	return get_render()->draw_texture_cell(cell,t,0);
 
-	image* img = find_image_raw(file);
+	image* img = find_image_raw(file,frame);
 	if (!img)
 		return -1;
 
 	const g_rect* rc = NULL;
 	if (r && !r->rc.is_empty())
 		rc = &r->rc;
+
+	if (is_zgp(file))
+		file = get_zgp_texture(file,frame);
 
 	return get_render()->draw_image_cell(cell,img,file,rc);
 }

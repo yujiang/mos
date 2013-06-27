@@ -25,15 +25,20 @@ function dir8_dirmax(dir,dirmax)
 end
 
 --复杂的ani
+function get_dir_base(tb,dir)
+	return tb.dir_inverse and dir8_dirmax(dir,tb.dir) or dir
+end
+
 function ani:set_ani_tb(tb,updateimage)
 	if self.ani_tb == tb then
 		return
 	end
 	self.ani_tb = tb
-	local base = dir8_dirmax(self.ani_dir,tb.dir) * (tb.frame_end - tb.frame_start)
+	local base = get_dir_base(tb,self.ani_dir) * tb.dir_frame
 	--有可能不需要set_image因为从可能从walk到快速walk。
-	--print("ani:set_ani_tb1",self.ani_dir,tb.dir,base)
-	--print("ani:set_ani_tb2",tb.image_file,base,tb.frame_start)
+	--print("ani:set_ani_tb0",tb.image_file)
+	--print("ani:set_ani_tb1 self.ani_dir "..self.ani_dir.." tb.dir " .. tb.dir .. " base ".. base .. " tb.frame_start " ..tb.frame_start)
+	
 	if updateimage then
 		self.image:set_image(tb.image_file,base + tb.frame_start)
 	end
@@ -53,7 +58,7 @@ function ani:set_ani_dir(dir)
 	self.ani_dir = dir
 	if self.ani_tb then
 		local tb = self.ani_tb
-		local base = dir8_dirmax(self.ani_dir,tb.dir) * (tb.frame_end - tb.frame_start)
+		local base = get_dir_base(tb,self.ani_dir) * tb.dir_frame
 		local off = self.image.frame - self.frame_start
 		self.image.frame = base + off
 		self.frame_start = base + tb.frame_start

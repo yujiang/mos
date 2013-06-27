@@ -9,13 +9,11 @@
 #include <map>
 #include <string>
 
-int image::s_image_id = 0;
-int image::s_image_num = 0;
+DECLARE_COUNTER(image)
 
 image::image()
 {
-	m_id = s_image_id++;
-	s_image_num++;
+	m_alloc_id = m_counter.s_alloc_num;
 
 	m_ref = 1;
 
@@ -36,8 +34,6 @@ image::image()
 
 image::~image()
 {
-	s_image_num--;
-
 	delete m_buffer;
 	m_buffer = 0;
 
@@ -154,15 +150,15 @@ bool image::create_image_image(const image* i,const g_rect* rc)
 //图片是rgb的顺序，而dc是bgr，所以有此函数
 void image::rgb2bgr()
 {
-	assert(m_bits_pixel == 3);
 	colorbyte* p = m_buffer;
 	colorbyte r;
+	int ri = 0;//m_bits_pixel - 3;
 	for (int i=0; i<m_width*m_height; ++i)
 	{
-		r = *p;
-		*p = *(p+2);
-		*(p+2) = r ;
-		p += 3;
+		r = *(p+ri);
+		*(p+ri) = *(p+ri+2);
+		*(p+ri+2) = r ;
+		p += m_bits_pixel;
 	}
 }
 
