@@ -27,7 +27,7 @@ public:
 
 	const char* image_file;
 	int frame;
-	const char* shade;
+	const char* shader;
 
 	//font
 	int font;

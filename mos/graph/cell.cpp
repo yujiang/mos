@@ -37,7 +37,7 @@ void init_cell()
 	offsetint(underline);
 
 	offsetstr(image_file);
-	offsetstr(shade);
+	offsetstr(shader);
 	offsetstr(text);
 
 	//st_cell cell;
@@ -69,6 +69,8 @@ st_cell::st_cell(const st_cell& r1,const st_cell r2)
 	//alpha 也用个乘法
 	color = r1.color;
 	alpha = r1.alpha * r2.alpha / 255;
+
+	shader = r2.shader ? r2.shader : r1.shader ;
 }
 
 void st_cell::set_kv(const char* key,lua_Number value)

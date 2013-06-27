@@ -255,13 +255,14 @@ void graph::auto_clear_resource()
 		texture_font* tf = it->second;
 		for (auto it2 = tf->m_map_char.begin(); it2 != tf->m_map_char.end(); )
 		{
-			const texture_char* tc = it2->second;
+			texture_char* tc = it2->second;
 			if (TIME_NOTUSE(tc,m_clear_texturefont))
 			{
 #ifdef _DEBUG_RESOURCE
 				std::cout << "clear font " << it->first << " char " << core::UnicodeCharToANSI(it2->first) << " time: " << TIME(tc) << std::endl;
 #endif
-				delete tc;
+				//delete tc;
+				tf->m_char_free.push_back(tc);
 				it2 = tf->m_map_char.erase(it2);
 			}
 			else 
@@ -318,7 +319,6 @@ void graph::dump_resource(const std::string& type) const
 		{
 			const texture_font* tf = it->second;
 			std::cout << it->first << " time: " << TIME(tf) << std::endl;
-			//std::unordered_map<int,texture_char*> m_map_char;
 			for (auto it2 = tf->m_map_char.begin(); it2 != tf->m_map_char.end(); ++it2)
 			{
 				const texture_char* tc = it2->second;

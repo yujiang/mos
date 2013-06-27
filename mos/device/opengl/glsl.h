@@ -30,9 +30,10 @@ shaders!
 #define A_GLSL_H
 
 //! \defgroup GLSL libglsl
-
+#include <string>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 //#define GLEW_STATIC 
 #include <GL/glew.h>
 
@@ -53,7 +54,7 @@ shaders!
                   glShaderObject();
       virtual     ~glShaderObject();
         
-      int         load(char* filename);                     //!< \brief Loads a shader file. \param filename The name of the ASCII file containing the shader. \return Teturns 0 if everything is ok. -1: File not found, -2: Empty File, -3: no memory
+      int         load(const char* filename);                     //!< \brief Loads a shader file. \param filename The name of the ASCII file containing the shader. \return Teturns 0 if everything is ok. -1: File not found, -2: Empty File, -3: no memory
       void        loadFromMemory(const char* program);      //!< \brief Load program from null-terminated char array. \param program Address of the memory containing the shader program.
        
       bool        compile(void);                            //!< compile program
@@ -277,28 +278,37 @@ shaders!
 // To simplify the process loading/compiling/linking shaders I created this
 // high level interface to simplify setup of a vertex/fragment shader.
    //! \ingroup GLSL
+
    class glShaderManager
    {
    public:
        glShaderManager();
        virtual ~glShaderManager();
 
-       // Regular GLSL (Vertex+Fragment Shader)
-       glShader* loadfromFile(char* vertexFile, char* fragmentFile);    //!< load vertex/fragment shader from file. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part. \param vertexFile Vertex Shader File. \param fragmentFile Fragment Shader File.
-       glShader* loadfromMemory(const char* vertexMem, const char* fragmentMem); //!< load vertex/fragment shader from memory. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part.
-       
-       // With Geometry Shader (Vertex+Geomentry+Fragment Shader)
-       glShader* loadfromFile(char* vertexFile, char* geometryFile, char* fragmentFile); //!< load vertex/geometry/fragment shader from file. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part. \param vertexFile Vertex Shader File. \param geometryFile Geometry Shader File \param fragmentFile Fragment Shader File.
-       glShader* loadfromMemory(const char* vertexMem, const char* geometryMem, const char* fragmentMem); //!< load vertex/geometry/fragment shader from memory. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part.
-       
+      
        void      SetInputPrimitiveType(int nInputPrimitiveType);    //!< Set the input primitive type for the geometry shader \param nInputPrimitiveType Input Primitive Type, for example GL_TRIANGLES
        void      SetOutputPrimitiveType(int nOutputPrimitiveType);  //!< Set the output primitive type for the geometry shader \param nOutputPrimitiveType Output Primitive Type, for example GL_TRIANGLE_STRIP
        void      SetVerticesOut(int nVerticesOut);                  //!< Set the maximal number of vertices the geometry shader can output \param nVerticesOut Maximal number of output vertices. It is possible to output less vertices!
   
-       bool      free(glShader* o); //!< Remove the shader and free the memory occupied by this shader.
+       //bool      free(glShader* o); //!< Remove the shader and free the memory occupied by this shader.
+	   glShader* loadfromFileName(const char* name);				//!< load vertex/fragment shader from file. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part. \param vertexFile Vertex Shader File. \param fragmentFile Fragment Shader File.
+	   glShader* loadfromMemoryName(const char* name,const char* vertexMem, const char* fragmentMem); //!< load vertex/fragment shader from memory. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part.
+	   glShader* getShader(const char* name);
+	   void		SetPath(const char* path){
+		   m_path = path;
+	   }
 
    private:
-       std::vector<glShader*>  _shaderObjectList; 
+	   std::string m_path;
+	   // Regular GLSL (Vertex+Fragment Shader)
+	   glShader* loadfromFile(const char* vertexFile, const char* fragmentFile);    //!< load vertex/fragment shader from file. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part. \param vertexFile Vertex Shader File. \param fragmentFile Fragment Shader File.
+	   glShader* loadfromMemory(const char* vertexMem, const char* fragmentMem); //!< load vertex/fragment shader from memory. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part.
+
+	   // With Geometry Shader (Vertex+Geomentry+Fragment Shader)
+	   glShader* loadfromFile(const char* vertexFile, const char* geometryFile, const char* fragmentFile); //!< load vertex/geometry/fragment shader from file. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part. \param vertexFile Vertex Shader File. \param geometryFile Geometry Shader File \param fragmentFile Fragment Shader File.   
+	   glShader* loadfromMemory(const char* vertexMem, const char* geometryMem, const char* fragmentMem); //!< load vertex/geometry/fragment shader from memory. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part.
+
+       std::unordered_map<std::string,glShader*>  _shaderObjectList; 
        int                     _nInputPrimitiveType;
        int                     _nOutputPrimitiveType;
        int                     _nVerticesOut;

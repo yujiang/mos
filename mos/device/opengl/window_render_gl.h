@@ -31,7 +31,7 @@ public:
 
 	int _draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
 	int draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
-	int draw_texture(int x,int y,int color,int alpha,texture* _tex,const g_rect* rc);
+	int draw_texture(int x,int y,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc);
 	int draw_box_cell(const st_cell& cell,int w,int h);
 	int draw_box(int x,int y,int color,int alpha,int w,int h);
 
@@ -39,14 +39,14 @@ public:
 	int draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc);
 
 	HDC  m_hDC;
-	void swapBuffers();
-
 	HGLRC m_hRC;
 	director* m_director;
 
 	unsigned int m_program_palette;
 
 	glShaderManager* m_shader_manager;
+
+	//some default shader.
 	glShader*	m_shader_palette;
 };
 

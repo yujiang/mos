@@ -42,7 +42,8 @@ char* read_imagefile(const char* file,size_t& size)
 
 const char* get_resourcefile(const char* file)
 {
-	static char buf[128];
-	sprintf(buf,"resources/%s",file);
+	static char buf[256];
+	sprintf(buf,RESOURCE_PATH"/%s",file);
 	return buf;
 }
+

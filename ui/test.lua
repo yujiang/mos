@@ -175,7 +175,11 @@ function test_png8()
 	--use pal render do some pal swap 
 	--or just use png for diskspace.
 	local file = "girl8.png"
+
 	--local file = "test-fs8.png" --4bit index and no alpha channel
+
+	--local file = "test-fs8.png"
+
 	cdriver.regist_image_palette(file,"")
 
 	local r = g_root
@@ -187,6 +191,22 @@ function test_png8()
 	l2:add_window(win2)
 	win2:set_bg(file)
 	win2:get_bg().alpha = 200
+end
+
+function test_png8_shader()
+	local file = "girl8.png"
+	cdriver.regist_image_palette(file,"")
+
+	local r = g_root
+	local l2 = r:find_child("normal")
+
+	local win2 = window()
+	--win2.is_chain = true
+	win2:create_window("win2",100,100,10,300,300)
+	l2:add_window(win2)
+	win2:set_bg(file)
+	win2:get_bg().alpha = 200
+	win2:get_bg().shader = "pal2"
 end
 
 function test_win1()

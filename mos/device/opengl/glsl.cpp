@@ -1355,7 +1355,7 @@ unsigned long getFileLength(ifstream& file)
 
 
 //----------------------------------------------------------------------------- 
-int glShaderObject::load(char* filename)
+int glShaderObject::load(const char* filename)
 {
    ifstream file;
 	file.open(filename, ios::in);
@@ -1544,13 +1544,9 @@ glShaderManager::glShaderManager()
 glShaderManager::~glShaderManager()
 {
    // free objects
-   vector<glShader*>::iterator  i=_shaderObjectList.begin();
-   while (i!=_shaderObjectList.end()) 
-   {
-        //glShader* o = *i;
-        i=_shaderObjectList.erase(i);
-        //delete o;
-   }
+	for (auto it = _shaderObjectList.begin(); it != _shaderObjectList.end(); ++it)
+		delete it->second;
+	_shaderObjectList.clear();
 }
 
 // ----------------------------------------------------------------------------
@@ -1573,7 +1569,7 @@ void glShaderManager::SetVerticesOut(int nVerticesOut)
 }
 
 // ----------------------------------------------------------------------------
-glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile) 
+glShader* glShaderManager::loadfromFile(const char* vertexFile, const char* fragmentFile) 
 {
    glShader* o = new glShader();
    o->UsesGeometryShader(false);
@@ -1585,7 +1581,7 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
    if (vertexFile!=0)
    if (tVertexShader->load(vertexFile) != 0)
    { 
-     cout << "error: can't load vertex shader!\n"; 
+     cout << "error: can't load vertex shader from "<< vertexFile <<"\n"; 
      delete o;
      delete tVertexShader;
      delete tFragmentShader;
@@ -1597,7 +1593,7 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
   if (fragmentFile!=0)
   if (tFragmentShader->load(fragmentFile) != 0)
   {
-     cout << "error: can't load fragment shader!\n";
+     cout << "error: can't load fragment shader "<< fragmentFile <<"\n"; 
      delete o;
      delete tVertexShader;
      delete tFragmentShader;
@@ -1651,14 +1647,14 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* fragmentFile)
   cout << "***GLSL Linker Log:\n";
   cout << o->getLinkerLog() << endl;
   
-  _shaderObjectList.push_back(o);
+  //_shaderObjectList.push_back(o);
   o->manageMemory();
 
    return o;
 }
 
 
-glShader* glShaderManager::loadfromFile(char* vertexFile, char* geometryFile, char* fragmentFile)
+glShader* glShaderManager::loadfromFile(const char* vertexFile, const char* geometryFile, const char* fragmentFile)
 {
    glShader* o = new glShader();
    o->UsesGeometryShader(true);
@@ -1777,7 +1773,7 @@ glShader* glShaderManager::loadfromFile(char* vertexFile, char* geometryFile, ch
   cout << "***GLSL Linker Log:\n";
   cout << o->getLinkerLog() << endl;
   
-  _shaderObjectList.push_back(o);
+  //_shaderObjectList.push_back(o);
   o->manageMemory();
 
    return o;
@@ -1847,7 +1843,7 @@ glShader* glShaderManager::loadfromMemory(const char* vertexMem, const char* fra
   cout << "***GLSL Linker Log:\n";
   cout << o->getLinkerLog() << endl;
 
-  _shaderObjectList.push_back(o);
+  //_shaderObjectList.push_back(o);
   o->manageMemory();
 
   return o;
@@ -1942,7 +1938,7 @@ glShader* glShaderManager::loadfromMemory(const char* vertexMem, const char* geo
   cout << "***GLSL Linker Log:\n";
   cout << o->getLinkerLog() << endl;
 
-  _shaderObjectList.push_back(o);
+  //_shaderObjectList.push_back(o);
   o->manageMemory();
 
    return o;
@@ -1950,20 +1946,45 @@ glShader* glShaderManager::loadfromMemory(const char* vertexMem, const char* geo
 
 // ----------------------------------------------------------------------------
 
- bool  glShaderManager::free(glShader* o)
- {
-   vector<glShader*>::iterator  i=_shaderObjectList.begin();
-   while (i!=_shaderObjectList.end()) 
-   {
-        if ((*i)==o)
-        {
-            _shaderObjectList.erase(i);
-            delete o;
-            return true;
-        }
-        i++;
-   }   
-   return false;
- }
+ //bool  glShaderManager::free(glShader* o)
+ //{
+ //  vector<glShader*>::iterator  i=_shaderObjectList.begin();
+ //  while (i!=_shaderObjectList.end()) 
+ //  {
+ //       if ((*i)==o)
+ //       {
+ //           _shaderObjectList.erase(i);
+ //           delete o;
+ //           return true;
+ //       }
+ //       i++;
+ //  }   
+ //  return false;
+ //}
 
 
+glShader* glShaderManager::loadfromFileName(const char* name)
+{
+	std::string v = m_path + "/" + name + "_vertex.txt";
+	std::string f = m_path + "/" + name + "_fragment.txt";
+	glShader* p = loadfromFile(v.c_str(),f.c_str());
+	if (p)
+		_shaderObjectList[name] = p;
+	return p;
+}
+
+glShader* glShaderManager::loadfromMemoryName(const char* name,const char* vertexMem, const char* fragmentMem)
+{
+	glShader* p = loadfromMemory(vertexMem,fragmentMem);
+	if (p)
+		_shaderObjectList[name] = p;
+	return p;
+}
+
+glShader* glShaderManager::getShader(const char* name)
+{
+	auto it = _shaderObjectList.find(name);
+	if (it != _shaderObjectList.end())
+		return it->second;
+	return loadfromFileName(name);
+}
