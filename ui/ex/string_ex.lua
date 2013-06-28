@@ -36,6 +36,26 @@ function string.ends(String,End)
    return End=='' or string.sub(String,-string.len(End))==End
 end
 
+--手写的，感觉不好
+function string.rfind(s,pat)
+	local m,n
+	local len = 0
+	while(true) do
+		i,j = string.find(s,pat)
+		if (j == nil) then
+			break
+		end
+		m,n = i,j
+		s = string.sub(s,j+1)
+		len = len + j
+		--print(s,len)
+	end
+	if (len == 0) then
+		return
+	end
+	return m+len-n,n+len-n
+end
+
 function is_char(int,s)
 	return string.byte(s,1) == int
 end

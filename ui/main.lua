@@ -155,10 +155,10 @@ function safe_on_init()
 	g_camera:run_normal()
 
 	test_fps()
-	test_png8_shader()
+	--test_png8_shader()
 	--test_map()
 	regist_dog()
-	test_sprite()
+	test_sprite(false)
 	--test_win2()
 	--test_notice()
 
@@ -172,21 +172,36 @@ function safe_on_input(s)
 	--print("on_input",s)
 	--print(string.split(s))
 	local t = split(s, " ")
+	function find_des(name)
+		if name == "r" then
+			return g_root
+		end
+		if name == "p" then
+			return g_root:get_play()
+		end
+	end
 	if t[1] == '?' then
 		print("r reload ")
 		print("l load window ")	
 		print("s show window ")
 		print("df dofile ")
-		print("pr g_root print ")
-		print("pr g_root print_render")
+		print("p r(p) g_root(play) print ")
+		print("pr r(p) g_root(play) print_render")
+		print("prp g_root.play print_render")
 		print("dump cdriver.dump_resource ")
 		print("test() get example.")
 	elseif t[1] == 's' then
 		show(t[2],t[3])
 	elseif t[1] == 'pr' then
-		g_root:print_render()
+		local des = find_des(t[2])
+		if des then
+			des:print_render()
+		end
 	elseif t[1] == 'p' then
-		g_root:print()
+		local des = find_des(t[2])
+		if des then
+			des:print()
+		end
 	elseif t[1] == 'r' then
 		reload(t[2])
 	elseif t[1] == 'l' then

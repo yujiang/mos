@@ -28,7 +28,7 @@ function root:create_root(w,h)
 	end
 
 	local m = map()
-	m:create_map("map",w,h)
+	m:create_map("map",w,h,1053)
 	--print(m.name)
 	self:find_child("map"):add_child(m)
 end
@@ -183,7 +183,7 @@ function root:check_var()
 	end
 end
 
-function root:recv_mouse_msg(mouse_event,x,y,param)
+function root:recv_mouse_msg(mouse_event,x,y,param,room)
 	self:check_var()
 
 	if self.drag_cell then
@@ -198,18 +198,18 @@ function root:recv_mouse_msg(mouse_event,x,y,param)
 
 	local win
 	if self.modal_window then
-		win = self.modal_window:recv_mouse_msg(mouse_event,x,y,param)
+		win = self.modal_window:recv_mouse_msg(mouse_event,x,y,param,1)
 	else
 		if self.popup_menu then
-			win = self.popup_menu:recv_mouse_msg(mouse_event,x,y,param)
+			win = self.popup_menu:recv_mouse_msg(mouse_event,x,y,param,1)
 			if not win and mouse_event == WM_LBUTTONDOWN or mouse_event == WM_RBUTTONDOWN then
 				self.popup_menu:hide()
 				--print("self.popup_menu:hide() 1",mouse_event,win)
-				win = cell.recv_mouse_msg(self,mouse_event,x,y,param)
+				win = cell.recv_mouse_msg(self,mouse_event,x,y,param,1)
 				--print("self.popup_menu:hide() 2",mouse_event,win)
 			end 
 		else
-			win = cell.recv_mouse_msg(self,mouse_event,x,y,param)
+			win = cell.recv_mouse_msg(self,mouse_event,x,y,param,1)
 		end
 	end
 

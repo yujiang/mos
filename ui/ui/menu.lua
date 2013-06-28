@@ -51,15 +51,15 @@ function menu:set_check(name,check)
 	end
 end
 
-function menu:in_rect(x,y)
-	if cell.in_rect(self,x,y) then
+function menu:in_rect(x,y,room)
+	if cell.in_rect(self,x,y,room) then
 		return true
 	end
 	local x2 = x - self.x
 	local y2 = y - self.y
 	for i=1,self.item_num do
 		local item = self:get_item(i)
-		if item:in_rect(x2,y2) then
+		if item:in_rect(x2,y2,room) then
 			return true
 		end
 	end

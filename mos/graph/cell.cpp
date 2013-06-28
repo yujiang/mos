@@ -65,6 +65,10 @@ st_cell::st_cell(const st_cell& r1,const st_cell r2)
 	y = r1.y + r2.y;
 	//z 不必变
 	room = r1.room * r2.room;
+	if (room != 1)
+	{
+		room = room;
+	}
 	//color 不必变
 	//alpha 也用个乘法
 	color = r1.color;
@@ -149,16 +153,15 @@ void cell::draw(int level,const st_cell& st) const
 		get_graph()->draw_win_begin(st2.x,st2.y,st.w,st.h);
 	else if (image_file)
 	{
-		if (cx == 0 && cy == 0) 
-			get_graph()->draw_image(st2,image_file,frame);
-		else
-		{
-			st2.x -= cx;
-			st2.y -= cy;
-			get_graph()->draw_image(st2,image_file,frame);
-			st2.x += cx;
-			st2.y += cy;
-		}
+		int x = st2.x;
+		int y = st2.y;
+		st2.x -= cx * st2.room;
+		st2.y -= cy * st2.room;
+		get_graph()->draw_image(st2,image_file,frame);
+		//st2.x += cx * room;
+		//st2.y += cy * room;
+		st2.x = x;
+		st2.y = y;
 	}
 	else if(text)
 	{

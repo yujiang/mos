@@ -76,15 +76,15 @@ function mitem:on_mouse_msg(mouse_event,x,y,param)
 	return self
 end
 
-function mitem:in_rect(x,y)
-	if cell.in_rect(self,x,y) then
+function mitem:in_rect(x,y,room)
+	if cell.in_rect(self,x,y,room) then
 		return true
 	end
 	local menu = self:get_menu()
 	if menu and menu:is_show() then
 		local x2 = x - self.x
 		local y2 = y - self.y
-		local rt = menu:in_rect(x2,y2)
+		local rt = menu:in_rect(x2,y2,room)
 		if rt then 
 			return true
 		end

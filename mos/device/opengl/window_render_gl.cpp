@@ -180,10 +180,10 @@ int window_render_gl::draw_texture_cell(const st_cell& cell,texture* _tex,const 
 
 int window_render_gl::_draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
 {
-	return draw_texture(cell.x,cell.y,cell.color,cell.alpha,cell.shader,_tex,rc);
+	return draw_texture(cell.x,cell.y,cell.room,cell.color,cell.alpha,cell.shader,_tex,rc);
 }
 
-int window_render_gl::draw_texture(int x,int y,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc_tex)
+int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc_tex)
 {
 	texture_gl* tex = (texture_gl*)_tex;
 	g_rect rect = rc_tex ? *rc_tex : tex->get_rect();
@@ -200,8 +200,8 @@ int window_render_gl::draw_texture(int x,int y,int color,int alpha,const char* s
 	f3[0].y = y;
 	uv[0].u = (float)rect.l/tex->m_tex_width;
 	uv[0].v = (float)rect.t/tex->m_tex_height;
-	f3[3].x = x + rect.width();
-	f3[3].y = y + rect.height();
+	f3[3].x = x + rect.width() * room;
+	f3[3].y = y + rect.height() * room;
 	uv[3].u = (float)rect.r/tex->m_tex_width;
 	uv[3].v = (float)rect.b/tex->m_tex_height;
 

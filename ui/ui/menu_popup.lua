@@ -17,12 +17,12 @@ function menu_popup:is_hide()
 end
 
 
-function menu_popup:recv_mouse_msg(mouse_event,x,y,param)
+function menu_popup:recv_mouse_msg(mouse_event,x,y,param,room)
 	--print("menu_popup:recv_mouse_msg",mouse_event,x,y)
-	if not self:in_rect(x,y) then
+	if not self:in_rect(x,y,room) then
 		--print("not menu_popup:in_rect(x,y)")
 		if mouse_event == WM_MOUSEMOVE and WM_MOUSEWHEEL then
-			if not self.cell or not self.cell:in_rect_all(x,y) then
+			if not self.cell or not self.cell:in_rect_all(x,y,room) then
 				self:hide()
 			end
 		else
@@ -30,7 +30,7 @@ function menu_popup:recv_mouse_msg(mouse_event,x,y,param)
 		end
 		return
 	end
-	return cell.recv_mouse_msg(self,mouse_event,x,y)
+	return cell.recv_mouse_msg(self,mouse_event,x,y,param,room)
 end
 
 return menu_popup

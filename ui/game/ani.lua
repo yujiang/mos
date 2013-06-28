@@ -108,32 +108,38 @@ function ani:on_loaded_from_table()
 	self:add_timer()
 end
 
-function ani:on_timer_updateframe()
+function ani:_on_timer_updateframe()
 	local img = self.image
 	--print("ani:on_timer_updateframe()",img.frame)
-	img:change_frame(img.frame + self.step)
-	if img.frame >= self.frame_end then
+	frame = img.frame + self.step
+	if frame >= self.frame_end then
 		if self.loop then
-			img:change_frame(self.frame_start)
+			frame = self.frame_start
 		else
-			img:change_frame(self.frame_end - 1)
+			frame = self.frame_end - 1
 			if self.on_aniend then
 				self.on_aniend(true)
 			end
-			return false
+			return false,frame
 		end
-	elseif img.frame < self.frame_start then --돌던。
+	elseif frame < self.frame_start then --돌던。
 		if self.loop then
-			img:change_frame(self.frame_end - 1)
+			frame = self.frame_end - 1
 		else
-			img:change_frame(self.frame_start)
+			frame = self.frame_start
 			if self.on_aniend then
 				self.on_aniend(true)
 			end
-			return false
+			return false,frame
 		end		
 	end
-	return true
+	return true,frame
+end
+
+function ani:on_timer_updateframe()
+	local rt , frame = self:_on_timer_updateframe()
+	self.image:change_frame(frame)
+	return rt
 end
 
 return ani

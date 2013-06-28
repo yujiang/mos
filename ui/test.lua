@@ -267,18 +267,34 @@ function test_map()
 	m:set_bg("farm.jpg")
 end
 
-function test_sprite()
+function register_sprite_png(shape,ani,speed,loop,inverse_dir)
+	local file = string.format("char/%04d/%s.png",shape,ani)
 	local rt,dir,frame 
-	rt,dir,frame = cdriver.regist_image("char/0120/stand.png")
-	--print("char/0120/stand.png",rt,dir,frame)
-	g_ani_data:regist_ani_data(0120,"stand","char/0120/stand.png",0.3,dir,frame,0,frame,1,false,true)
-	rt,dir,frame = cdriver.regist_image("char/0120/02/stand.png")
+	rt,dir,frame = cdriver.regist_image(file)
+	--print(file,rt,dir,frame)
+	g_ani_data:regist_ani_data(0120,ani,file,speed,dir,frame,0,frame,1,loop,inverse_dir)
+end
 
-	--rt,dir,frame = cdriver.regist_zgp("char/0120/walk.zgp")
-	--print("char/0120/walk.zgp",rt,dir,frame)
-	--g_ani_data:regist_ani_data(0120,"walk","char/0120/walk.zgp",0.1,dir,frame,0,frame,1,true,true)
-	--g_ani_data:regist_ani_data(0120,"walkend","char/0120/walk.png",0.01,dir,0,frame,false)
-	--g_ani_data:regist_ani_data(0120,"walkend2","char/0120/walk.png",0.01,dir,0,1,false)
+function register_sprite_weapon_png(shape,weapon,ani)
+	local file = string.format("char/%04d/%02d/%s.png",shape,weapon,ani)
+	local rt,dir,frame 
+	rt,dir,frame = cdriver.regist_image(file)
+	print(file,rt,dir,frame)
+	--g_ani_data:regist_ani_data(0120,ani,file,0.3,dir,frame,0,frame,1,false,true)
+end
+
+
+function print_test_sprite()
+	
+end
+
+function test_sprite(png)
+	if png then
+		register_sprite_png(120,"walk",0.1,true,true)
+		register_sprite_png(120,"stand",0.3,false,true)
+		register_sprite_weapon_png(120,2,"walk")
+		register_sprite_weapon_png(120,2,"stand")
+	end
 
 	local sp = sprite()
 	sp:create_sprite(nil,100,100,0,0120,true)
@@ -288,6 +304,8 @@ function test_sprite()
 	sp:stop()
 	sp:set_name("猫猫",0x00ff00)
 	sp:set_weapon(2)
+
+	sp:set_room(0.7)
 
 	r:set_play(sp)
 end

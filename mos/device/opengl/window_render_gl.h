@@ -31,7 +31,7 @@ public:
 
 	int _draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
 	int draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
-	int draw_texture(int x,int y,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc);
+	int draw_texture(int x,int y, float room,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc);
 	int draw_box_cell(const st_cell& cell,int w,int h);
 	int draw_box(int x,int y,int color,int alpha,int w,int h);
 

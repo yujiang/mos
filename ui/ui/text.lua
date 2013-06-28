@@ -35,12 +35,12 @@ function text:set_scroll(scroll)
 	self.scroll = scroll
 end
 
-function text:in_rect(x,y)
+function text:in_rect(x,y,room)
 	return x >= 0 and x < self.w and y >= 0 and y < self.h
 end
 
-function text:in_rect_pixel(x,y)
-	return self:in_rect(x,y)
+function text:in_rect_pixel(x,y,room)
+	return self:in_rect(x,y,room)
 end
 
 function text:on_mouse_msg(mouse_event,x,y,param)

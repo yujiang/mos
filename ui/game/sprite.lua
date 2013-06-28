@@ -34,20 +34,20 @@ function sprite:set_weapon(weapon_id)
 	self:get_body():set_weapon(weapon_id)
 end
 
-function sprite:in_rect(x,y)
+function sprite:in_rect(x,y,room)
 	local body = self:get_body() 
 	if body then 
-		return body:in_rect(x-self.x,y-self.y)
+		return body:in_rect(x-self.x,y-self.y,room)
 	end
-	return self:_in_rect(x,y)
+	return self:_in_rect(x,y,room)
 end
 
-function sprite:in_rect_pixel(x,y)
+function sprite:in_rect_pixel(x,y,room)
 	local body = self:get_body() 
 	if body then 
-		return body:in_rect_pixel(x-self.x,y-self.y)
+		return body:in_rect_pixel(x-self.x,y-self.y,room)
 	end
-	return self:_in_rect(x,y)
+	return self:_in_rect(x,y,room)
 end
 
 
@@ -121,8 +121,17 @@ function sprite:stop()
 	end
 end
 
+--function sprite:recv_mouse_msg(mouse_event,x,y,param,room)
+--	local rt = cell.recv_mouse_msg(self,mouse_event,x,y,param,room)
+	--if mouse_event == WM_RBUTTONDOWN then
+		--print("sprite:recv_mouse_msg WM_RBUTTONDOWN",x,y,self:in_rect(x,y,room),self:in_rect_pixel(x,y,room),self.name)
+	--end
+--	return rt
+--end
+
 function sprite:on_mouse_msg(mouse_event,x,y,param)
 	if mouse_event == WM_RBUTTONDOWN then
+		--print("sprite:on_mouse_msg WM_RBUTTONDOWN",self.name)
 		ui:on_sprite_mouse_rd(self,x,y)
 	end
 	return self

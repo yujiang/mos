@@ -2,9 +2,13 @@
 
 local map = class(window,"map")
 
-function map:create_map(name,w,h)
+function map:create_map(name,w,h,id)
+	assert(id)
 	window.create_window(self,name,0,0,0,w,h)
 	self.drag = false
+
+	local jpg = string.format("map/%04d.jpg",id)
+	self:set_bg(jpg)
 end
 
 function map:add_sprite(x,y,ani)
@@ -31,19 +35,19 @@ function map:center_play(x,y,w,h)
 	--print("map:center_play()",x,y,w,h)
 	self.x = w/2 - x
 	self.y = h/2 - y
-	if self.x > 0 then
-		self.x = 0
-	end
-	if self.x + self.w < w then
-		self.x = w - self.w
-	end
-	if self.y > 0 then
-		self.y = 0
-	end
-	if self.y + self.h < h then
-		self.y = h - self.h
-	end
-	--print("map:center_play()",self.x,self.y)
+--	if self.x > 0 then
+--		self.x = 0
+--	end
+--	if self.x + self.w < w then
+--		self.x = w - self.w
+--	end
+--	if self.y > 0 then
+--		self.y = 0
+--	end
+--	if self.y + self.h < h then
+--		self.y = h - self.h
+--	end
+	--print("map:center_play()",self.x,self.y,w,h)
 end
 
 

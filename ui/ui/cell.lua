@@ -12,6 +12,7 @@ function cell:create_cell(name,x,y,z,w,h)
 	self.w = w
 	self.h = h
 	self.childs = {} 
+	self.room = 1
 end
 
 --create and destroy
@@ -52,6 +53,16 @@ function cell:get_pos_all()
 	return x+ox,y+oy
 end
 
+function cell:get_room_all()	
+	local room = self.room
+	local f = self.father
+	while(f) do
+		room = room * f.room
+		f = f.father
+	end
+	return room
+end
+
 function cell:get_offset_all()	
 	local x = 0
 	local y = 0
@@ -83,7 +94,8 @@ end
 
 function cell:in_rect_all(x,y)
 	local ox,oy = self:get_offset_all()
-	return self:in_rect(x-ox, y-oy)
+	local room = self:get_room_all()
+	return self:in_rect(x-ox, y-oy,room)
 end
 
 function cell:in_x(x)
@@ -98,32 +110,32 @@ function cell:in_size(x,y)
 	return x >= 0 and x < self.w and y >= 0 and y < self.h
 end
 
-function cell:get_rect()
-	return self.x,self.y,self.x + self.w,self.y + self.h
+function cell:get_rect(room)
+	return self.x,self.y,self.x + self.w*room,self.y + self.h*room
 end
 
-function cell:_in_rect(x,y)
-	local l,t,r,b = self:get_rect()
+function cell:_in_rect(x,y,room)
+	local l,t,r,b = self:get_rect(room)
 	--return x >= self.x and x < self.x + self.w and y >= self.y and y < self.y + self.h
 	return x >= l and x < r and y >= t and y < b
 end
 
 --只有image重载这两个函数，所以没有写成in_rect_override的形式？
 --实际上，下拉菜单menu也重载了，但是menu属于内部使用的。
-function cell:in_rect(x,y)
+function cell:in_rect(x,y,room)
 	local bg = self:get_bg() 
 	if bg then 
-		return bg:in_rect(x-self.x,y-self.y)
+		return bg:in_rect(x-self.x,y-self.y,room)
 	end
-	return self:_in_rect(x,y)
+	return self:_in_rect(x,y,room)
 end
 
-function cell:in_rect_pixel(x,y)
+function cell:in_rect_pixel(x,y,room)
 	local bg = self:get_bg() 
 	if bg then 
-		return bg:in_rect_pixel(x-self.x,y-self.y)
+		return bg:in_rect_pixel(x-self.x,y-self.y,room)
 	end
-	return self:_in_rect(x,y)
+	return self:_in_rect(x,y,room)
 end
 
 ---------------------------------------------------------
@@ -175,6 +187,10 @@ end
 
 
 --放缩先不考虑
+function cell:set_room(room)
+	self.room = room
+end
+
 function cell:get_room()
 	return self.room 
 end
@@ -432,8 +448,7 @@ end
 function cell:get_render_override()
 end
 
-function table_copyvalue(tb)
-	local t = {}
+function table_copyvalue(t,tb)
 	for k,v in pairs(tb) do
 		if type(k) == "string" then
 			if type(v) == "string" or type(v) == "number" then
@@ -448,8 +463,7 @@ end
 function cell:get_render_childs()
 	if self:get_childs_num() > 0 then
 		--base is here!
-		local tb = table_copyvalue(self)
-
+		local tb = {}
 		local shows = self:get_sortshow_childs()
 		for _,child in pairs(shows) do
 			local t = child:get_render_childs()
@@ -457,9 +471,10 @@ function cell:get_render_childs()
 				table.insert(tb,t)
 			end
 		end	
-		if #tb == 0 then
-			return
+		if #tb == 0 then			
+			return self:get_render_override()
 		end
+		table_copyvalue(tb,self)
 		return tb
 	else
 		return self:get_render_override() --or cell
@@ -509,11 +524,14 @@ end
 
 --也只有menu重载这个函数
 --menu是内部使用。
-function cell:recv_mouse_msg(mouse_event,x,y,param)
+function cell:recv_mouse_msg(mouse_event,x,y,param,room)
+	assert(room)
 	if mouse_event == WM_MOUSEWHEEL then
-		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,x,y,param,self:in_rect(x,y))
+		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,x,y,param,self:in_rect(x,y,room))
 	end
-	if not self:in_rect(x,y) then
+	
+	room = room * self.room
+	if not self:in_rect(x,y,room) then
 		return
 	end
 
@@ -521,7 +539,7 @@ function cell:recv_mouse_msg(mouse_event,x,y,param)
 	local y2 = y - self.y
 	local msgs = self:get_sortmsg_childs()
 	for _,child in pairs(msgs) do
-		local rt = child:recv_mouse_msg(mouse_event,x2,y2,param)
+		local rt = child:recv_mouse_msg(mouse_event,x2,y2,param,room)
 		if rt then
 			self:on_child_mouse_msg(mouse_event,x,y,param,rt)
 			return rt
@@ -529,9 +547,9 @@ function cell:recv_mouse_msg(mouse_event,x,y,param)
 	end	
 
 	if mouse_event == WM_MOUSEWHEEL then
-		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,self:in_rect_pixel(x,y),self:in_rect(x,y))
+		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,self:in_rect_pixel(x,y,room),self:in_rect(x,y,room))
 	end
-	if self:in_rect_pixel(x,y) then
+	if self:in_rect_pixel(x,y,room) then
 		return self:on_mouse_msg(mouse_event,x,y,param)	
 	end
 end
