@@ -30,10 +30,6 @@ function sprite:get_body()
 	return self:find_child("body")
 end
 
-function sprite:set_weapon(weapon_id)
-	self:get_body():set_weapon(weapon_id)
-end
-
 function sprite:in_rect(x,y,room)
 	local body = self:get_body() 
 	if body then 
@@ -129,11 +125,26 @@ end
 --	return rt
 --end
 
+function sprite:on_get_hover(is_hover,hover)
+	cell.on_get_hover(self,is_hover,hover)
+	--print("sprite:on_get_hover",is_hover)
+	if is_hover then
+		self.shader = "light"
+	else
+		--self.shader = "dark"
+		self.shader = nil
+	end
+end
+
+
 function sprite:on_mouse_msg(mouse_event,x,y,param)
 	if mouse_event == WM_RBUTTONDOWN then
 		--print("sprite:on_mouse_msg WM_RBUTTONDOWN",self.name)
 		ui:on_sprite_mouse_rd(self,x,y)
+	elseif mouse_event == WM_MOUSEWHEEL then
+		self:on_mouse_scroll_room(param,0.5,2)
 	end
+
 	return self
 end
 

@@ -55,6 +55,22 @@ function sprite_body:set_weapon(weapon_id)
 	self:set_weapon_image()
 end
 
+--only zgp valid
+function sprite_body:clear_zgp_part_pal(part,h,s,v)
+	self["part"..part] = nil
+end
+
+function sprite_body:set_zgp_part_pal(part,h,s,v)
+	--local index = cdirver.create_zgp_pal_hsv(image_file,part,h,s,v)
+	assert(part >= 0)
+
+	--h -180 180  360
+	--s -100 100  200
+	--v -20 20    40
+
+	self["part"..part] = (h+180) * 256 * 64 + (s+100) * 64 + (v+20)
+end
+
 function sprite_body:do_ani(ani_name)
 	self.ani_name = ani_name
 	local tb = g_ani_data:find_ani_data(self.ani_id,ani_name,self.use_zgp)	

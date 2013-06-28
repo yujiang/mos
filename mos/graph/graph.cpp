@@ -8,6 +8,7 @@
 #include "font.h"
 #include "image_db.h"
 #include "mos.h"
+#include "crc32.h"
 #include "image/image_zgp.h"
 #include <iostream>
 
@@ -25,7 +26,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-image* graph::create_image_zgp(const char* file,int frame)
+image_zgp* graph::find_zgp(const char* file)
 {
 	image_zgp* zgp = zgp_map[file];
 	if (!zgp)
@@ -41,10 +42,16 @@ image* graph::create_image_zgp(const char* file,int frame)
 			zgp = NULL;
 		}
 	}
+	return zgp;
+}
+
+image* graph::create_image_zgp(const char* file,int frame,const DWORD* parts_pal_hsv)
+{
+	image_zgp* zgp = find_zgp(file);
 	if (zgp)
 	{
 		zgp->mark_use_zgp(g_time_now);
-		return zgp->get_sprite_image(frame);
+		return zgp->get_sprite_image_parts(frame,parts_pal_hsv);
 	}
 	return NULL;
 }
@@ -56,20 +63,29 @@ bool is_zgp(const char* file)
 	return strcmp(p,".zgp") == 0;
 }
 
-const char* get_zgp_texture(const char* _file,int frame)
+const char* get_zgp_texture(const char* _file,int frame,const unsigned long* parts_pal_hsv)
 {
 	static char file[128];
-	sprintf(file,"%s_%04d",_file,frame);
+	if (parts_pal_hsv == NULL)
+		sprintf(file,"%s_%04d",_file,frame);
+	else
+	{
+		unsigned int hashcode = crc_buffer((char*)parts_pal_hsv,sizeof(*parts_pal_hsv) * ZGP_MAX_PARTS); //= hash_part(parts_pal_hsv); //一般这里冲突的可能性不大。
+		if (hashcode == 0)
+			sprintf(file,"%s_%04d",_file,frame);
+		else
+			sprintf(file,"%s_%04d_%x",_file,frame,hashcode);
+	}
 	return file;
 }
 
-image* graph::find_image_zgp(const char* _file,int frame)
+image* graph::find_image_zgp(const char* _file,int frame,const unsigned long* parts_pal_hsv)
 {
-	const char* file = get_zgp_texture(_file,frame);
+	const char* file = get_zgp_texture(_file,frame,parts_pal_hsv);
 	image* i = image_map[file];
 	if (!i)
 	{
-		i = create_image_zgp(_file,frame);
+		i = create_image_zgp(_file,frame,parts_pal_hsv);
 		if (i)
 			image_map[file] = i;
 	}
@@ -78,10 +94,10 @@ image* graph::find_image_zgp(const char* _file,int frame)
 	return i;
 }
 
-image* graph::find_image_raw(const char* file,int frame)
+image* graph::find_image_raw(const char* file,int frame,const unsigned long* parts_pal_hsv)
 {
 	if (is_zgp(file))
-		return find_image_zgp(file,frame);
+		return find_image_zgp(file,frame,parts_pal_hsv);
 
 	image* i = image_map[file];
 	if (!i)
@@ -95,12 +111,12 @@ image* graph::find_image_raw(const char* file,int frame)
 	return i;
 }
 
-image* graph::find_image(const char* file,int frame)
+image* graph::find_image(const char* file,int frame,const unsigned long* parts_pal_hsv)
 {
 	const st_redirect* r = redirect_image_file(file,frame);
 	if (r)
 		file = r->file_image.c_str();
-	return find_image_raw(file,frame);
+	return find_image_raw(file,frame,parts_pal_hsv);
 }
 
 bool graph::get_image_size(const char* file,int frame,g_size& sz)
@@ -121,7 +137,7 @@ bool graph::get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg)
 	if (r)
 		file = r->file_image.c_str();
 
-	image* i = find_image_raw(file,frame);
+	image* i = find_image_raw(file,frame,NULL);
 	if (i)
 	{
 		sz = i->get_size();
@@ -346,7 +362,7 @@ int graph::draw_image(const st_cell& cell,const char* file,int frame)
 	//if (t)
 	//	return get_render()->draw_texture_cell(cell,t,0);
 
-	image* img = find_image_raw(file,frame);
+	image* img = find_image_raw(file,frame,&cell.part0);
 	if (!img)
 		return -1;
 
@@ -355,7 +371,7 @@ int graph::draw_image(const st_cell& cell,const char* file,int frame)
 		rc = &r->rc;
 
 	if (is_zgp(file))
-		file = get_zgp_texture(file,frame);
+		file = get_zgp_texture(file,frame,&cell.part0);
 
 	return get_render()->draw_image_cell(cell,img,file,rc);
 }

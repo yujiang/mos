@@ -100,6 +100,10 @@
     <None Include="game\sprite_body.lua" />
     <None Include="main.lua" />
     <None Include="monk.lua" />
+    <None Include="resources\shaders\dark_fragment.txt" />
+    <None Include="resources\shaders\dark_vertex.txt" />
+    <None Include="resources\shaders\light_fragment.txt" />
+    <None Include="resources\shaders\light_vertex.txt" />
     <None Include="Resources\shaders\palette_fragment.txt" />
     <None Include="Resources\shaders\palette_vertex.txt" />
     <None Include="test.lua" />

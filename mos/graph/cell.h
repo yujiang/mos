@@ -38,9 +38,12 @@ public:
 	int is_box;		//for box
 	int is_window;	//for window use，一个window上的图素可以一次绘制。
 
+	unsigned long part0,part1,part2,part3,part4,part5;
+	//int shader_light;	//发亮，可以用shader，但是part不行，因为part是分块的无法支持。
+
 	st_cell();
 	void init();
-	st_cell(const st_cell& r1,const st_cell r2);
+	st_cell(const st_cell& r1,const st_cell& r2);
 
 	void set_kv(const char* key,lua_Number value);
 	void set_kv(const char* key,const char* value);

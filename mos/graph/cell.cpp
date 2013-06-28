@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <assert.h>
 #include <string>
+#include "image/image_zgp.h"
 
 std::unordered_map<std::string,int> g_hmOffsetInt;
 std::unordered_map<std::string,int> g_hmOffsetStr;
@@ -40,6 +41,12 @@ void init_cell()
 	offsetstr(shader);
 	offsetstr(text);
 
+	offsetint(part0);
+	offsetint(part1);
+	offsetint(part2);
+	offsetint(part3);
+	offsetint(part4);
+	offsetint(part5);
 	//st_cell cell;
 	//cell.set_kv("y",12);
 	//cell.set_kv("name","haha");
@@ -59,22 +66,23 @@ void st_cell::init()
 	room = 1.f;
 }
 
-st_cell::st_cell(const st_cell& r1,const st_cell r2)
+st_cell::st_cell(const st_cell& r1,const st_cell& r2)
 {
+	//init();
+	memcpy(&part0,&r2.part0,sizeof(part0)*ZGP_MAX_PARTS);
+
+	//后面覆盖前面的shader!
+	shader = r2.shader ? r2.shader : r1.shader;
+
 	x = r1.x + r2.x;
 	y = r1.y + r2.y;
 	//z 不必变
 	room = r1.room * r2.room;
-	if (room != 1)
-	{
-		room = room;
-	}
+
 	//color 不必变
 	//alpha 也用个乘法
-	color = r1.color;
+	color = r2.color;
 	alpha = r1.alpha * r2.alpha / 255;
-
-	shader = r2.shader ? r2.shader : r1.shader ;
 }
 
 void st_cell::set_kv(const char* key,lua_Number value)

@@ -35,7 +35,7 @@ __inline DWORD MakeSrcDword(DWORD wb)
 
 DECLARE_COUNTER(image_zgp)
 
-bool sprite_zgp::create_sprite(WORD* pal,void* _data)
+bool sprite_zgp::create_sprite(WORD** pal,void* _data)
 {
 	WSpriteStruct *spt_src=(WSpriteStruct*)(_data);
 	WSpriteStruct *spt_this=&m_data;
@@ -72,7 +72,7 @@ bool sprite_zgp::create_empty()
 }
 
 //没有考虑分块信息？所以并不好用！
-void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD* pal) const
+void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD** pal) const
 {
 	DWORD* deslineptr = buf8888 + pitch * y + x;
 	if (pal == NULL)
@@ -125,7 +125,7 @@ void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD*
 			case 1://连续多个不透明并且color相同像素
 				{
 					mask_type = *src++;
-					tpixel=pal[*src+mask_type*256];
+					tpixel=pal[mask_type][*src];
 					m = min(j+style,off);
 					k = max(j,m);
 					m = min(j+style,w);
@@ -151,7 +151,7 @@ void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD*
 					alpha= *src++;
 					mask_type = alpha>>5;
 					alpha&=31;
-					tpixel=pal[*src+mask_type*256];
+					tpixel=pal[mask_type][*src];
 					m = min(j+style,off);
 					k = max(j,m);
 					m = min(j+style,w);
@@ -177,14 +177,15 @@ void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD*
 			case 3://连续多个不透明并且color不相同像素
 				{
 					mask_type = *src++;
-					int mask_offset = mask_type*256;
+					//int mask_offset = mask_type*256;
+					const WORD* pp = pal[mask_type];
 
 					for (k=j;k<j+style && k<off;k++,++src);
 					for (;k<j+style && k<w;k++,++lineptr,++src) 
 					{
 						//*lineptr=pal[*src+mask_offset];
 						CHECK_BLOCK
-							*lineptr=color565_8888(pal[*src+mask_offset]) | 0xff000000;
+							*lineptr=color565_8888(pp[*src]) | 0xff000000;
 					}
 					j=k;
 
@@ -245,10 +246,12 @@ bool image_zgp::loadzgp_memory(const char* zgp,char* _data)
 
 	pal = new WORD[256 * pak.pal_num];
 	mread(pal,data,pal512);
+	pals[0] = pal;
 	for(int i=1;i<pak.pal_num;i++)
 	{
 		//分块了。
 		memcpy((char *)pal+pal512*i, pal, pal512);
+		pals[i] = pal+256*i;
 	}
 
 	DWORD* offtbl = new DWORD[offset_size];
@@ -270,7 +273,7 @@ bool image_zgp::loadzgp_memory(const char* zgp,char* _data)
 			if (offtbl[frame])
 			{
 				char* off = data + offtbl[frame] - offset_size;
-				spr.create_sprite(pal,off);
+				spr.create_sprite(pals,off);
 			}
 			else
 			{
@@ -320,16 +323,66 @@ image_zgp::~image_zgp()
 	delete [] pal;
 	delete []sprites;
 	delete _data;
+	for (auto it = m_pals_hsv.begin(); it != m_pals_hsv.end(); ++it)
+		delete it->second;
+	m_pals_hsv.clear();
 }
 
-image* image_zgp::get_sprite_image(int frame,int block ,WORD* pal ) const
+image* image_zgp::get_sprite_image(int frame,int block ) const
 {
 	sprite_zgp* s = get_sprite(frame);
 
 	image* i = new image();
 	i->create_image_dynamic(s->m_data.w,s->m_data.h,4);
-	s->render8888(0,0,(DWORD*)i->get_buffer(),i->get_width(),block,pal);
+	s->render8888(0,0,(DWORD*)i->get_buffer(),i->get_width(),block,(WORD**)pals);
 	i->set_cg(s->get_cg());
 	i->rgb2bgr();
 	return i;
+}
+
+image* image_zgp::get_sprite_image_parts(int frame,const DWORD* parts) 
+{
+	if (parts == 0)
+		return  get_sprite_image(frame);
+
+	sprite_zgp* s = get_sprite(frame);
+
+	image* i = new image();
+	i->create_image_dynamic(s->m_data.w,s->m_data.h,4);
+
+	WORD* pals[ZGP_MAX_PARTS];
+	for (int i=0;i<pak.pal_num;i++)
+	{
+		pals[i] = find_pal(i,parts[i]);
+	}
+
+	s->render8888(0,0,(DWORD*)i->get_buffer(),i->get_width(),-1,pals);
+	i->set_cg(s->get_cg());
+	i->rgb2bgr();
+	return i;	
+}
+
+
+WORD* create_pal_hsv(WORD* pal,int h,int s,int v);
+
+WORD* image_zgp::find_pal(int part,DWORD hsv)
+{
+	if (hsv == 0)
+		return pals[part];
+
+	int index = part << 24 | (hsv);
+	if (m_pals_hsv[index])
+		return m_pals_hsv[index];
+	
+	hsv &= 0x00ffffff;
+	//h -180 180
+	//s -100 100
+	//v -20 20
+	int h = (hsv & 0x00FFFFFF) >> 14;
+	int s = (hsv & 0x00003FFF) >> 6;
+	int v = (hsv & 0x0000003F) ;
+
+	WORD* pal = create_pal_hsv(pals[part],h-180,s-100,v-20);
+	m_pals_hsv[index] = pal;
+	return pal;
 }

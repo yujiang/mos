@@ -94,6 +94,7 @@
     <ClInclude Include="core\pool.h" />
     <ClInclude Include="core\utf8.h" />
     <ClInclude Include="counter.h" />
+    <ClInclude Include="crc32.h" />
     <ClInclude Include="device\opengl\director.h" />
     <ClInclude Include="device\file.h" />
     <ClInclude Include="device\opengl\glsl.h" />
@@ -124,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\utf8.cpp" />
+    <ClCompile Include="crc32.cpp" />
     <ClCompile Include="device\opengl\director.cpp" />
     <ClCompile Include="device\file.cpp" />
     <ClCompile Include="device\gdi\texture_gdi.cpp" />
@@ -143,6 +145,7 @@
     <ClCompile Include="graph\rect.cpp" />
     <ClCompile Include="graph\texture.cpp" />
     <ClCompile Include="graph\texture_font.cpp" />
+    <ClCompile Include="image\hsv.cpp" />
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
     <ClCompile Include="image\image_zgp.cpp" />

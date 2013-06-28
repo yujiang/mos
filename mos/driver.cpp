@@ -24,7 +24,7 @@ static int lua_in_image(lua_State *L) {
 	const st_redirect* r = redirect_image_file(file,frame);
 	if (r)
 		file = r->file_image.c_str();
-	image* img = get_graph()->find_image_raw(file,frame);
+	image* img = get_graph()->find_image_raw(file,frame,NULL);
 	if (img)
 	{
 		if (r)
@@ -220,6 +220,23 @@ static int  lua_get_dir(lua_State *L) {
 	return 1;
 }
 
+
+//static int  lua_create_zgp_pal_hsv(lua_State *L) {
+//	const char* zgp = luaL_checkstring(L,1);
+//	int part = luaL_checkinteger(L,2);
+//	int h = luaL_checkinteger(L,3);
+//	int s = luaL_checkinteger(L,4);
+//	int v = luaL_checkinteger(L,5);
+//	//lua_pushinteger(L,math_get_dir8(x,y));
+//
+//	image_zgp* zgp = get_graph()->find_zgp(zgp);
+//	int index = -1;
+//	if (zgp)
+//		index = zgp->create_pal_hsv(part,h,s,v);
+//	lua_pushinteger(L,index);
+//	return 1;
+//}
+
 static const luaL_reg driver_lib[] = {
 	{"render",				lua_render},
 	{"create_window",		lua_create_window},
@@ -235,6 +252,7 @@ static const luaL_reg driver_lib[] = {
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},
 	{"get_dir",				lua_get_dir},
+	//{"create_zgp_pal_hsv",	lua_create_zgp_pal_hsv},
 	{NULL, NULL}
 };
 

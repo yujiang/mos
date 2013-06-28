@@ -12,6 +12,7 @@ function image:set_image(image_file,frame)
 	--print(debug.traceback())
 	--print("image:set_image",self,image_file,frame)
 	self.image_file = image_file
+	self.frame = -1 --must update frame.
 	self:_change_frame(frame)
 	--self:update_frame_change()
 end

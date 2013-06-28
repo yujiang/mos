@@ -303,11 +303,25 @@ function test_sprite(png)
 	m:add_child(sp)
 	sp:stop()
 	sp:set_name("猫猫",0x00ff00)
-	sp:set_weapon(2)
+
+	local bd = sp:get_body()
+	bd:set_weapon(2)
+
+	--bd:set_zgp_part_pal(1,-77,0,0)
+	--bd:set_zgp_part_pal(4,54,0,0)
 
 	sp:set_room(0.7)
 
 	r:set_play(sp)
+end
+
+function test_pal()
+	local r = g_root
+	local m = r:get_map()
+	local sp = r:get_play()
+	local bd = sp:get_body()
+	bd:set_zgp_part_pal(1,-77,0,0)
+	bd:set_zgp_part_pal(4,54,0,0)
 end
 
 function test_sprite2()

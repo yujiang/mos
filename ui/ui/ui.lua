@@ -158,14 +158,18 @@ function ui:save_window(win)
 	f:close()
 end
 
+function ui:on_sprite_mouse_scroll(win,x,y)
+	
+end
+
 function ui:on_sprite_mouse_rd(win,x,y)
 	--self:on_window_mouse_rd(win,x,y)
 	local m = menu_popup()
 	m:create_menu_texts(win.name.."_menu",self.mouse_x,self.mouse_y,0,100,20,
-	{"drag","hide","destroy","save","print","printrd","ai..."},win)
+	{"drag","hide","destroy","save","print","printrd","roomout","roomin","ai..."},win)
 	m:set_check("drag",win.drag)
 
-	local item = m:get_item(7) --show...
+	local item = m:find_item_by_text("ai...") --show...
 	local m2 = menu()
 	m2:create_child_menu(100,20,{"walk_path","walk_path loop","walk random"})
 	item:set_menu(m2)
@@ -198,6 +202,15 @@ function ui:on_sprite_mouse_rd(win,x,y)
 			self:save_window(win)
 		elseif menu == 'print' then
 			win:print()
+		elseif menu == 'roomout' then
+			if win.room < 2 then
+				win.room = win.room + 0.1
+			end
+			print(win.room)
+		elseif menu == 'roomin' then
+			if win.room > 0.2 then
+				win.room = win.room - 0.1
+			end
 		elseif menu == 'printrd' then
 			win:print_render()
 		end

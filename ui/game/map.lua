@@ -56,8 +56,9 @@ function map:on_mouse_msg(mouse_event,x,y,param)
 		--print("window:on_mouse_msg WM_RBUTTONDOWN",self.name,x,y,self:in_rect(x,y))
 	--end
 	if mouse_event ~= WM_MOUSEMOVE then
-		--print("window:on_mouse_msg",mouse_event,x,y)
+		--print("map:on_mouse_msg",mouse_event,x,y)
 	end
+
 	if mouse_event == WM_LBUTTONDOWN then
 		if g_root.play then
 			g_root.play:walk_to(x-self.x,y-self.y,150)
@@ -65,7 +66,11 @@ function map:on_mouse_msg(mouse_event,x,y,param)
 		--self:topest()
 	elseif mouse_event == WM_RBUTTONDOWN then
 		ui:on_map_mouse_rd(self,x,y)
+	elseif mouse_event == WM_MOUSEWHEEL then
+		--print("map:on_mouse_msg","WM_MOUSEWHEEL")
+		self:on_mouse_scroll_room(param,0.5,2)
 	end
+
 	--cell.on_mouse_msg(self,mouse_event,x,y)
 	return self
 end

@@ -642,6 +642,16 @@ function cell:reload_class(old,new)
 	self:on_reload_class(old,new)
 end
 
+function cell:on_mouse_scroll_room(param,min,max)
+	local depth = param / 120
+	self.room = self.room + depth / 10
+	if self.room < 0.5 then
+		self.room = 0.5
+	elseif self.room > 2 then
+		self.room = 2
+	end	
+end
+
 ------------------------------------------------------
 function cell:get_move()
 	if not self.move then

@@ -29,10 +29,11 @@ public:
 	}
 	//所有zgp资源。
 	std::unordered_map<std::string,image_zgp*> zgp_map;
+	image_zgp* find_zgp(const char* file);
 
 	//所有资源。
 	std::unordered_map<std::string,image*> image_map;
-	image* find_image(const char* file,int frame);
+	image* find_image(const char* file,int frame,const unsigned long* parts_pal_hsv);
 	
 	bool get_image_size(const char* file,int frame,g_size& sz);
 	bool get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg);
@@ -68,13 +69,13 @@ public:
 	//device
 	void init_graph();
 	void close_graph();
-	image* find_image_raw(const char* file,int frame);
+	image* find_image_raw(const char* file,int frame,const unsigned long* parts_pal_hsv);
 protected:
 	int get_text_line(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 	g_size get_text_size(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 
-	image* find_image_zgp(const char* file,int frame);
-	image* create_image_zgp(const char* file,int frame);
+	image* find_image_zgp(const char* file,int frame,const unsigned long* parts_pal_hsv);
+	image* create_image_zgp(const char* file,int frame,const unsigned long* parts_pal_hsv);
 
 	texture_font* find_texture_font(int font,bool bold);
 	bool find_texture_font_rc(const st_cell& text,int char_value,text_char& tc);
