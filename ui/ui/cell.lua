@@ -48,23 +48,47 @@ function cell:get_pos()
 end
 
 --得到绝对的pos
-function cell:get_pos_all()	
+function cell:get_screen_pos_abs()	
 	local f = self
 	local t = {}
 	while(f) do
-		f = f.father
 		table.insert(t,1,f)
+		f = f.father
 	end
 	local x = 0
 	local y = 0
 	local room = 1
 	for i,cell in ipairs(t) do
-		local x2,y2 = f:get_pos()
+		local x2,y2 = cell:get_pos()
 		x = x + x2 * room 
 		y = y + y2 * room
 		room = room * cell.room
 	end
 	return x,y
+end
+
+function cell:in_rect_abs(x,y)
+	local x2,y2 = self:abs_2_local(x,y)
+	local rt = self:in_rect(x2,y2)
+	--print("in_rect_abs",self.name,x,y,x2,y2,rt)
+	--return self:in_rect(x2,y2)
+	return rt
+end
+
+function cell:abs_2_local(x,y)
+	local f = self
+	local t = {}
+	while(f) do
+		table.insert(t,1,f)
+		f = f.father
+	end
+	local room = 1
+	for i,cell in ipairs(t) do
+		local x2,y2 = cell:get_pos()
+		x = (x - x2) / cell.room 
+		y = (y - y2) / cell.room
+	end
+	return x,y	
 end
 
 function cell:set_pos(x,y)

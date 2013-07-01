@@ -11,9 +11,15 @@ function map:create_map(name,w,h,id)
 	self:set_bg(jpg)
 end
 
-function map:add_sprite(x,y,ani)
+function map:mouse_2_map(x,y)
+	return (x-self.x)/self.room,(y-self.y)/self.room
+end
+
+function map:add_sprite(x,y,ani)	
+	--x,y is mouse pos
 	local sp = sprite()
-	sp:create_sprite(nil,x-self.x,y-self.y,0,101)
+	local x2,y2 = self:mouse_2_map(x,y)
+	sp:create_sprite(nil,x2,y2,0,101)
 	sp:stop()		
 	sp:set_name(nil,math.random(1,0xffffff))	
 	self:add_child(sp)
@@ -35,7 +41,7 @@ function map:center_play(x,y,w,h)
 	--print("map:center_play()",x,y,w,h)
 	self.x = w/2 - x*self.room
 	self.y = h/2 - y*self.room
-	print("center_play",self.x,self.y,x,y,self.room)
+	--print("center_play",self.x,self.y,x,y,self.room)
 --	if self.x > 0 then
 --		self.x = 0
 --	end
@@ -62,7 +68,8 @@ function map:on_mouse_msg(mouse_event,x,y,param)
 
 	if mouse_event == WM_LBUTTONDOWN then
 		if g_root.play then
-			g_root.play:walk_to((x-self.x)/self.room,(y-self.y)/self.room,150)
+			local x2,y2 = self:mouse_2_map(x,y)
+			g_root.play:walk_to(x2,y2,150)
 		end
 		--self:topest()
 	elseif mouse_event == WM_RBUTTONDOWN then

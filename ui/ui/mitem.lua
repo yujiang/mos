@@ -82,8 +82,8 @@ function mitem:in_rect(x,y)
 	end
 	local menu = self:get_menu()
 	if menu and menu:is_show() then
-		local x2 = x 
-		local y2 = y 
+		local x2 = x - menu.x
+		local y2 = y - menu.y
 		local rt = menu:in_rect(x2,y2)
 		if rt then 
 			return true

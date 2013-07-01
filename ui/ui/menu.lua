@@ -55,11 +55,9 @@ function menu:in_rect(x,y)
 	if cell.in_rect(self,x,y) then
 		return true
 	end
-	local x2 = x 
-	local y2 = y 
 	for i=1,self.item_num do
 		local item = self:get_item(i)
-		if item:in_rect(x2,y2) then
+		if item:in_rect(x-item.x,y-item.y) then
 			return true
 		end
 	end

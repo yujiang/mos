@@ -31,6 +31,8 @@ function root:create_root(w,h)
 	m:create_map("map",w,h,1053)
 	--print(m.name)
 	self:find_child("map"):add_child(m)
+
+	self.emitter = emitter()
 end
 
 function root:get_map()
@@ -159,6 +161,8 @@ function root:set_hover(win)
 		else
 			--print("self.hover = nil")
 		end
+
+		--self.emitter:emit("on_hover",old,win)
 	end
 end
 

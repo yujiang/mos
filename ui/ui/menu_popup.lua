@@ -24,7 +24,7 @@ function menu_popup:recv_mouse_msg(mouse_event,x,y,param)
 	if not self:in_rect(x2,y2) then
 		--print("not menu_popup:in_rect(x,y)")
 		if mouse_event == WM_MOUSEMOVE and WM_MOUSEWHEEL then
-			if not self.cell then--or not self.cell:in_rect_all(x,y,room) then
+			if not self.cell or not self.cell:in_rect_abs(x,y) then
 				--必须注册lostfocus的事件。
 				self:hide()
 			end
