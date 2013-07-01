@@ -31,9 +31,11 @@ public:
 	virtual void render_end() = 0;
 
 	g_rect m_rc_window;
+	float m_room_window;
 	bool m_in_window;
-	void window_start(int x,int y,int w,int h){
+	void window_start(int x,int y,int w,int h,float room){
 		m_rc_window.set_xywh(x,y,w,h);
+		m_room_window = room;
 		m_in_window = true;
 	}
 	void window_end(){

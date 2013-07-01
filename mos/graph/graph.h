@@ -63,7 +63,7 @@ public:
 	void render_begin();
 	void render_end();
 	
-	void draw_win_begin(int x,int y,int w,int h);
+	void draw_win_begin(int x,int y,int w,int h,float room);
 	void draw_win_end();
 
 	//device

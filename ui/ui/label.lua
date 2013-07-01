@@ -11,6 +11,8 @@ function label:create_label(name,x,y,z,w,h,s,font,wrap,align)
 	self:add_child(t)
 
 	self._disable = true;
+
+	--print("create_label",name,x,y,z,w,h)
 end
 
 function label:get_text()
@@ -24,7 +26,7 @@ end
 function label:set_string(s)
 	self:get_text():set_string(s)
 	if self.align then
-		set_align(self.align)
+		self:set_align(self.align)
 	end
 end
 

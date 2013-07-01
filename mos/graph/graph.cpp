@@ -500,6 +500,7 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 
 	int x = 0;
 	int y = 0;
+	float room = cell.room;
 
 	int ch;
 	while(ch = *str++)
@@ -508,15 +509,15 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 		if (ch == '\n')
 		{
 			x = 0;
-			y += font->height + font->y_space;
+			y += font->height + font->y_space ;
 			continue;
 		}
 
 		if (!find_texture_font_rc(text,ch,tc))
 			continue;
 
-		c.x = cell.x + x;
-		c.y = cell.y + y;
+		c.x = cell.x + x*room;
+		c.y = cell.y + y*room;
 		c.color = text.color;
 		c.alpha = text.alpha;
 		get_render()->draw_text_cell(c,tc.texture->m_texture,tc.rc_texture);
@@ -539,9 +540,9 @@ void graph::render_end()
 	auto_clear_resource();
 }
 
-void graph::draw_win_begin(int x,int y,int w,int h)
+void graph::draw_win_begin(int x,int y,int w,int h,float room)
 {
-	get_render()->window_start(x,y,w,h);
+	get_render()->window_start(x,y,w,h,room);
 }
 
 void graph::draw_win_end()

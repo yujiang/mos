@@ -47,31 +47,22 @@ function cell:get_pos()
 	return self.x,self.y
 end
 
+--得到绝对的pos
 function cell:get_pos_all()	
-	local x,y = self:get_pos()
-	local ox,oy = self:get_offset_all()
-	return x+ox,y+oy
-end
-
-function cell:get_room_all()	
-	local room = self.room
-	local f = self.father
+	local f = self
+	local t = {}
 	while(f) do
-		room = room * f.room
 		f = f.father
+		table.insert(t,1,f)
 	end
-	return room
-end
-
-function cell:get_offset_all()	
 	local x = 0
 	local y = 0
-	local f = self.father
-	while(f) do
+	local room = 1
+	for i,cell in ipairs(t) do
 		local x2,y2 = f:get_pos()
-		x = x + x2
-		y = y + y2
-		f = f.father
+		x = x + x2 * room 
+		y = y + y2 * room
+		room = room * cell.room
 	end
 	return x,y
 end
@@ -92,12 +83,6 @@ function cell:set_size(w,h)
 	self.w,self.h = w,h
 end
 
-function cell:in_rect_all(x,y)
-	local ox,oy = self:get_offset_all()
-	local room = self:get_room_all()
-	return self:in_rect(x-ox, y-oy,room)
-end
-
 function cell:in_x(x)
 	return x >= self.x and x < self.x + self.w 
 end
@@ -110,32 +95,33 @@ function cell:in_size(x,y)
 	return x >= 0 and x < self.w and y >= 0 and y < self.h
 end
 
-function cell:get_rect(room)
-	return self.x,self.y,self.x + self.w*room,self.y + self.h*room
+function cell:get_rect()
+	return 0,0,self.w,self.h
+	--return self.x,self.y,self.x + self.w,self.y + self.h
 end
 
-function cell:_in_rect(x,y,room)
-	local l,t,r,b = self:get_rect(room)
+function cell:_in_rect(x,y)
+	local l,t,r,b = self:get_rect()
 	--return x >= self.x and x < self.x + self.w and y >= self.y and y < self.y + self.h
 	return x >= l and x < r and y >= t and y < b
 end
 
 --只有image重载这两个函数，所以没有写成in_rect_override的形式？
 --实际上，下拉菜单menu也重载了，但是menu属于内部使用的。
-function cell:in_rect(x,y,room)
+function cell:in_rect(x,y)
 	local bg = self:get_bg() 
 	if bg then 
-		return bg:in_rect(x-self.x,y-self.y,room)
+		return bg:in_rect(x,y)
 	end
-	return self:_in_rect(x,y,room)
+	return self:_in_rect(x,y)
 end
 
-function cell:in_rect_pixel(x,y,room)
+function cell:in_rect_pixel(x,y)
 	local bg = self:get_bg() 
 	if bg then 
-		return bg:in_rect_pixel(x-self.x,y-self.y,room)
+		return bg:in_rect_pixel(x,y)
 	end
-	return self:_in_rect(x,y,room)
+	return self:_in_rect(x,y)
 end
 
 ---------------------------------------------------------
@@ -164,12 +150,15 @@ function cell:get_box()
 	return self:find_child("box")
 end
 
-function cell:set_caption(text,font,offx,offy)
+function cell:set_caption(text,font,offx,offy,w,h)
 	offx = offx or 0
 	offy = offy or 0
-	local lb = label()
 	assert(self.w >= 0 and self.h >= 0)
-	lb:create_label("caption",offx,offy,1000,self.w-2*offx,self.h-2*offy,text,font,nil,ALIGN_CENTER)
+	local lb = label()
+	--lb:create_label("caption",offx,offy,1000,self.w-2*offx,self.h-2*offy,text,font,nil,ALIGN_CENTER)
+	w = w or 100
+	h = h or 32
+	lb:create_label("caption",offx,offy,1000,w,h,text,font,nil,ALIGN_CENTER)
 	self:add_child(lb)
 end
 
@@ -451,7 +440,7 @@ end
 function table_copyvalue(t,tb)
 	for k,v in pairs(tb) do
 		if type(k) == "string" then
-			if type(v) == "string" or type(v) == "number" then
+			if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
 				t[k] = v
 			end
 		end
@@ -524,22 +513,24 @@ end
 
 --也只有menu重载这个函数
 --menu是内部使用。
-function cell:recv_mouse_msg(mouse_event,x,y,param,room)
-	assert(room)
+function cell:recv_mouse_msg(mouse_event,x,y,param)
 	if mouse_event == WM_MOUSEWHEEL then
-		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,x,y,param,self:in_rect(x,y,room))
+		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,x,y,param,self:in_rect(x,y))
 	end
 	
-	room = room * self.room
-	if not self:in_rect(x,y,room) then
+	local x2 = (x - self.x) / self.room
+	local y2 = (y - self.y) / self.room
+
+	if not self:in_rect(x2,y2) then
 		return
 	end
 
-	local x2 = x - self.x
-	local y2 = y - self.y
+	--local s = string.format("cell:recv_mouse_msg %s x %d y %d x2 %d y2 %d room %.1f ",self.name,x,y,x2,y2,self.room)
+	--print(s) 
+
 	local msgs = self:get_sortmsg_childs()
 	for _,child in pairs(msgs) do
-		local rt = child:recv_mouse_msg(mouse_event,x2,y2,param,room)
+		local rt = child:recv_mouse_msg(mouse_event,x2,y2,param)
 		if rt then
 			self:on_child_mouse_msg(mouse_event,x,y,param,rt)
 			return rt
@@ -547,9 +538,9 @@ function cell:recv_mouse_msg(mouse_event,x,y,param,room)
 	end	
 
 	if mouse_event == WM_MOUSEWHEEL then
-		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,self:in_rect_pixel(x,y,room),self:in_rect(x,y,room))
+		--print("recv_mouse_msg WM_MOUSEWHEEL",self.name,self:in_rect_pixel(x,y),self:in_rect(x,y))
 	end
-	if self:in_rect_pixel(x,y,room) then
+	if self:in_rect_pixel(x2,y2) then
 		return self:on_mouse_msg(mouse_event,x,y,param)	
 	end
 end
@@ -644,12 +635,13 @@ end
 
 function cell:on_mouse_scroll_room(param,min,max)
 	local depth = param / 120
-	self.room = self.room + depth / 10
-	if self.room < 0.5 then
-		self.room = 0.5
+	local room = self.room + depth / 10
+	if room < 0.5 then
+		room = 0.5
 	elseif self.room > 2 then
-		self.room = 2
+		room = 2
 	end	
+	self:set_room(room)
 end
 
 ------------------------------------------------------

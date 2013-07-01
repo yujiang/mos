@@ -30,20 +30,20 @@ function sprite:get_body()
 	return self:find_child("body")
 end
 
-function sprite:in_rect(x,y,room)
+function sprite:in_rect(x,y)
 	local body = self:get_body() 
 	if body then 
-		return body:in_rect(x-self.x,y-self.y,room)
+		return body:in_rect(x,y)
 	end
-	return self:_in_rect(x,y,room)
+	return self:_in_rect(x,y)
 end
 
-function sprite:in_rect_pixel(x,y,room)
+function sprite:in_rect_pixel(x,y)
 	local body = self:get_body() 
 	if body then 
-		return body:in_rect_pixel(x-self.x,y-self.y,room)
+		return body:in_rect_pixel(x,y)
 	end
-	return self:_in_rect(x,y,room)
+	return self:_in_rect(x,y)
 end
 
 
@@ -117,10 +117,10 @@ function sprite:stop()
 	end
 end
 
---function sprite:recv_mouse_msg(mouse_event,x,y,param,room)
---	local rt = cell.recv_mouse_msg(self,mouse_event,x,y,param,room)
+--function sprite:recv_mouse_msg(mouse_event,x,y,param)
+--	local rt = cell.recv_mouse_msg(self,mouse_event,x,y,param)
 	--if mouse_event == WM_RBUTTONDOWN then
-		--print("sprite:recv_mouse_msg WM_RBUTTONDOWN",x,y,self:in_rect(x,y,room),self:in_rect_pixel(x,y,room),self.name)
+		--print("sprite:recv_mouse_msg WM_RBUTTONDOWN",x,y,self:in_rect(x,y),self:in_rect_pixel(x,y),self.name)
 	--end
 --	return rt
 --end
@@ -130,6 +130,7 @@ function sprite:on_get_hover(is_hover,hover)
 	--print("sprite:on_get_hover",is_hover)
 	if is_hover then
 		self.shader = "light"
+		self.shader_param = 0.2
 	else
 		--self.shader = "dark"
 		self.shader = nil

@@ -33,8 +33,9 @@ end
 
 function map:center_play(x,y,w,h)
 	--print("map:center_play()",x,y,w,h)
-	self.x = w/2 - x
-	self.y = h/2 - y
+	self.x = w/2 - x*self.room
+	self.y = h/2 - y*self.room
+	print("center_play",self.x,self.y,x,y,self.room)
 --	if self.x > 0 then
 --		self.x = 0
 --	end
@@ -61,7 +62,7 @@ function map:on_mouse_msg(mouse_event,x,y,param)
 
 	if mouse_event == WM_LBUTTONDOWN then
 		if g_root.play then
-			g_root.play:walk_to(x-self.x,y-self.y,150)
+			g_root.play:walk_to((x-self.x)/self.room,(y-self.y)/self.room,150)
 		end
 		--self:topest()
 	elseif mouse_event == WM_RBUTTONDOWN then

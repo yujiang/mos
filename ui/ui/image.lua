@@ -78,23 +78,29 @@ function image:get_room_local()
 	return self.room
 end
 
-function image:get_rect(room)
+function image:get_rect()
 	--local room = self:get_room_local()
-	local cx = self.cx * room
-	local cy = self.cy * room
-
-	return self.x - cx,self.y - cy,self.x - cx + self.w * room ,self.y - cy	+ self.h * room 
+	local cx = self.cx 
+	local cy = self.cy 
+	return self.x - cx,self.y - cy,self.x - cx + self.w ,self.y - cy	+ self.h  
 end
 
-function image:in_rect_pixel(x,y,room)
-	if not self:in_rect(x,y,room) then
+function image:in_rect_pixel(x,y)
+	if not self:in_rect(x,y) then
 		return false
 	end
-	if  self:is_jpg() then --jpg没有alpha通道
+	if self:is_jpg() then --jpg没有alpha通道
+		--local l,t,r,b = self:get_rect(room)
+		--print("image:in_rect_pixel",x,y,room,l,t,r,b,self.w,self.h)
 		return true
 	else
 		--local room = self:get_room_local()
-		return cdriver.in_image(self.image_file,self.frame,(x - self.x)/room + self.cx , (y - self.y)/room + self.cy)
+		local room = self.room
+		local rt = cdriver.in_image(self.image_file,self.frame,(x - self.x)/room + self.cx , (y - self.y)/room + self.cy)
+		--print("image:in_rect_pixel ",self.image_file,rt)
+		local l,t,r,b = self:get_rect()
+		--print(x,y,room,l,t,r,b)
+		return rt
 	end
 end
 

@@ -180,17 +180,61 @@ int window_render_gl::draw_texture_cell(const st_cell& cell,texture* _tex,const 
 
 int window_render_gl::_draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
 {
-	return draw_texture(cell.x,cell.y,cell.room,cell.color,cell.alpha,cell.shader,_tex,rc);
+	return draw_texture(cell.x,cell.y,cell.room,cell.color,cell.alpha,cell.shader,cell.shader_param,_tex,rc);
 }
 
-int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,const char* shader,texture* _tex,const g_rect* rc_tex)
+bool get_cliped_rect2(g_rect& rect,const g_rect& clip,int& offx,int& offy)
+{
+	if (offx < clip.l)
+	{
+		rect.l -= offx - clip.l;
+		if (rect.r <= rect.l)
+			return false;
+		offx = clip.l;
+	}
+	else if (offx >= clip.r)
+		return false;
+	if (offx + rect.width() > clip.r)
+		rect.r -= offx + rect.width() - clip.r;
+
+	if (offy < clip.t)
+	{
+		rect.t -= offy - clip.t;
+		if (rect.b <= rect.t)
+			return false;
+		offy = clip.t;
+	}
+	else if (offy >= clip.b)
+		return false;
+	if (offy + rect.height() > clip.b)
+		rect.b -= offy + rect.height() - clip.b;
+
+	if (rect.is_empty())
+		return false;
+
+	return true;
+}
+
+
+//room做成shader算了。
+int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex)
 {
 	texture_gl* tex = (texture_gl*)_tex;
-	g_rect rect = rc_tex ? *rc_tex : tex->get_rect();
+	g_rect rect0 = rc_tex ? *rc_tex : tex->get_rect();
 
-	g_rect rc = g_rect(0,0,m_window->m_width,m_window->m_height);
+	float u0 = (float)rect0.l/tex->m_tex_width;
+	float v0 = (float)rect0.t/tex->m_tex_height;
+	g_rect rect = rect0;
+	rect.r += rect.width() * (room - 1);
+	rect.b += rect.height() * (room - 1);
 
-	if (!get_cliped_rect(rect,rc,x,y,m_rc_clip))
+
+	//这个地方不对，跟window clip了接着room，错了。
+	
+	//因为shader的缘故，这里可以去了。
+	g_rect rc_window = g_rect(0,0,m_window->m_width,m_window->m_height);
+	//if (m_rc_clip && !get_cliped_rect2(rect,*m_rc_clip,x,y))
+	if (!get_cliped_rect(rect,rc_window,x,y,m_rc_clip))
 		return -1;
 
 	s_f2 f3[4];
@@ -198,12 +242,12 @@ int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,co
 
 	f3[0].x = x;
 	f3[0].y = y;
-	uv[0].u = (float)rect.l/tex->m_tex_width;
-	uv[0].v = (float)rect.t/tex->m_tex_height;
-	f3[3].x = x + rect.width() * room;
-	f3[3].y = y + rect.height() * room;
-	uv[3].u = (float)rect.r/tex->m_tex_width;
-	uv[3].v = (float)rect.b/tex->m_tex_height;
+	uv[0].u = u0 + (float)(rect.l-rect0.l)/tex->m_tex_width/room;
+	uv[0].v = v0 + (float)(rect.t-rect0.t)/tex->m_tex_height/room;
+	f3[3].x = x + rect.width() ;
+	f3[3].y = y + rect.height() ;
+	uv[3].u = u0 + (float)(rect.r-rect0.l)/tex->m_tex_width/room;
+	uv[3].v = v0 + (float)(rect.b-rect0.t)/tex->m_tex_height/room;
 
 	f3[1].x = f3[0].x;
 	f3[1].y = f3[3].y;
@@ -217,7 +261,7 @@ int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,co
 
 	glShader* cur_shader = NULL;
 	if (shader)
-		cur_shader = m_shader_manager->getShader(shader);
+		cur_shader = m_shader_manager->getShader(shader,tex->use_palette());
 	if (cur_shader == NULL && tex->use_palette())
 		cur_shader = m_shader_palette;
 
@@ -238,6 +282,10 @@ int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,co
 			int palette = cur_shader->GetUniformLocation("palette");
 			glUniform1i(palette,1);
 		}
+
+		int param = cur_shader->GetUniformLocation("param");
+		//shader_param
+		glUniform1f(param,shader_param);
 	}
 	else
 	{

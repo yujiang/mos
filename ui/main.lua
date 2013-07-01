@@ -159,7 +159,9 @@ function safe_on_init()
 	--test_map()
 	regist_dog()
 	test_sprite(false)
-	--test_win2()
+	
+	test_win1()
+	--test_win4()
 	--test_notice()
 
 	print("input ? or test() get example.")

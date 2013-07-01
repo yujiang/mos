@@ -19,7 +19,9 @@ public:
 
 	int x,y,z;
 	int cx,cy; //重心
-	float room;
+
+	float room;		//room改变offset，roomall改变render!
+
 	int w,h;
 
 	int color;
@@ -27,7 +29,9 @@ public:
 
 	const char* image_file;
 	int frame;
+
 	const char* shader;
+	float shader_param;
 
 	//font
 	int font;
@@ -43,7 +47,8 @@ public:
 
 	st_cell();
 	void init();
-	st_cell(const st_cell& r1,const st_cell& r2);
+	//st_cell(const st_cell& r1,const st_cell& r2);
+	void merge(const st_cell& r1,const st_cell& r2);
 
 	void set_kv(const char* key,lua_Number value);
 	void set_kv(const char* key,const char* value);

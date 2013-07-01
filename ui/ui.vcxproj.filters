@@ -158,5 +158,11 @@
     <None Include="resources\shaders\dark_vertex.txt">
       <Filter>resources\shaders</Filter>
     </None>
+    <None Include="resources\shaders\room_fragment.txt">
+      <Filter>resources\shaders</Filter>
+    </None>
+    <None Include="resources\shaders\room_vertex.txt">
+      <Filter>resources\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

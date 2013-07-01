@@ -1,6 +1,8 @@
 
 #include "cell.h"
 #include "graph.h"
+#include "device/window_render.h"
+#include "mos.h"
 #include <vector>
 #include <unordered_map>
 #include <assert.h>
@@ -40,7 +42,7 @@ void init_cell()
 	offsetstr(image_file);
 	offsetstr(shader);
 	offsetstr(text);
-
+	
 	offsetint(part0);
 	offsetint(part1);
 	offsetint(part2);
@@ -66,17 +68,28 @@ void st_cell::init()
 	room = 1.f;
 }
 
-st_cell::st_cell(const st_cell& r1,const st_cell& r2)
+void st_cell::merge(const st_cell& father,const st_cell& me)
 {
+	const st_cell& r1 = father;
+	const st_cell& r2 = me;
 	//init();
 	memcpy(&part0,&r2.part0,sizeof(part0)*ZGP_MAX_PARTS);
 
 	//后面覆盖前面的shader!
-	shader = r2.shader ? r2.shader : r1.shader;
+	if (r2.shader)
+	{
+		shader = r2.shader ;
+		shader_param = r2.shader_param;
+	}
+	else
+	{
+		shader = r1.shader ;
+		shader_param = r1.shader_param;
+	}
 
-	x = r1.x + r2.x;
-	y = r1.y + r2.y;
-	//z 不必变
+	x = r1.x + r2.x * r1.room;
+	y = r1.y + r2.y * r1.room;
+
 	room = r1.room * r2.room;
 
 	//color 不必变
@@ -87,14 +100,23 @@ st_cell::st_cell(const st_cell& r1,const st_cell& r2)
 
 void st_cell::set_kv(const char* key,lua_Number value)
 {
-	if (key[0] == 'r')
-	{
-		room = value;
-		return;
-	}
+	//这个太trick了。
 	int offset = g_hmOffsetInt[key];
 	if (offset == 0)
+	{
+		switch(key[0])
+		{
+		case 'r':
+			if (strcmp(key,"room") == 0)
+				room = value;
+			break;
+		case 's':
+			if (strcmp(key,"shader_param") == 0)
+				shader_param = value;
+			break;
+		}
 		return;
+	}
 	*((int*)(((char*)this)+offset)) = value;
 }
 
@@ -156,33 +178,40 @@ void cell::print(int level) const
 
 void cell::draw(int level,const st_cell& st) const
 {
-	st_cell st2(st,*this);
+	//st_cell st2(st,*this);
+	st_cell st2;
+	st2.merge(st,*this);
+
 	if (is_window)
-		get_graph()->draw_win_begin(st2.x,st2.y,st.w,st.h);
-	else if (image_file)
+		get_graph()->draw_win_begin(st2.x,st2.y,st.w,st.h,room);
+	else 
 	{
-		int x = st2.x;
-		int y = st2.y;
-		st2.x -= cx * st2.room;
-		st2.y -= cy * st2.room;
-		get_graph()->draw_image(st2,image_file,frame);
-		//st2.x += cx * room;
-		//st2.y += cy * room;
-		st2.x = x;
-		st2.y = y;
+		int x0 = st2.x;
+		int y0 = st2.y;
+	
+		if (image_file)
+		{
+			//必须修改这里才行，来修改offset。和destexture。
+			st2.x -= cx * st2.room;
+			st2.y -= cy * st2.room;
+			get_graph()->draw_image(st2,image_file,frame);
+		}
+		else if(text)
+		{			
+			g_rect r;
+			r.set_xywh(st.x,st.y,w* st2.room,h* st2.room);
+			get_graph()->draw_text(st2,*this,r); //*this x,y 也是有用的。
+		}
+		else if(is_box)
+		{
+			st2.color = color;
+			get_graph()->draw_box(st2,w*st2.room,h*st2.room);
+		}
+
+		st2.x = x0;
+		st2.y = y0;
 	}
-	else if(text)
-	{
-		g_rect r;
-		r.set_xywh(st.x,st.y,w,h);
-		//use st2 x,y,color,alpha and use *this font...
-		get_graph()->draw_text(st2,*this,r); //*this x,y 也是有用的。
-	}
-	else if(is_box)
-	{
-		st2.color = color;
-		get_graph()->draw_box(st2,w,h);
-	}
+
 	for (auto it = childs.begin(); it != childs.end(); ++it)
 		(*it)->draw(level+1,st2);
 	if (is_window)

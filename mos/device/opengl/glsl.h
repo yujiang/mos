@@ -293,7 +293,7 @@ shaders!
        //bool      free(glShader* o); //!< Remove the shader and free the memory occupied by this shader.
 	   glShader* loadfromFileName(const char* name);				//!< load vertex/fragment shader from file. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part. \param vertexFile Vertex Shader File. \param fragmentFile Fragment Shader File.
 	   glShader* loadfromMemoryName(const char* name,const char* vertexMem, const char* fragmentMem); //!< load vertex/fragment shader from memory. If you specify 0 for one of the shaders, the fixed function pipeline is used for that part.
-	   glShader* getShader(const char* name);
+	   glShader* getShader(const char* name,bool use_pal);
 	   void		SetPath(const char* path){
 		   m_path = path;
 	   }

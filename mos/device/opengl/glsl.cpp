@@ -1981,7 +1981,7 @@ glShader* glShaderManager::loadfromMemoryName(const char* name,const char* verte
 	return p;
 }
 
-glShader* glShaderManager::getShader(const char* name)
+glShader* glShaderManager::getShader(const char* name,bool use_pal)
 {
 	auto it = _shaderObjectList.find(name);
 	if (it != _shaderObjectList.end())

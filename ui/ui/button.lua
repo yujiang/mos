@@ -24,6 +24,11 @@ function button:change_status(status)
 	self.status = status
 	if self:get_bg() then
 		self:get_bg().frame = status
+		if status == BUTTON_HOVER then
+			self.room = 1.2
+		else
+			self.room = 1
+		end
 	end
 
 	if self:get_box() and self.status_box_colors then

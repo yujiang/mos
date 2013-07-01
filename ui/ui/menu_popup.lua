@@ -17,12 +17,15 @@ function menu_popup:is_hide()
 end
 
 
-function menu_popup:recv_mouse_msg(mouse_event,x,y,param,room)
+function menu_popup:recv_mouse_msg(mouse_event,x,y,param)
 	--print("menu_popup:recv_mouse_msg",mouse_event,x,y)
-	if not self:in_rect(x,y,room) then
+	local x2 = x - self.x
+	local y2 = y - self.y
+	if not self:in_rect(x2,y2) then
 		--print("not menu_popup:in_rect(x,y)")
 		if mouse_event == WM_MOUSEMOVE and WM_MOUSEWHEEL then
-			if not self.cell or not self.cell:in_rect_all(x,y,room) then
+			if not self.cell then--or not self.cell:in_rect_all(x,y,room) then
+				--必须注册lostfocus的事件。
 				self:hide()
 			end
 		else
@@ -30,7 +33,7 @@ function menu_popup:recv_mouse_msg(mouse_event,x,y,param,room)
 		end
 		return
 	end
-	return cell.recv_mouse_msg(self,mouse_event,x,y,param,room)
+	return cell.recv_mouse_msg(self,mouse_event,x,y,param)
 end
 
 return menu_popup

@@ -106,6 +106,8 @@
     <None Include="resources\shaders\light_vertex.txt" />
     <None Include="Resources\shaders\palette_fragment.txt" />
     <None Include="Resources\shaders\palette_vertex.txt" />
+    <None Include="resources\shaders\room_fragment.txt" />
+    <None Include="resources\shaders\room_vertex.txt" />
     <None Include="test.lua" />
     <None Include="todo.txt" />
     <None Include="ui\box.lua" />

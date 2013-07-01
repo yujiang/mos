@@ -232,20 +232,31 @@ function test_win1()
 	local btn = button()
 	btn:create_button("btn1",20,20,0)
 	btn:set_bg("play")
-	btn:set_caption("游戏",0,50,50)
+	btn:set_caption("游戏按钮play",0,50,80,100,30)
 	local text = btn:get_caption_text()
 	text.color = 0x000000ff
 	win:add_child(btn)
 	assert(btn == r:find_control("normal.win1.btn1"))
+	local lb = btn:get_caption()
+	lb:set_box(0x8040ff,128)
 
 	local btn2 = button()
-	btn2:create_button("dog",200,100,0)
+	btn2:create_button("dog",250,100,0)
 	btn2:set_bg("dog")
-	btn2:set_caption("狐狸")
+	btn2:set_caption("狐狸",0,-50,0,100,30)
 	btn2:get_caption():set_align(ALIGN_CENTER)
+
 	local text = btn2:get_caption_text()
 	text.color = 0x0000ff00
 	win:add_child(btn2)
+
+	--注意一下三句话，只有最后一个是对齐效果正确的，记住就好。
+	text.text = "狐狸小狗"
+	text:set_string("狐狸小狗")
+	local lb = btn2:get_caption()
+	lb:set_box(0x8040ff,128)
+
+	lb:set_string("狐狸小狗")
 end
 
 function test_msgbox()
@@ -310,7 +321,7 @@ function test_sprite(png)
 	--bd:set_zgp_part_pal(1,-77,0,0)
 	--bd:set_zgp_part_pal(4,54,0,0)
 
-	sp:set_room(0.7)
+	--sp:set_room(0.7)
 
 	r:set_play(sp)
 end

@@ -65,6 +65,9 @@ function window:on_mouse_msg(mouse_event,x,y,param)
 	elseif mouse_event == WM_RBUTTONDOWN then
 		--self:hide()
 		ui:on_window_mouse_rd(self,x,y)
+	elseif mouse_event == WM_MOUSEWHEEL then
+		--print("map:on_mouse_msg","WM_MOUSEWHEEL")
+		self:on_mouse_scroll_room(param,0.5,2)
 	end
 	--cell.on_mouse_msg(self,mouse_event,x,y)
 	return self

@@ -9,6 +9,8 @@ int window_render::s_triangle_render = 0;
 window_render::window_render(window* w) : m_window(w)
 {
 	m_rc_clip = NULL;  
+	m_in_window = false;
+	m_in_text = false;
 }
 
 window_render::~window_render()

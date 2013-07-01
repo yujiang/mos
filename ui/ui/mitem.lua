@@ -4,7 +4,7 @@ local mitem = class(button,"mitem")
 function mitem:create_mitem(index,w,htext,text)
 	button.create_button(self,tostring(index),0,(index-1)*htext,0,w,htext)
 	--self:set_box(-1,200)
-	self:set_caption(text)
+	self:set_caption(text,0,0,0,self.w,self.h)
 	self:get_caption_text():set_color(0)
 	self:set_box(-1,200)
 	self.htext = htext
@@ -76,15 +76,15 @@ function mitem:on_mouse_msg(mouse_event,x,y,param)
 	return self
 end
 
-function mitem:in_rect(x,y,room)
-	if cell.in_rect(self,x,y,room) then
+function mitem:in_rect(x,y)
+	if cell.in_rect(self,x,y) then
 		return true
 	end
 	local menu = self:get_menu()
 	if menu and menu:is_show() then
-		local x2 = x - self.x
-		local y2 = y - self.y
-		local rt = menu:in_rect(x2,y2,room)
+		local x2 = x 
+		local y2 = y 
+		local rt = menu:in_rect(x2,y2)
 		if rt then 
 			return true
 		end

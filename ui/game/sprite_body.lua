@@ -86,9 +86,9 @@ end
 function sprite_body:on_timer_stand()
 	--print("sprite:on_timer_stand()")
 	local ani = self.ani
-	if ani.ani_tb.name == "stand" then
+	if ani.ani_tb and ani.ani_tb.name == "stand" then
 		ani.ani_tb = nil
-		--self:stand()
+		self:stand()
 	end
 end
 
