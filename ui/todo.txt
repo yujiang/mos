@@ -123,6 +123,8 @@ changelog
 7.1
 	支持了room，没法用shader或者matrix，那么其他shader不好合并了，关键是，sprite的几何信息是在image中的。
 	渲染的时候用乘法一步步展开到screen坐标，而判断鼠标点击用除法除到cell的坐标，看上去挺复杂，其实代码简单的多。
+	
+	因为room和shader，已经失去了gdi的支持。
 
 	
 Todo：

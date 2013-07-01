@@ -662,9 +662,10 @@ function cell:on_mouse_scroll_room(param,min,max)
 	local room = self.room + depth / 10
 	if room < 0.5 then
 		room = 0.5
-	elseif self.room > 2 then
+	elseif room > 2 then
 		room = 2
 	end	
+	--print("self:set_room",self.name,room)
 	self:set_room(room)
 end
 

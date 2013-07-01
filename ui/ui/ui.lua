@@ -166,7 +166,7 @@ function ui:on_sprite_mouse_rd(win,x,y)
 	--self:on_window_mouse_rd(win,x,y)
 	local m = menu_popup()
 	m:create_menu_texts(win.name.."_menu",self.mouse_x,self.mouse_y,0,100,20,
-	{"drag","hide","destroy","save","print","printrd","roomout","roomin","ai..."},win)
+	{"drag","hide","destroy","save","resetpal","print","printrd","ai..."},win)
 	m:set_check("drag",win.drag)
 
 	local item = m:find_item_by_text("ai...") --show...
@@ -202,17 +202,16 @@ function ui:on_sprite_mouse_rd(win,x,y)
 			self:save_window(win)
 		elseif menu == 'print' then
 			win:print()
-		elseif menu == 'roomout' then
-			if win.room < 2 then
-				win.room = win.room + 0.1
-			end
-			print(win.room)
-		elseif menu == 'roomin' then
-			if win.room > 0.2 then
-				win.room = win.room - 0.1
-			end
 		elseif menu == 'printrd' then
 			win:print_render()
+		elseif menu == 'resetpal' then
+			local bd = win:get_body()
+			if bd.part1 then
+				bd:reset_zgp_pal()
+			else
+				bd:set_zgp_part_pal(1,-77,0,0)
+				bd:set_zgp_part_pal(4,54,0,0)
+			end
 		end
 	end
 	g_root:set_popup_menu(m)

@@ -56,8 +56,14 @@ function sprite_body:set_weapon(weapon_id)
 end
 
 --only zgp valid
-function sprite_body:clear_zgp_part_pal(part,h,s,v)
+function sprite_body:clear_zgp_part_pal(part)
 	self["part"..part] = nil
+end
+
+function sprite_body:reset_zgp_pal()
+	for part=1,6 do 
+		self["part"..part] = nil
+	end
 end
 
 function sprite_body:set_zgp_part_pal(part,h,s,v)
