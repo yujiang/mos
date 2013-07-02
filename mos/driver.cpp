@@ -10,6 +10,7 @@
 #include "graph/texture.h"
 #include "device/window.h"
 #include "device/window_render.h"
+#include "graph/map.h"
 #include "mos.h"
 
 #include <string>
@@ -86,6 +87,24 @@ static int lua_get_image_size (lua_State *L) {
 		return 2;
 	}
 	printf("error! get_image_size %s %d\n",file,frame);
+	lua_pushinteger(L,0);
+	lua_pushinteger(L,0);
+	return 2;
+}
+
+static int lua_get_map_size (lua_State *L) {
+	const char* file = luaL_checkstring(L,1);
+	int frame = -1;
+	if (lua_gettop(L) == 2)
+		frame = luaL_checkinteger(L,2);
+	g_size sz;
+	if (get_map()->get_map_size(file,frame,sz))
+	{
+		lua_pushinteger(L,sz.w);
+		lua_pushinteger(L,sz.h);
+		return 2;
+	}
+	printf("error! get_map_size %s %d\n",file,frame);
 	lua_pushinteger(L,0);
 	lua_pushinteger(L,0);
 	return 2;
@@ -241,6 +260,7 @@ static const luaL_reg driver_lib[] = {
 	{"render",				lua_render},
 	{"create_window",		lua_create_window},
 	{"get_image_size",		lua_get_image_size},
+	{"get_map_size",		lua_get_map_size},
 	{"get_image_sizecg",	lua_get_image_sizecg},
 	{"get_text_line",		lua_get_text_line},
 	{"get_text_size",		lua_get_text_size},

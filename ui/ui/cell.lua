@@ -149,12 +149,21 @@ function cell:in_rect_pixel(x,y)
 end
 
 ---------------------------------------------------------
+--常量
+c_box_z = -2000
+c_bg_z = -1000
+
 --bg and box and caption
 function cell:set_bg(image_file,frame)
-	local bg = image()
 	--z随便给个负值，放在最下面
-	bg:create_image("bg",0,0,-1000,image_file,frame or 0)
-	self:add_child(bg)
+	local bg = self:get_bg()
+	if not bg then
+		bg = image()
+		bg:create_image("bg",0,0,c_bg_z,image_file,frame or 0)
+		self:add_child(bg)
+	else
+		bg:set_image(image_file,frame)
+	end
 	self.w = bg.w
 	self.h = bg.h
 end
@@ -164,10 +173,16 @@ function cell:get_bg()
 end
 
 function cell:set_box(color,alpha)
-	local b = box()
-	--z随便给个负值，放在最下面
-	b:create_box("box",0,0,-2000,self.w,self.h,color,alpha)
-	self:add_child(b)
+	local b = self:get_box()
+	if not b then
+		b = box()
+		--z随便给个负值，放在最下面
+		b:create_box("box",0,0,c_box_z,self.w,self.h,color,alpha)
+		self:add_child(b)
+	else
+		b:set_color(color)
+		b:set_alpha(alpha)
+	end
 end
 
 function cell:get_box()
@@ -175,13 +190,16 @@ function cell:get_box()
 end
 
 function cell:set_caption(text,font,offx,offy,w,h)
+	assert(self.w >= 0 and self.h >= 0)
+	assert(not self:get_caption())
+
 	offx = offx or 0
 	offy = offy or 0
-	assert(self.w >= 0 and self.h >= 0)
-	local lb = label()
-	--lb:create_label("caption",offx,offy,1000,self.w-2*offx,self.h-2*offy,text,font,nil,ALIGN_CENTER)
 	w = w or 100
 	h = h or 32
+
+	local lb = label()
+	--lb:create_label("caption",offx,offy,1000,self.w-2*offx,self.h-2*offy,text,font,nil,ALIGN_CENTER)
 	lb:create_label("caption",offx,offy,1000,w,h,text,font,nil,ALIGN_CENTER)
 	self:add_child(lb)
 end

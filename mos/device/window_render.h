@@ -31,18 +31,18 @@ public:
 	virtual void render_end() = 0;
 
 	g_rect m_rc_window;
-	float m_room_window;
-	bool m_in_window;
-	void window_start(int x,int y,int w,int h,float room){
+	const st_cell* m_in_window;
+	void window_start(int x,int y,int w,int h,const st_cell& win){
 		m_rc_window.set_xywh(x,y,w,h);
-		m_room_window = room;
-		m_in_window = true;
+		m_in_window = &win;
 	}
 	void window_end(){
-		m_in_window = false;
+		m_in_window = NULL;
 	}
 
+
 	const g_rect* m_rc_clip;
+	//剪裁使用，现在仅仅用于text。
 
 	g_rect m_rc_text;
 	bool m_in_text;

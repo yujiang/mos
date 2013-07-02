@@ -8,8 +8,8 @@
 #include "font.h"
 #include "image_db.h"
 #include "mos.h"
-#include "crc32.h"
 #include "image/image_zgp.h"
+#include "map.h"
 #include <iostream>
 
 class auto_free
@@ -26,78 +26,38 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-image_zgp* graph::find_zgp(const char* file)
+graph::graph()
 {
-	image_zgp* zgp = zgp_map[file];
-	if (!zgp)
-	{
-		zgp = new image_zgp;
-		if (zgp->loadzgp_file(file))
-		{
-			zgp_map[file] = zgp;
-		}
-		else
-		{
-			delete zgp;
-			zgp = NULL;
-		}
-	}
-	return zgp;
+	m_compress_image = 10;
+	m_clear_image  = 60;
+	m_clear_texture = 10;
+	m_clear_texturefont = 10;
+
+	m_in_map = NULL;
 }
 
-image* graph::create_image_zgp(const char* file,int frame,const DWORD* parts_pal_hsv)
+void graph::regist_file_source(file_source* source)
 {
-	image_zgp* zgp = find_zgp(file);
-	if (zgp)
-	{
-		zgp->mark_use_zgp(g_time_now);
-		return zgp->get_sprite_image_parts(frame,parts_pal_hsv);
-	}
+	source_map[source->get_file_ext()] = source;
+}
+
+file_source* graph::find_file_source(const char* file)
+{
+	const char* f = file + strlen(file) - 3;
+	auto it = source_map.find(f);
+	if (it != source_map.end())
+		return it->second;
+	//return source_map[f];
 	return NULL;
-}
-
-
-bool is_zgp(const char* file)
-{
-	const char* p = file + strlen(file) - 4;
-	return strcmp(p,".zgp") == 0;
-}
-
-const char* get_zgp_texture(const char* _file,int frame,const unsigned long* parts_pal_hsv)
-{
-	static char file[128];
-	if (parts_pal_hsv == NULL)
-		sprintf(file,"%s_%04d",_file,frame);
-	else
-	{
-		unsigned int hashcode = crc_buffer((char*)parts_pal_hsv,sizeof(*parts_pal_hsv) * ZGP_MAX_PARTS); //= hash_part(parts_pal_hsv); //一般这里冲突的可能性不大。
-		if (hashcode == 0)
-			sprintf(file,"%s_%04d",_file,frame);
-		else
-			sprintf(file,"%s_%04d_%x",_file,frame,hashcode);
-	}
-	return file;
-}
-
-image* graph::find_image_zgp(const char* _file,int frame,const unsigned long* parts_pal_hsv)
-{
-	const char* file = get_zgp_texture(_file,frame,parts_pal_hsv);
-	image* i = image_map[file];
-	if (!i)
-	{
-		i = create_image_zgp(_file,frame,parts_pal_hsv);
-		if (i)
-			image_map[file] = i;
-	}
-	if (i)
-		i->mark_use_image(g_time_now);
-	return i;
 }
 
 image* graph::find_image_raw(const char* file,int frame,const unsigned long* parts_pal_hsv)
 {
-	if (is_zgp(file))
-		return find_image_zgp(file,frame,parts_pal_hsv);
+	file_source* source = find_file_source(file);
+	if (source)
+		return source->find_image_file(file,frame,parts_pal_hsv);
+	//if (is_zgp(file))
+	//	return find_image_zgp(file,frame,parts_pal_hsv);
 
 	image* i = image_map[file];
 	if (!i)
@@ -201,29 +161,18 @@ bool graph::find_texture_font_rc(const st_cell& text,int char_value,text_char& t
 
 
 //////////////////////////////////////////////////////////////////////////
-#define TIME_NOTUSE(A,B) ((int)(time - A->m_time_use) / 1000 > B)
-#define TIME(A) ((time - A->m_time_use) / 1000)
 
 
 
 void graph::auto_clear_resource()
 {
-	unsigned long time = get_time_now();
-
-	for (auto it = zgp_map.begin(); it != zgp_map.end(); )
+	for (auto it = source_map.begin(); it != source_map.end(); ++it)
 	{
-		image_zgp* img = it->second;
-		if (img && TIME_NOTUSE(img,m_clear_zgp) )
-		{
-#ifdef _DEBUG_RESOURCE
-			std::cout << "clear zgp " << it->first << " time: " << TIME(img) << std::endl;
-#endif
-			delete img;
-			it = zgp_map.erase(it);
-		}
-		else
-			++it;
-	}	
+		file_source* p = it->second;
+		p->auto_clear_resource();
+	}
+
+	unsigned long time = get_time_now();
 
 	for (auto it = image_map.begin(); it != image_map.end(); )
 	{
@@ -289,6 +238,12 @@ void graph::auto_clear_resource()
 
 void graph::close_resource()
 {
+	for (auto it = source_map.begin(); it != source_map.end(); ++it)
+	{
+		file_source* p = it->second;
+		p->close_resource();
+	}
+
 	for (auto it = image_map.begin(); it != image_map.end(); ++it)
 		delete it->second;
 	image_map.clear();
@@ -370,8 +325,11 @@ int graph::draw_image(const st_cell& cell,const char* file,int frame)
 	if (r && !r->rc.is_empty())
 		rc = &r->rc;
 
-	if (is_zgp(file))
-		file = get_zgp_texture(file,frame,&cell.part0);
+	//if (is_zgp(file))
+	//	file = get_zgp_texture(file,frame,&cell.part0);
+	file_source* source = find_file_source(file);
+	if (source)
+		file = source->get_texture_file(file,frame,&cell.part0);
 
 	return get_render()->draw_image_cell(cell,img,file,rc);
 }
@@ -540,16 +498,15 @@ void graph::render_end()
 	auto_clear_resource();
 }
 
-void graph::draw_win_begin(int x,int y,int w,int h,float room)
+void graph::draw_win_begin(int x,int y,int w,int h,const st_cell& win)
 {
-	get_render()->window_start(x,y,w,h,room);
+	get_render()->window_start(x,y,w,h,win);
 }
 
 void graph::draw_win_end()
 {
 	get_render()->window_end();
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 //device
@@ -564,6 +521,7 @@ void graph::init_graph()
 	image::register_image_file("png",create_image_png);
 	image::register_image_file("jpg",create_image_jpg);
 	//image::register_image_file("zgp",create_image_zgp);
+	regist_file_source(get_file_source_zgp());
 }
 
 void graph::close_graph()

@@ -1,6 +1,7 @@
 
 #include "cell.h"
 #include "graph.h"
+#include "map.h"
 #include "device/window_render.h"
 #include "mos.h"
 #include <vector>
@@ -19,7 +20,8 @@ void init_cell()
 {
 	offsetint(is_window);
 	offsetint(is_box);
-	//offsetint(is_text);
+	offsetint(is_map);
+
 	offsetstr(name);
 
 	offsetint(alpha);
@@ -40,6 +42,7 @@ void init_cell()
 	offsetint(underline);
 
 	offsetstr(image_file);
+	offsetstr(map_file);
 	offsetstr(shader);
 	offsetstr(text);
 	
@@ -66,36 +69,6 @@ void st_cell::init()
 	color = -1;
 	alpha = 255;
 	room = 1.f;
-}
-
-void st_cell::merge(const st_cell& father,const st_cell& me)
-{
-	const st_cell& r1 = father;
-	const st_cell& r2 = me;
-	//init();
-	memcpy(&part0,&r2.part0,sizeof(part0)*ZGP_MAX_PARTS);
-
-	//后面覆盖前面的shader!
-	if (r2.shader)
-	{
-		shader = r2.shader ;
-		shader_param = r2.shader_param;
-	}
-	else
-	{
-		shader = r1.shader ;
-		shader_param = r1.shader_param;
-	}
-
-	x = r1.x + r2.x * r1.room;
-	y = r1.y + r2.y * r1.room;
-
-	room = r1.room * r2.room;
-
-	//color 不必变
-	//alpha 也用个乘法
-	color = r2.color;
-	alpha = r1.alpha * r2.alpha / 255;
 }
 
 void st_cell::set_kv(const char* key,lua_Number value)
@@ -176,6 +149,36 @@ void cell::print(int level) const
 		(*it)->print(level+1);
 }
 
+void st_cell::merge(const st_cell& father,const st_cell& me)
+{
+	const st_cell& r1 = father;
+	const st_cell& r2 = me;
+	//init();
+	memcpy(&part0,&r2.part0,sizeof(part0)*ZGP_MAX_PARTS);
+
+	//后面覆盖前面的shader!
+	if (r2.shader)
+	{
+		shader = r2.shader ;
+		shader_param = r2.shader_param;
+	}
+	else
+	{
+		shader = r1.shader ;
+		shader_param = r1.shader_param;
+	}
+
+	x = r1.x + r2.x * r1.room;
+	y = r1.y + r2.y * r1.room;
+
+	room = r1.room * r2.room;
+
+	//color 不必变
+	//alpha 也用个乘法
+	color = r2.color;
+	alpha = r1.alpha * r2.alpha / 255;
+}
+
 void cell::draw(int level,const st_cell& st) const
 {
 	//st_cell st2(st,*this);
@@ -183,18 +186,29 @@ void cell::draw(int level,const st_cell& st) const
 	st2.merge(st,*this);
 
 	if (is_window)
-		get_graph()->draw_win_begin(st2.x,st2.y,st.w,st.h,room);
+		get_graph()->draw_win_begin(st2.x,st2.y,st.w,st.h,*this);
+	else if(is_map)
+		get_graph()->draw_map_begin(st2.x,st2.y,st.w,st.h,*this);
 	else 
 	{
 		int x0 = st2.x;
 		int y0 = st2.y;
 	
+		//image_file,text,is_box是互斥的，本来也可以并行，有一个默认排序即可
+		//但是保持结构，还是互斥。
 		if (image_file)
 		{
+			if (get_graph()->m_in_map)
+				get_map()->mask_draw_image(this);
+
 			//必须修改这里才行，来修改offset。和destexture。
 			st2.x -= cx * st2.room;
 			st2.y -= cy * st2.room;
 			get_graph()->draw_image(st2,image_file,frame);
+		}
+		else if(map_file) //地图文件
+		{
+			get_map()->draw_map_image(st2,map_file,frame);
 		}
 		else if(text)
 		{			
@@ -214,8 +228,11 @@ void cell::draw(int level,const st_cell& st) const
 
 	for (auto it = childs.begin(); it != childs.end(); ++it)
 		(*it)->draw(level+1,st2);
+
 	if (is_window)
 		get_graph()->draw_win_end();
+	else if(is_map)
+		get_graph()->draw_map_end();
 }
 
 

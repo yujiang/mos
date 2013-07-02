@@ -94,6 +94,7 @@
     <None Include="game\ai.lua" />
     <None Include="game\ani.lua" />
     <None Include="game\camera.lua" />
+    <None Include="game\image_map.lua" />
     <None Include="game\map.lua" />
     <None Include="game\move.lua" />
     <None Include="game\sprite.lua" />

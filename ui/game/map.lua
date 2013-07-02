@@ -2,13 +2,31 @@
 
 local map = class(window,"map")
 
+function map:set_bg_map(image_file,frame)
+	--z随便给个负值，放在最下面
+	local bg = self:get_bg()
+	if not bg then
+		bg = image_map()
+		bg:create_image_map("bg",0,0,c_bg_z,image_file,frame or 0)
+		self:add_child(bg)
+	else
+		bg:set_image_map(image_file,frame)
+	end
+	self.w = bg.w
+	self.h = bg.h
+end
+
+
 function map:create_map(name,w,h,id)
 	assert(id)
 	window.create_window(self,name,0,0,0,w,h)
+	self.is_window = nil
+	self.is_map = true
+
 	self.drag = false
 
 	local jpg = string.format("map/%04d.jpg",id)
-	self:set_bg(jpg)
+	self:set_bg_map(jpg)
 end
 
 function map:mouse_2_map(x,y)

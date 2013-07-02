@@ -164,5 +164,8 @@
     <None Include="resources\shaders\room_vertex.txt">
       <Filter>resources\shaders</Filter>
     </None>
+    <None Include="game\image_map.lua">
+      <Filter>game</Filter>
+    </None>
   </ItemGroup>
 </Project>

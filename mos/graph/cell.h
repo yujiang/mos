@@ -38,9 +38,15 @@ public:
 	const char* text;
 	int wrap,align,bold,underline;
 
-	//int is_text;	//for text
 	int is_box;		//for box
-	int is_window;	//for window use，一个window上的图素可以一次绘制。
+	
+	int is_window;	//for window use
+	//一个window上的图素可以一次绘制，合并其上的image和text，然后一次性绘制image和text。
+	//尚未实现
+	
+	int is_map;		//for map
+	const char* map_file;
+	//一个特殊的实现，因为map的格式复杂，并且map可能是动态的，包括其上的遮罩，处理也复杂。
 
 	unsigned long part0,part1,part2,part3,part4,part5;
 	//int shader_light;	//发亮，可以用shader，但是part不行，因为part是分块的无法支持。

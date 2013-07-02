@@ -1,6 +1,9 @@
 #include "image_zgp.h"
 #include "../graph/image.h"
 #include "device/file.h"
+#include "mos.h"
+#include "../graph/graph.h"
+#include "crc32.h"
 
 //本来为了通用，想使用png的格式，
 //并且发现主要zgp的格式并不优化，比png要大一倍，
@@ -386,3 +389,131 @@ WORD* image_zgp::find_pal(int part,DWORD hsv)
 	m_pals_hsv[index] = pal;
 	return pal;
 }
+
+//////////////////////////////////////////////////////////////////////////
+class zgp_source : public file_source
+{
+public:
+	zgp_source()
+	{
+		m_clear_zgp = 100;
+	}
+	int m_clear_zgp;
+	//bool is_file(const char* file);
+	const char* get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv);
+	const char* get_file_ext() {
+		return "zgp";
+	}
+
+	//所有zgp资源。
+	std::unordered_map<std::string,image_zgp*> zgp_map;
+	image_zgp* find_file(const char* file);
+
+	image* find_image_file(const char* file,int frame,const unsigned long* parts_pal_hsv);
+	image* create_image_file(const char* file,int frame,const unsigned long* parts_pal_hsv);
+
+	void auto_clear_resource();
+	void close_resource();
+};
+
+
+image_zgp* zgp_source::find_file(const char* file)
+{
+	image_zgp* zgp = zgp_map[file];
+	if (!zgp)
+	{
+		zgp = new image_zgp;
+		if (zgp->loadzgp_file(file))
+		{
+			zgp_map[file] = zgp;
+		}
+		else
+		{
+			delete zgp;
+			zgp = NULL;
+		}
+	}
+	return zgp;
+}
+
+image* zgp_source::create_image_file(const char* file,int frame,const DWORD* parts_pal_hsv)
+{
+	image_zgp* zgp = find_file(file);
+	if (zgp)
+	{
+		zgp->mark_use_zgp(g_time_now);
+		return zgp->get_sprite_image_parts(frame,parts_pal_hsv);
+	}
+	return NULL;
+}
+
+//bool zgp_source::is_file(const char* file)
+//{
+//	const char* p = file + strlen(file) - 4;
+//	return strcmp(p,".zgp") == 0;
+//}
+
+const char* zgp_source::get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv)
+{
+	static char file[128];
+	if (parts_pal_hsv == NULL)
+		sprintf(file,"%s_%04d",_file,frame);
+	else
+	{
+		unsigned int hashcode = crc_buffer((char*)parts_pal_hsv,sizeof(*parts_pal_hsv) * ZGP_MAX_PARTS); //= hash_part(parts_pal_hsv); //一般这里冲突的可能性不大。
+		if (hashcode == 0)
+			sprintf(file,"%s_%04d",_file,frame);
+		else
+			sprintf(file,"%s_%04d_%x",_file,frame,hashcode);
+	}
+	return file;
+}
+
+image* zgp_source::find_image_file(const char* _file,int frame,const unsigned long* parts_pal_hsv)
+{
+	const char* file = get_texture_file(_file,frame,parts_pal_hsv);
+	image* i = get_graph()->image_map[file];
+	if (!i)
+	{
+		i = create_image_file(_file,frame,parts_pal_hsv);
+		if (i)
+			get_graph()->image_map[file] = i;
+	}
+	if (i)
+		i->mark_use_image(g_time_now);
+	return i;
+}
+
+void zgp_source::auto_clear_resource()
+{
+	unsigned long time = get_time_now();
+
+	for (auto it = zgp_map.begin(); it != zgp_map.end(); )
+	{
+		image_zgp* img = it->second;
+		if (img && TIME_NOTUSE(img,m_clear_zgp) )
+		{
+#ifdef _DEBUG_RESOURCE
+			std::cout << "clear zgp " << it->first << " time: " << TIME(img) << std::endl;
+#endif
+			delete img;
+			it = zgp_map.erase(it);
+		}
+		else
+			++it;
+	}	
+}
+
+void zgp_source::close_resource()
+{
+	for (auto it = zgp_map.begin(); it != zgp_map.end(); ++it)
+		delete it->second;
+	zgp_map.clear();
+}
+
+file_source* get_file_source_zgp()
+{
+	static zgp_source s_zgp_source;
+	return &s_zgp_source;
+}
+

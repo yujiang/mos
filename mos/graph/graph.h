@@ -17,19 +17,27 @@ class texture_font;
 struct text_char;
 class image_zgp;
 
+#define TIME_NOTUSE(A,B) ((int)(time - A->m_time_use) / 1000 > B)
+#define TIME(A) ((time - A->m_time_use) / 1000)
+
+class file_source
+{
+public:
+	virtual image* find_image_file(const char* file,int frame,const unsigned long* parts_pal_hsv) = 0;
+	virtual const char* get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv) = 0;
+	virtual void auto_clear_resource() = 0;
+	virtual void close_resource() = 0;
+	virtual const char* get_file_ext() = 0;
+};
+
 class graph
 {
 public:
-	graph(){
-		m_compress_image = 10;
-		m_clear_image  = 60;
-		m_clear_zgp = 100;
-		m_clear_texture = 10;
-		m_clear_texturefont = 10;
-	}
-	//所有zgp资源。
-	std::unordered_map<std::string,image_zgp*> zgp_map;
-	image_zgp* find_zgp(const char* file);
+	graph();
+	
+	void regist_file_source(file_source* source);
+	std::unordered_map<std::string,file_source* > source_map;
+	file_source* find_file_source(const char* file);
 
 	//所有资源。
 	std::unordered_map<std::string,image*> image_map;
@@ -44,7 +52,7 @@ public:
 	std::unordered_map<int,texture_font*> texture_font_map;
 
 	//clear 
-	int m_compress_image,m_clear_zgp,m_clear_image,m_clear_texture,m_clear_texturefont;
+	int m_compress_image,m_clear_image,m_clear_texture,m_clear_texturefont;
 	void auto_clear_resource();
 	void close_resource();
 	void dump_resource(const std::string& type) const;
@@ -52,7 +60,10 @@ public:
 	//绘制
 	int draw_image(const st_cell& cell,const char* file,int frame);
 	int draw_box(const st_cell& cell,int w,int h);
-
+	
+	//特殊的绘制地图
+	int draw_image_map(const st_cell& cell,const char* file);
+	
 	//text
 	int draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_father);
 	//传入sz_father是因为可能要wrap
@@ -63,8 +74,18 @@ public:
 	void render_begin();
 	void render_end();
 	
-	void draw_win_begin(int x,int y,int w,int h,float room);
+	void draw_win_begin(int x,int y,int w,int h,const st_cell& win);
 	void draw_win_end();
+
+	g_rect m_rc_map;
+	const st_cell* m_in_map;
+	void draw_map_begin(int x,int y,int w,int h,const st_cell& map){
+		m_rc_map.set_xywh(x,y,w,h);
+		m_in_map = &map;
+	}
+	void draw_map_end(){
+		m_in_map = NULL;
+	}
 
 	//device
 	void init_graph();
@@ -74,8 +95,6 @@ protected:
 	int get_text_line(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 	g_size get_text_size(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 
-	image* find_image_zgp(const char* file,int frame,const unsigned long* parts_pal_hsv);
-	image* create_image_zgp(const char* file,int frame,const unsigned long* parts_pal_hsv);
 
 	texture_font* find_texture_font(int font,bool bold);
 	bool find_texture_font_rc(const st_cell& text,int char_value,text_char& tc);

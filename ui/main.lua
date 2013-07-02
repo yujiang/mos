@@ -36,7 +36,7 @@ local game_files = {
 	"ani",
 	"sprite", "sprite_body",
 	"move","ai",
-	"map",
+	"map","image_map",
 	"camera",
 }
 

@@ -12,7 +12,7 @@ function image:set_image(image_file,frame)
 	--print(debug.traceback())
 	--print("image:set_image",self,image_file,frame)
 	self.image_file = image_file
-	self.frame = -1 --must update frame.
+	self.frame = nil --must update frame.
 	self:_change_frame(frame)
 	--self:update_frame_change()
 end
@@ -73,13 +73,7 @@ function image:is_jpg()
 	return string.sub(self.image_file,#self.image_file - 3) == ".jpg"
 end
 
---现在只支持image的room，否则这里效率低了，再说罢。
-function image:get_room_local()
-	return self.room
-end
-
 function image:get_rect()
-	--local room = self:get_room_local()
 	local cx = self.cx 
 	local cy = self.cy 
 	return self.x - cx,self.y - cy,self.x - cx + self.w ,self.y - cy	+ self.h  
@@ -94,7 +88,6 @@ function image:in_rect_pixel(x,y)
 		--print("image:in_rect_pixel",x,y,room,l,t,r,b,self.w,self.h)
 		return true
 	else
-		--local room = self:get_room_local()
 		local room = self.room
 		local rt = cdriver.in_image(self.image_file,self.frame,(x - self.x)/room + self.cx , (y - self.y)/room + self.cy)
 		--print("image:in_rect_pixel ",self.image_file,rt)

@@ -113,6 +113,7 @@
     <ClInclude Include="graph\graph.h" />
     <ClInclude Include="graph\image.h" />
     <ClInclude Include="graph\image_db.h" />
+    <ClInclude Include="graph\map.h" />
     <ClInclude Include="graph\point.h" />
     <ClInclude Include="graph\rect.h" />
     <ClInclude Include="graph\texture.h" />
@@ -141,6 +142,7 @@
     <ClCompile Include="graph\graph.cpp" />
     <ClCompile Include="graph\image.cpp" />
     <ClCompile Include="graph\image_db.cpp" />
+    <ClCompile Include="graph\map.cpp" />
     <ClCompile Include="graph\point.cpp" />
     <ClCompile Include="graph\rect.cpp" />
     <ClCompile Include="graph\texture.cpp" />
