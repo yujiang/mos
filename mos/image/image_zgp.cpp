@@ -400,8 +400,8 @@ public:
 	}
 	int m_clear_zgp;
 	//bool is_file(const char* file);
-	const char* get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv);
-	const char* get_file_ext() {
+	const char* get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv) const;
+	const char* get_file_ext() const{
 		return "zgp";
 	}
 
@@ -414,8 +414,8 @@ public:
 
 	void auto_clear_resource();
 	void close_resource();
+	void dump_resource() const;
 };
-
 
 image_zgp* zgp_source::find_file(const char* file)
 {
@@ -453,7 +453,7 @@ image* zgp_source::create_image_file(const char* file,int frame,const DWORD* par
 //	return strcmp(p,".zgp") == 0;
 //}
 
-const char* zgp_source::get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv)
+const char* zgp_source::get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv) const
 {
 	static char file[128];
 	if (parts_pal_hsv == NULL)
@@ -509,6 +509,16 @@ void zgp_source::close_resource()
 	for (auto it = zgp_map.begin(); it != zgp_map.end(); ++it)
 		delete it->second;
 	zgp_map.clear();
+}
+
+void zgp_source::dump_resource() const
+{
+	unsigned long time = get_time_now();
+	for (auto it = zgp_map.begin(); it != zgp_map.end(); ++it)
+	{
+		const image_zgp* img = it->second;
+		std::cout << it->first << " time: " << TIME(img) << std::endl;
+	}
 }
 
 file_source* get_file_source_zgp()

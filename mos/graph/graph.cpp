@@ -41,7 +41,7 @@ void graph::regist_file_source(file_source* source)
 	source_map[source->get_file_ext()] = source;
 }
 
-file_source* graph::find_file_source(const char* file)
+file_source* graph::find_file_source(const char* file) const
 {
 	const char* f = file + strlen(file) - 3;
 	auto it = source_map.find(f);
@@ -121,7 +121,6 @@ texture* graph::find_texture(const char* file)
 	return t;
 }
 
-
 texture_font* graph::find_texture_font(int font,bool bold)
 {
 	if (bold)
@@ -161,9 +160,6 @@ bool graph::find_texture_font_rc(const st_cell& text,int char_value,text_char& t
 
 
 //////////////////////////////////////////////////////////////////////////
-
-
-
 void graph::auto_clear_resource()
 {
 	for (auto it = source_map.begin(); it != source_map.end(); ++it)
@@ -226,7 +222,6 @@ void graph::auto_clear_resource()
 #ifdef _DEBUG_RESOURCE
 				std::cout << "clear font " << it->first << " char " << core::UnicodeCharToANSI(it2->first) << " time: " << TIME(tc) << std::endl;
 #endif
-				//delete tc;
 				tf->m_char_free.push_back(tc);
 				it2 = tf->m_map_char.erase(it2);
 			}
@@ -260,6 +255,10 @@ void graph::dump_resource(const std::string& type) const
 {
 	std::cout << "\n"__FUNCTION__" " << type << std::endl;
 	unsigned long time = get_time_now();
+
+	file_source* source = find_file_source(type.c_str());
+	if (source)
+		source->dump_resource();
 
 	if (type == "all")
 	{
@@ -306,16 +305,9 @@ void graph::dump_resource(const std::string& type) const
 //////////////////////////////////////////////////////////////////////////
 int graph::draw_image(const st_cell& cell,const char* file,int frame)
 {
-	//const char* file = file0;
 	const st_redirect* r = redirect_image_file(file,frame);
-	//if (r)
-	//	file = r->id_texture.c_str();
 	if (r)
 		file = r->file_image.c_str();
-
-	//texture* t = find_texture(file);
-	//if (t)
-	//	return get_render()->draw_texture_cell(cell,t,0);
 
 	image* img = find_image_raw(file,frame,&cell.part0);
 	if (!img)
@@ -325,8 +317,6 @@ int graph::draw_image(const st_cell& cell,const char* file,int frame)
 	if (r && !r->rc.is_empty())
 		rc = &r->rc;
 
-	//if (is_zgp(file))
-	//	file = get_zgp_texture(file,frame,&cell.part0);
 	file_source* source = find_file_source(file);
 	if (source)
 		file = source->get_texture_file(file,frame,&cell.part0);
@@ -512,7 +502,6 @@ void graph::draw_win_end()
 //device
 bool create_image_png(image_struct*,void* data,int size,const char* name);
 bool create_image_jpg(image_struct*,void* data,int size,const char* name);
-//bool create_image_zgp(image_struct*,void* data,int size,const char* name);
 
 void graph::init_graph()
 {
@@ -520,7 +509,10 @@ void graph::init_graph()
 	init_font();
 	image::register_image_file("png",create_image_png);
 	image::register_image_file("jpg",create_image_jpg);
+
 	//image::register_image_file("zgp",create_image_zgp);
+	//简单的文件可以用register_image_file
+	//复杂的多帧文件必须用regist_file_source
 	regist_file_source(get_file_source_zgp());
 }
 

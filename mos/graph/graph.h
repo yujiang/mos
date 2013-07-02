@@ -24,10 +24,11 @@ class file_source
 {
 public:
 	virtual image* find_image_file(const char* file,int frame,const unsigned long* parts_pal_hsv) = 0;
-	virtual const char* get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv) = 0;
+	virtual const char* get_texture_file(const char* _file,int frame,const unsigned long* parts_pal_hsv) const = 0 ;
 	virtual void auto_clear_resource() = 0;
 	virtual void close_resource() = 0;
-	virtual const char* get_file_ext() = 0;
+	virtual const char* get_file_ext() const = 0 ;
+	virtual void dump_resource() const = 0 ;
 };
 
 class graph
@@ -37,7 +38,7 @@ public:
 	
 	void regist_file_source(file_source* source);
 	std::unordered_map<std::string,file_source* > source_map;
-	file_source* find_file_source(const char* file);
+	file_source* find_file_source(const char* file) const;
 
 	//所有资源。
 	std::unordered_map<std::string,image*> image_map;
