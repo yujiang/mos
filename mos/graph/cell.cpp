@@ -154,7 +154,7 @@ void st_cell::merge(const st_cell& father,const st_cell& me)
 	const st_cell& r1 = father;
 	const st_cell& r2 = me;
 	//init();
-	memcpy(&part0,&r2.part0,sizeof(part0)*ZGP_MAX_PARTS);
+	memcpy(&part0,&r2.part0,sizeof(part0)*CELL_MAX_PARTS);
 
 	//后面覆盖前面的shader!
 	if (r2.shader)

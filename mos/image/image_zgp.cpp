@@ -17,6 +17,106 @@
 #include <iostream>
 using namespace std;
 
+#include "../graph/rect.h"
+#include <assert.h>
+#include "../counter.h"
+#include <unordered_map>
+
+typedef unsigned short      WORD;
+typedef unsigned long       DWORD;
+typedef unsigned char       BYTE;
+
+struct WSpritePakFileHeader {
+	WORD dir;
+	WORD frame;
+	WORD width;
+	WORD height;
+	short kx;
+	short ky;
+	char pal_num;
+	char null;	//为空
+	unsigned short extern_len;
+};  
+
+struct WSpriteStruct {
+	int kx;									// 中心点 x
+	int ky;									// 中心点 y
+	int w;									// 宽度
+	int h;									// 高度
+	BYTE **line;							// 第一扫描行指针
+	WORD** pal;								// 调色盘
+	DWORD sprite_userdata;					// 额外数据
+	void *data;	
+};
+
+
+class sprite_zgp
+{
+public:
+	int spt_type;
+	WSpriteStruct m_data;
+	bool create_sprite(WORD** pal,void* _data);
+	bool create_empty();
+
+	g_point get_cg() const{
+		return g_point(m_data.kx,m_data.ky);
+	}
+
+	void render8888(int x,int y,DWORD* buf8888,int pitch,int block = -1,WORD** pal = 0) const;
+};
+
+class image;
+#define ZGP_MAX_PARTS 6
+
+class image_zgp
+{
+public:
+	counter<image_zgp> m_counter;
+
+	WSpritePakFileHeader pak;
+	WORD* pal;
+	WORD* pals[ZGP_MAX_PARTS];
+
+	std::unordered_map<int,WORD*> m_pals_hsv;
+
+	sprite_zgp* sprites;
+	char* _data;
+
+	image_zgp(){
+		pal = 0;
+		sprites = 0;
+		_data = 0;
+	}
+	~image_zgp();
+
+	bool loadzgp_file(const char* zgp);
+	bool loadzgp_memory(const char* zgp,char* _data);
+
+	int get_frame_num() const{
+		return pak.dir * pak.frame;
+	}
+	sprite_zgp* get_sprite(int frame) const{
+		assert(frame < get_frame_num());
+		return &sprites[frame];
+	}
+	sprite_zgp* get_sprite_dirframe(int dir,int frame) const{
+		return get_sprite(pak.frame*dir+frame);
+	}
+
+	image* get_sprite_image(int frame,int block = -1) const;
+	image* get_sprite_image_parts(int frame,const DWORD* parts) ;
+
+	unsigned int m_time_use;
+	void mark_use_zgp(unsigned int time){
+		m_time_use = time;
+	}
+
+	//static image* create_image_zgp(const char* file,int frame);
+	//WORD* create_pal_hsv(int part,int h,int s,int v);
+	WORD* find_pal(int part,DWORD hsv);
+};
+
+
 DWORD color565_8888(DWORD color)
 {
 	return (color<<5&0x7fc00)|(color<<8&0xf80000)|((color<<3|(color&7))&0x3ff);
@@ -200,11 +300,6 @@ void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD*
 }
 
 
-void mread(void* dest,char*& src,size_t size)
-{
-	memcpy(dest,src,size);
-	src += size;
-}
 
 
 const int pal512 = 256 * 2; //256色的word
@@ -213,19 +308,12 @@ const int pal512 = 256 * 2; //256色的word
 //在手机上图片都做成png 256色的，每个方向是一行，铺在一起。
 bool image_zgp::loadzgp_file(const char* zgp)
 {
-	FILE* f = fopen(get_resourcefile(zgp),"rb");
-	if (!f)
+	size_t size;
+	_data = read_imagefile(zgp,size);
+	if (!_data)
 		return false;
-	int seek = fseek(f,0,SEEK_END);
-	size_t size = ftell(f);
-	fseek(f,0,SEEK_SET);
-	//char* _data = new char[size];
-	_data = new char[size];
-	fread(_data,size,1,f);
-	fclose(f);
 	bool rt = loadzgp_memory(zgp,_data);
-	//delete _data;
-	return true;
+	return rt;
 }
 
 bool image_zgp::loadzgp_memory(const char* zgp,char* _data)
@@ -308,14 +396,14 @@ bool image_zgp::loadzgp_memory(const char* zgp,char* _data)
 
 bool regist_zgp(const char* file,int& dir,int& frame)
 {
-	FILE* f = fopen(get_resourcefile(file),"rb");
+	MOS_FILE_HANDLE f = mfopen_resource(file,"rb");
 	if (!f)
 		return false;
 	st_header header;
-	fread(&header,sizeof(header),1,f);
+	mfread(&header,sizeof(header),1,f);
 	WSpritePakFileHeader pak;
-	fread(&pak,sizeof(pak),1,f);
-	fclose(f);
+	mfread(&pak,sizeof(pak),1,f);
+	mfclose(f);
 	dir = pak.dir;
 	frame = pak.frame;
 	return true;

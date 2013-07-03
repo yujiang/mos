@@ -125,7 +125,7 @@ void window_render_gl::create_shaders()
 
 	m_shader_manager = new glShaderManager();
 	m_shader_palette = m_shader_manager->loadfromMemoryName("shader_palette",palette_vertex_prog,palette_fragment_prog);
-	m_shader_manager->SetPath(RESOURCE_PATH"/shaders");
+	m_shader_manager->SetPath(get_resourcefile("shaders"));
 }
 
 texture* window_render_gl::create_texture() 

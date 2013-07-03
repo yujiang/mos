@@ -10,6 +10,8 @@ extern "C"
 
 #include "graph/rect.h"
 
+#define CELL_MAX_PARTS 6
+
 class st_cell
 {
 public:
