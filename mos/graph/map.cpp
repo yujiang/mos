@@ -7,7 +7,7 @@ map* get_map()
 	return &s_map;
 }
 
-void map::mask_draw_image(const st_cell* cell)
+void map::mask_drawing_image(const st_cell* cell)
 {
 
 }

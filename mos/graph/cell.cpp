@@ -199,7 +199,7 @@ void cell::draw(int level,const st_cell& st) const
 		if (image_file)
 		{
 			if (get_graph()->m_in_map)
-				get_map()->mask_draw_image(this);
+				get_map()->mask_drawing_image(this);
 
 			//必须修改这里才行，来修改offset。和destexture。
 			st2.x -= cx * st2.room;
