@@ -7,6 +7,7 @@
 #include "device/window_render.h"
 #include "script.h"
 #include "graph/graph.h"
+#include "graph/map.h"
 #include "mos.h"
 
 window* g_window = NULL;
@@ -57,9 +58,22 @@ bool window_run()
 	return true;
 }
 
+#include "image/image_zgp.h"
+#include "image/map_tl.h"
+//////////////////////////////////////////////////////////////////////////
+//custom your game source == call it from script.
+void custom_game_source()
+{
+	get_graph()->regist_file_source(get_file_source_zgp());
+	get_map()->register_map_source("map",&get_map_source_tl);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	get_graph()->init_graph();
+	
+	custom_game_source();
+
 	init_lua();
 
 	while(1)

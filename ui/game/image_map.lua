@@ -11,7 +11,7 @@ end
 function image_map:set_image_map(image_file,frame)
 	self.map_file = image_file
 	self.frame = frame
-	local w,h = cdriver.get_map_size(self.map_file,self.frame) --从文件得到w,h
+	local w,h = cdriver.load_map(self.map_file,self.frame) --从文件得到w,h
 	self.w = w 
 	self.h = h 
 end

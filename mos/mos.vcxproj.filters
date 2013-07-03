@@ -135,6 +135,9 @@
     <ClInclude Include="graph\map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="image\map_tl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -222,6 +225,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graph\map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="image\map_tl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

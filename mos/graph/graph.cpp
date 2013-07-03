@@ -4,6 +4,7 @@
 #include "texture_font.h"
 #include "image.h"
 #include "device/window_render.h"
+#include "device/file.h"
 #include "core/utf8.h"
 #include "font.h"
 #include "image_db.h"
@@ -33,7 +34,6 @@ graph::graph()
 	m_clear_texture = 10;
 	m_clear_texturefont = 10;
 
-	m_in_map = NULL;
 }
 
 void graph::regist_file_source(file_source* source)
@@ -43,8 +43,7 @@ void graph::regist_file_source(file_source* source)
 
 file_source* graph::find_file_source(const char* file) const
 {
-	const char* f = file + strlen(file) - 3;
-	auto it = source_map.find(f);
+	auto it = source_map.find(get_file_ext(file));
 	if (it != source_map.end())
 		return it->second;
 	//return source_map[f];
@@ -510,10 +509,10 @@ void graph::init_graph()
 	image::register_image_file("png",create_image_png);
 	image::register_image_file("jpg",create_image_jpg);
 
+	get_map()->init_map();
 	//image::register_image_file("zgp",create_image_zgp);
 	//简单的文件可以用register_image_file
 	//复杂的多帧文件必须用regist_file_source
-	regist_file_source(get_file_source_zgp());
 }
 
 void graph::close_graph()

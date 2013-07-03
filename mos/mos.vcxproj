@@ -119,6 +119,7 @@
     <ClInclude Include="graph\texture.h" />
     <ClInclude Include="graph\texture_font.h" />
     <ClInclude Include="image\image_zgp.h" />
+    <ClInclude Include="image\map_tl.h" />
     <ClInclude Include="mos.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="stdafx.h" />
@@ -151,6 +152,7 @@
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
     <ClCompile Include="image\image_zgp.cpp" />
+    <ClCompile Include="image\map_tl.cpp" />
     <ClCompile Include="mos.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="stdafx.cpp" />

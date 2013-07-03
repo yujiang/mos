@@ -188,7 +188,7 @@ void cell::draw(int level,const st_cell& st) const
 	if (is_window)
 		get_graph()->draw_win_begin(st2.x,st2.y,st.w,st.h,*this);
 	else if(is_map)
-		get_graph()->draw_map_begin(st2.x,st2.y,st.w,st.h,*this);
+		get_map()->draw_map_begin(st2.x,st2.y,st.w,st.h,*this);
 	else 
 	{
 		int x0 = st2.x;
@@ -198,7 +198,7 @@ void cell::draw(int level,const st_cell& st) const
 		//但是保持结构，还是互斥。
 		if (image_file)
 		{
-			if (get_graph()->m_in_map)
+			if (get_map()->m_in_map)
 				get_map()->mask_drawing_image(this);
 
 			//必须修改这里才行，来修改offset。和destexture。
@@ -232,7 +232,7 @@ void cell::draw(int level,const st_cell& st) const
 	if (is_window)
 		get_graph()->draw_win_end();
 	else if(is_map)
-		get_graph()->draw_map_end();
+		get_map()->draw_map_end();
 }
 
 

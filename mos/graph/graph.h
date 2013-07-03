@@ -78,16 +78,6 @@ public:
 	void draw_win_begin(int x,int y,int w,int h,const st_cell& win);
 	void draw_win_end();
 
-	g_rect m_rc_map;
-	const st_cell* m_in_map;
-	void draw_map_begin(int x,int y,int w,int h,const st_cell& map){
-		m_rc_map.set_xywh(x,y,w,h);
-		m_in_map = &map;
-	}
-	void draw_map_end(){
-		m_in_map = NULL;
-	}
-
 	//device
 	void init_graph();
 	void close_graph();

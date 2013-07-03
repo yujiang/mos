@@ -29,4 +29,10 @@ const char* get_windows_font(const char* file);
 //itoa not need buffer
 const char* my_itoa(int num);
 
+#include <string.h>
+inline const char* get_file_ext(const char* file)
+{
+	return file + strlen(file) - 3;
+}
+
 #endif
