@@ -15,6 +15,12 @@ texture_font::~texture_font()
 {
 	delete m_texture;
 	m_texture = NULL;
+	for (auto it = m_char_free.begin(); it != m_char_free.end(); ++it)
+		delete *it;
+	m_char_free.clear();
+	for (auto it = m_map_char.begin(); it != m_map_char.end(); ++it)
+		delete it->second;
+	m_map_char.clear();
 }
 
 bool texture_font::create_texture_font(int width,int height,const stFont* st_font,bool bold)

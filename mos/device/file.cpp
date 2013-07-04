@@ -5,12 +5,22 @@
 #define RESOURCE_PATH "resources"
 
 #pragma warning(disable:4996)
+#define MAX_PATH 256
 
 const char* get_windows_font(const char* file)
 {
-	static char buf[128];
+	static char buf[MAX_PATH];
 	sprintf(buf,"c:/Windows/Fonts/%s",file);
 	return buf;
+}
+
+const char* replace_file_ext(const char* file,const char* ext)
+{
+	static char buf[MAX_PATH];
+	memcpy(buf,file,strlen(file)-3);
+	strcpy(buf+strlen(file)-3,ext);
+	return buf;
+
 }
 
 const char* my_itoa(int num)
@@ -34,6 +44,7 @@ char* read_file(const char* file,size_t& size)
 	char* buf = new char[size];
 	size_t sz = mfread(buf,1,size,f);
 	assert(sz == size);
+	mfclose(f);
 	return buf;
 }
 

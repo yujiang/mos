@@ -59,6 +59,7 @@ bool create_image_jpg(image_struct* img,void* data,int nSize,const char* name)
 {
     /* these are standard libjpeg structures for reading(decompression) */
     struct jpeg_decompress_struct cinfo;
+	memset(&cinfo,0,sizeof(cinfo));
     /* We use our private extension JPEG error handler.
 	 * Note that this struct must live as long as the main JPEG parameter
 	 * struct, to avoid dangling-pointer problems.

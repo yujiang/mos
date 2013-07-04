@@ -177,7 +177,7 @@ bool map_block::load_whole(mapdata*head)
 	char filename[256];
 	sprintf(filename,"%s_%02d%02d.jpg",head->m_map.c_str(),y,x);
 	m_image_name = filename;
-	m_Image = get_graph()->find_image_raw(filename,0,0);
+	m_Image = get_graph()->image_map[filename];
 	if (!m_Image)
 	{
 		image* image888 = image::create_image_file_buffer(filename,compress_data,len);
@@ -232,16 +232,18 @@ bool map_block::load_whole(mapdata*head)
 
 bool mapdata::load_map(const std::string& map)
 {
+	destory_mapdata();
+
 	int i;
-	f = fopen(map.c_str(), "rb");
+	f = mfopen(map.c_str(), "rb");
 	if (!f)
 		return false;
 
-	fread(&_map_header, sizeof(_map_header), 1, f);
+	mfread(&_map_header, sizeof(_map_header), 1, f);
 
 	if(_map_header.mapid != 'M1.0')
 	{
-		fclose(f);
+		mfclose(f);
 		return false;
 	}
 
@@ -260,25 +262,25 @@ bool mapdata::load_map(const std::string& map)
 	}
 
 	_map_position.block_offset = new int[_map_position.block_num];
-	fread(_map_position.block_offset, 4, _map_position.block_num, f);
+	mfread(_map_position.block_offset, 4, _map_position.block_num, f);
 
-	fread(&_map_position.mask_seek, 4, 1, f);
-	fread(&_map_position.mask_num, 4, 1, f);
+	mfread(&_map_position.mask_seek, 4, 1, f);
+	mfread(&_map_position.mask_num, 4, 1, f);
 
 	if (_map_position.mask_num > 0)
 	{
 		_map_position.mask_offset = new int[_map_position.mask_num];
-		fread(_map_position.mask_offset, 4, _map_position.mask_num, f);
+		mfread(_map_position.mask_offset, 4, _map_position.mask_num, f);
 
 		_mask_data = new MASK_DATA[_map_position.mask_num];
 
 		for(i = 0; i < _map_position.mask_num; i++)
 		{
-			fseek(f, _map_position.mask_offset[i], SEEK_SET);
-			fread(&_mask_data[i].rect, sizeof(WRect), 1, f);
-			fread(&_mask_data[i].len, 4, 1, f);
+			mfseek(f, _map_position.mask_offset[i], SEEK_SET);
+			mfread(&_mask_data[i].rect, sizeof(WRect), 1, f);
+			mfread(&_mask_data[i].len, 4, 1, f);
 			_mask_data[i].data = new char[_mask_data[i].len];
-			fread(_mask_data[i].data, _mask_data[i].len, 1, f);
+			mfread(_mask_data[i].data, _mask_data[i].len, 1, f);
 		}
 	}
 
@@ -286,28 +288,28 @@ bool mapdata::load_map(const std::string& map)
 	for(i = 0; i < _map_position.block_num; i++)
 	{
 		NORMAL_BLOCK_INFO *p = &_block_info[i];
-		fseek(f, _map_position.block_offset[i], SEEK_SET);
-		fread(&p->mask_num, 4, 1, f);
+		mfseek(f, _map_position.block_offset[i], SEEK_SET);
+		mfread(&p->mask_num, 4, 1, f);
 		if(p->mask_num > 0)
 		{
 			p->mask_index = new int[p->mask_num];
-			fread(p->mask_index, 4, p->mask_num, f);
+			mfread(p->mask_index, 4, p->mask_num, f);
 		}
 		else
 			p->mask_index = 0;
-		fseek(f, 4, SEEK_CUR);
-		fread(&p->jpeg_len, 4, 1, f);
-		p->jpeg_offset = ftell(f);
+		mfseek(f, 4, SEEK_CUR);
+		mfread(&p->jpeg_len, 4, 1, f);
+		p->jpeg_offset = mftell(f);
 
 		p->cell_offset = p->jpeg_offset + p->jpeg_len + 8;
-		fseek(f, p->cell_offset-4, SEEK_SET);
-		fread(&p->cell_len, 4, 1, f);
+		mfseek(f, p->cell_offset-4, SEEK_SET);
+		mfread(&p->cell_len, 4, 1, f);
 
 		p->bright_offset = p->cell_offset + p->cell_len + 8;
-		fseek(f, p->bright_offset-4, SEEK_SET);
-		fread(&p->bright_len, 4, 1, f);
+		mfseek(f, p->bright_offset-4, SEEK_SET);
+		mfread(&p->bright_len, 4, 1, f);
 
-		fseek(f, 0, 0);
+		mfseek(f, 0, 0);
 	}
 
 	//loadblocks();
@@ -323,27 +325,36 @@ void mapdata::load_all_blocks()
 	}
 }
 
-mapdata::~mapdata()
+void mapdata::destory_mapdata()
 {
 	if (f)
 	{
-		fclose(f);
+		mfclose(f);
 		f = 0;
 	}
 
 	delete []_mask_data;
+	_mask_data = NULL;
+
 	delete []_block_info;
+	_block_info = NULL;
 
 	delete []_blocks;
+	_blocks = NULL;
+}
+
+mapdata::~mapdata()
+{
+	destory_mapdata();
 }
 
 
 void *mapdata::get_block_image(int n, int &len)
 {
-	fseek(f, _block_info[n].jpeg_offset, SEEK_SET);
+	mfseek(f, _block_info[n].jpeg_offset, SEEK_SET);
 	len = _block_info[n].jpeg_len;
 	char *data = new char[_block_info[n].jpeg_len];
-	fread(data, _block_info[n].jpeg_len, 1, f);
+	mfread(data, _block_info[n].jpeg_len, 1, f);
 	return data;
 }
 

@@ -124,6 +124,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tl\image_zgp.h" />
     <ClInclude Include="tl\mapdata.h" />
+    <ClInclude Include="tl\mapobs.h" />
     <ClInclude Include="tl\map_tl.h" />
     <ClInclude Include="tl\tl.h" />
   </ItemGroup>
@@ -158,6 +159,7 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="tl\image_zgp.cpp" />
     <ClCompile Include="tl\mapdata.cpp" />
+    <ClCompile Include="tl\mapobs.cpp" />
     <ClCompile Include="tl\map_tl.cpp" />
     <ClCompile Include="tl\tl.cpp" />
   </ItemGroup>

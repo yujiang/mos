@@ -29,6 +29,7 @@ public:
 	//void mask_drawing_image(const st_cell* cell);
 	void draw_map_image(const st_cell& cell, const char* map_file,int frame);
 	bool load_map(const char* file,int frame,g_size& sz);
+	void destroy_map();
 
 	g_rect m_rc_map;
 	const st_cell* m_in_map;

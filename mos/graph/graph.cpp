@@ -522,6 +522,8 @@ void graph::init_graph()
 
 void graph::close_graph()
 {
+	get_map()->destroy_map();
+
 	close_resource();
 	close_font();
 }

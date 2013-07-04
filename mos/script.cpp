@@ -64,6 +64,12 @@ lua_State* init_lua()
 	return L;
 }
 
+void close_lua()
+{
+	lua_close(g_L);
+	g_L = NULL;
+}
+
 //////////////////////////////////////////////////////////////////////////
 #include <stdarg.h>
 

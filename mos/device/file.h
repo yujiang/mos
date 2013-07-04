@@ -34,5 +34,6 @@ inline const char* get_file_ext(const char* file)
 {
 	return file + strlen(file) - 3;
 }
+const char* replace_file_ext(const char* file,const char* ext);
 
 #endif

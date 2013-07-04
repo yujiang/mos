@@ -11,6 +11,7 @@
 #include "../device/file.h"
 #include "../mos.h"
 #include "mapdata.h"
+#include "mapobs.h"
 #include <unordered_set>
 
 class map_tl : public map_source
@@ -26,6 +27,7 @@ public:
 		delete this;
 	}
 	mapdata m_data;
+	mapobs m_obs;
 protected:
 	void draw_block_image(const st_cell& cell,map_block* block);
 	
@@ -139,6 +141,7 @@ bool map_tl::load_map(const char* file,int frame,g_size& sz)
 		return false;
 	sz.w = m_data.get_width();
 	sz.h = m_data.get_height();
+	m_obs.load_obs(replace_file_ext(get_resourcefile(file),"blk"));
 	return true;
 }
 

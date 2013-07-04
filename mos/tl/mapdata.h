@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <string>
+#include "device/file.h"
 
 struct NORMAL_MAP_HEADER
 {
@@ -17,6 +18,17 @@ struct NORMAL_MAP_POSITION
 	int mask_seek;
 	int mask_num;
 	int *mask_offset;
+	NORMAL_MAP_POSITION(){
+		block_offset = 0;
+		mask_offset = 0;
+	}
+	~NORMAL_MAP_POSITION()
+	{
+		delete block_offset;
+		block_offset = 0;
+		delete mask_offset;
+		mask_offset = 0;
+	}
 };
 
 struct NORMAL_MAP_BLOCK
@@ -119,14 +131,17 @@ inline int up_div(int a,int b)
 class mapdata
 {
 public:
-	FILE *f;
+	MOS_FILE_HANDLE f;
 	mapdata()
 	{
 		f = 0;
 		_mask_data = 0;
 		_block_info = 0;
+		_blocks = 0;
 	}
 	~mapdata();
+	void destory_mapdata();
+
 	NORMAL_MAP_HEADER _map_header;
 	NORMAL_MAP_POSITION _map_position;
 	MASK_DATA* _mask_data ;

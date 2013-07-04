@@ -8,7 +8,9 @@
 #include "script.h"
 #include "graph/graph.h"
 #include "graph/map.h"
+
 #include "mos.h"
+//#include "../3rd/vld/vld.h" //http://vld.codeplex.com/
 
 window* g_window = NULL;
 unsigned int g_time_now = 0;
@@ -87,6 +89,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	delete g_window;
 	g_window = NULL;
+
+	close_lua();
+
+	get_graph()->close_graph();
 
 	return 0;
 }

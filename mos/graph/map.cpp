@@ -28,6 +28,11 @@ graph_map::graph_map()
 
 graph_map::~graph_map()
 {
+	destroy_map();
+}
+
+void graph_map::destroy_map()
+{
 	if (m_source)
 	{
 		m_source->destory();

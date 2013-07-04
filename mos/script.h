@@ -9,5 +9,6 @@ int lua_call_function(const char* func);
 int lua_call_va (const char *func, const char *sig, ...);
 
 lua_State* init_lua();
+void close_lua();
 
 #endif
