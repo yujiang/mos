@@ -30,6 +30,9 @@ struct image_struct
 	int get_height() const{
 		return m_height;
 	}
+	int get_num() const{
+		return get_width() * get_height();
+	}
 	g_size get_size() const{
 		return g_size(m_width,m_height);
 	}
@@ -87,6 +90,7 @@ struct image_struct
 	g_point get_cg() const{
 		return m_cg;
 	}
+
 };
 
 class image : public image_struct
@@ -116,6 +120,7 @@ public:
 
 	bool create_image_dynamic(int width,int height,int m_bits_component);
 	bool create_image_image(const image* i,const g_rect* rc);
+	void clear0();
 
 	int m_ref;
 	int image_add_ref(){
@@ -167,6 +172,7 @@ protected:
 bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_rect* rc_clip);
 bool get_cliped_box(int& offx,int& offy,int& w,int& h, int width,int height);
 
+image* get_image8888_888_8(image* image888,image* image8);
 
 struct image_ref
 {

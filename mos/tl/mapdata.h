@@ -80,8 +80,9 @@ public:
 	//const image* bmp;
 	int kx,ky,w,h;
 	BYTE * mask;
-	int wm;
+	int pitch;
 	void Create(int x,int y,int _w,int _h,void *ptr);
+	void Render(image* img8);
 	//BYTE* Render8888();
 	//BYTE* Render888();
 };
@@ -91,10 +92,9 @@ class map_block
 {
 public:
 	bool load_whole(mapdata *head);
-	int m_MaskNum;
 
 	image* m_Image;
-	WMask *m_Mask;
+	std::string m_image_name;
 
 	int x,y,num;
 	void set_pos(int _x,int _y,int _num)
@@ -104,17 +104,17 @@ public:
 		num = _num;
 	}
 
-	//unsigned char *m_Cell; //×èµ²ÅÐ¶Ï
-
-	//unsigned char *m_BrightLayer; 
-	//unsigned char *m_LightData; //ÎÞÓÃ
 	map_block()
 	{
 		m_Image = 0;
-		m_Mask = 0;
 	}
 	~map_block();
 };
+
+inline int up_div(int a,int b)
+{
+	return (a + (b-1))/b;
+}
 
 class mapdata
 {
@@ -155,10 +155,10 @@ public:
 
 	map_block* _blocks;
 	int get_block_width() const{
-		return (width+BLOCKW-1)/BLOCKW;
+		return up_div(width,BLOCKW);
 	}
 	int get_block_height() const{
-		return (height+BLOCKH-1)/BLOCKH;
+		return up_div(height,BLOCKH);
 	}
 	void num_2_pos(int num,int& x,int& y){
 		int w = get_block_width();

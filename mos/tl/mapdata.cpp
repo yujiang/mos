@@ -9,7 +9,7 @@
 
 void *alloc_mask(int w, int h) 
 {
-	return new char [(w+3)/4*h];
+	return new char [up_div(w,4)*h];
 }
 
 int decompress (const void *in , void *out)
@@ -164,39 +164,9 @@ bool map_block::load_whole(mapdata*head)
 	//	return false;	// 地图没有那么多块
 	//head may be release here!!!
 
-	void *compress_data = 0;
-	int i = 0, result = 0, len = 0;
-	void *temp;
-	m_MaskNum = head->get_mask_num(n);
-	if (m_MaskNum < 0 || m_MaskNum > 100000)
-		return false;
-
-	//m_Image = new WBitmap;
-
-	if( m_MaskNum > 0)
-	{
-		//int x, y;
-		const int *maskindex = head->get_block_maskindex(n, len);
-		//ASSERT(len == m_MaskNum);
-		m_Mask=new WMask[m_MaskNum];
-		//x=(head->get_width()+BLOCKW-1)/BLOCKW;
-		//y=n/x;
-		//x=n%x;
-		for(i=0; i< m_MaskNum; i++)
-		{
-			const MASK_DATA *mask = head->get_mask(maskindex[i]);
-			//printf("get mask %d %d\n",n,maskindex[i]);
-			int size = (mask->rect.w+3)/4*mask->rect.h;
-			temp = alloc_mask(mask->rect.w, mask->rect.h);
-			result = decompress(mask->data,temp);
-			ASSERT2(result == size,"decompress mask error!");
-			m_Mask[i].Create((int)mask->rect.x-BLOCKW*x, (int)mask->rect.y-BLOCKH*y,mask->rect.w,mask->rect.h, temp);
-			//delete temp;
-		}
-	}
-
+	int len = 0;
 	// load JPEG
-	compress_data = head->get_block_image(n, len);
+	void* compress_data = head->get_block_image(n, len);
 	
 	//int jpeg_result = _load_jpeg_ex(m_Image, compress_data, len);
 
@@ -206,11 +176,46 @@ bool map_block::load_whole(mapdata*head)
 
 	char filename[256];
 	sprintf(filename,"%s_%02d%02d.jpg",head->m_map.c_str(),y,x);
+	m_image_name = filename;
 	m_Image = get_graph()->find_image_raw(filename,0,0);
 	if (!m_Image)
 	{
-		m_Image = image::create_image_file_buffer(filename,compress_data,len);
-		get_graph()->set_image_raw(filename,m_Image);
+		image* image888 = image::create_image_file_buffer(filename,compress_data,len);
+
+		int m_MaskNum = head->get_mask_num(n);
+		if( m_MaskNum > 0)
+		{
+			image* image8 = new image;
+			image8->create_image_dynamic(BLOCKW,BLOCKH,1);
+			//WMask* m_Mask = new WMask[m_MaskNum];
+			const int *maskindex = head->get_block_maskindex(n, len);
+			for(int i=0; i< m_MaskNum; i++)
+			{
+				//if (i != 0)
+					//continue;
+				const MASK_DATA *mask = head->get_mask(maskindex[i]);
+				//printf("get mask %d %d\n",n,maskindex[i]);
+				int size = up_div(mask->rect.w,4)*mask->rect.h;
+				void* temp = alloc_mask(mask->rect.w, mask->rect.h);
+				int result = decompress(mask->data,temp);
+				ASSERT2(result == size,"decompress mask error!");
+				
+				WMask m;
+				m.Create((int)mask->rect.x-BLOCKW*x, (int)mask->rect.y-BLOCKH*y,mask->rect.w,mask->rect.h, temp);
+				m.Render(image8);
+				
+				delete temp;
+			}
+
+			m_Image = get_image8888_888_8(image888,image8);
+			delete image888;
+			delete image8;
+		}
+		else
+		{
+			m_Image = image888;
+		}
+		get_graph()->maped_image(filename,m_Image);
 	}
 	else
 		m_Image ->image_add_ref();
@@ -224,8 +229,6 @@ bool map_block::load_whole(mapdata*head)
 	//delete[] compress_data;
 	return true;
 }
-
-
 
 bool mapdata::load_map(const std::string& map)
 {
@@ -379,6 +382,52 @@ map_block::~map_block()
 	}
 }
 
+void WMask::Render(image* img8)
+{
+	colorbyte* buf = img8->get_buf_offset(kx,ky);
+	colorbyte* desline = buf;
+	colorbyte* srcline = mask;
+	BYTE mm[4] = {0x03,0x0c,0x30,0xc0};
+
+	for (int y=0; y<h; y++)
+	{
+		colorbyte* des = desline;
+		colorbyte* src = srcline;
+
+		for (int x=0; x<w/4; x++,src++)
+		{
+			BYTE m = *src;
+			for (int i=0; i<4; i++)
+			{
+				if ((m &mm[i]) == mm[i])
+				{
+					*des++ = 255;
+				}
+				else
+				{
+					*des++ = 0;
+				}
+			}
+		}
+
+		BYTE m = *src;
+		for (int i=0; i<w%4; i++)
+		{
+			if ((m &mm[i]) == mm[i])
+			{
+				*des++ = 255;
+			}
+			else
+			{
+				*des++ = 0;
+			}
+		}
+
+		desline += img8->get_line_pitch();
+		srcline += pitch;
+	}
+}
+
 void WMask::Create(int x,int y,int _w,int _h,void *ptr)
 {
 	kx = x;
@@ -386,13 +435,13 @@ void WMask::Create(int x,int y,int _w,int _h,void *ptr)
 	w = _w;
 	h = _h;
 
-	wm = (w+3)/4;
+	pitch = up_div(w,4);
 	//printf("WMask::Create x %d y %d w %d h %d\n",x,y,_w,_h);
 	mask = (BYTE *) ptr; //alpha channel
 	if (ky < 0)
 	{
 		h -= -ky;
-		mask += -ky * wm;
+		mask += -ky * pitch;
 		ky = 0;
 	}
 	assert(kx >= 0 && ky >= 0 && w >=0 && h >= 0 );

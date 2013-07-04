@@ -11,6 +11,10 @@ inline window* get_window()
 class window_render;
 window_render* get_render();
 
+//dont support gdi anymore
+class window_render_gl;
+window_render_gl* get_render_gl();
+
 extern unsigned int g_time_now;
 inline unsigned int get_time_now()
 {

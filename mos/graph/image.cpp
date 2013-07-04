@@ -116,7 +116,13 @@ bool image::create_image_dynamic(int width,int height,int bits)
 	//m_premul_alpha = false;
 	//m_alpha = false;
 	m_buffer = new colorbyte[get_buf_size()];
+	clear0();
 	return true;
+}
+
+void image::clear0()
+{
+	memset(m_buffer,0,get_buf_size());
 }
 
 bool image::create_image_image(const image* i,const g_rect* rc)
@@ -582,4 +588,24 @@ colorbyte* image::render_256_palette_alpha() const
 			*des ++ = 255;
 	}
 	return buf;
+}
+
+image* get_image8888_888_8(image* image888,image* image8)
+{
+	assert(image888->m_bits_pixel == 3 && image8->m_bits_pixel == 1);
+	assert(image888->get_size() == image8->get_size());
+	image* img8888 = new image;
+	img8888->create_image_dynamic(image888->get_width(),image888->get_height(),4);
+
+	colorbyte* p888 = image888->get_buffer();
+	colorbyte* p8 = image8->get_buffer();
+	colorbyte* p8888 = img8888->get_buffer();
+	for (int i=0; i<img8888->get_num();i++)
+	{
+		*p8888++ = *p888++;
+		*p8888++ = *p888++;
+		*p8888++ = *p888++;
+		*p8888++ = *p8++;
+	}
+	return img8888;
 }

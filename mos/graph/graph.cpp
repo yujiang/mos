@@ -49,7 +49,7 @@ file_source* graph::find_file_source(const char* file) const
 	return NULL;
 }
 
-void graph::set_image_raw(const char* file,image* img)
+void graph::maped_image(const char* file,image* img)
 {
 	img->image_add_ref();
 	image_map[file] = img;

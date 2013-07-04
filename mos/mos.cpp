@@ -18,6 +18,11 @@ window_render* get_render()
 	return g_window->m_render;
 }
 
+window_render_gl* get_render_gl()
+{
+	return (window_render_gl*)g_window->m_render;
+}
+
 bool init_window(const char* name,const char* title,st_window_param& st)
 {
 	if (g_window)

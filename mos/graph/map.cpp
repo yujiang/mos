@@ -18,6 +18,7 @@ void graph_map::draw_map_begin(int x,int y,int w,int h,const st_cell& map)
 void graph_map::draw_map_end()
 {
 	m_source->draw_map_end();
+	m_in_map = NULL;
 }
 
 graph_map::graph_map()
@@ -35,13 +36,6 @@ graph_map::~graph_map()
 }
 
 //////////////////////////////////////////////////////////////////////////
-
-void graph_map::mask_drawing_image(const st_cell* cell)
-{
-	//just set mask need draw.
-	m_source->mask_drawing_image(cell);
-}
-
 void graph_map::draw_map_image(const st_cell& cell, const char* map_file,int frame)
 {
 	m_source->draw_map_image(cell,map_file,frame);
@@ -65,7 +59,6 @@ void graph_map::register_map_source(const char* fileext,map_source_func func)
 class map_jpg : public map_source
 {
 public:
-	void mask_drawing_image(const st_cell* cell) {};
 	void draw_map_image(const st_cell& cell, const char* map_file,int frame){
 		get_graph()->draw_image(cell,map_file,frame);
 	}

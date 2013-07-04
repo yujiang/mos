@@ -197,13 +197,15 @@ void cell::draw(int level,const st_cell& st) const
 		//但是保持结构，还是互斥。
 		if (image_file)
 		{
-			if (get_map()->m_in_map)
-				get_map()->mask_drawing_image(this);
-
 			//必须修改这里才行，来修改offset。和destexture。
 			st2.x -= cx * st2.room;
 			st2.y -= cy * st2.room;
-			get_graph()->draw_image(st2,image_file,frame);
+			if (get_graph()->draw_image(st2,image_file,frame) >= 0)
+			{
+				//因为3d可以一次绘制所有的mask，就不必像2d那样绘制了。
+				//if (get_map()->m_in_map)
+				//	get_map()->mask_drawing_image(this);
+			}
 		}
 		else if(map_file) //地图文件
 		{

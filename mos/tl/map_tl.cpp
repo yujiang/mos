@@ -4,10 +4,14 @@
 #include "../graph/image.h"
 #include "../graph/graph.h"
 #include "../graph/cell.h"
-#include "../device/window_render.h"
+#include "../device/opengl/window_render_gl.h"
+#include "../device/opengl/texture_gl.h"
+#include "../device/opengl/director.h"
+#include "../device/window.h"
 #include "../device/file.h"
 #include "../mos.h"
 #include "mapdata.h"
+#include <unordered_set>
 
 class map_tl : public map_source
 {
@@ -15,62 +19,117 @@ public:
 	void mask_drawing_image(const st_cell* cell);
 	void draw_map_image(const st_cell& cell, const char* map_file,int frame);
 	bool load_map(const char* file,int frame,g_size& sz);
-	void draw_map_begin() {};
-	void draw_map_end() {};
+	void draw_map_begin() ;
+	void draw_map_end() ;
 	void destory()
 	{
 		delete this;
 	}
 	mapdata m_data;
 protected:
-	void draw_block(const st_cell& cell,map_block* block);
+	void draw_block_image(const st_cell& cell,map_block* block);
+	
+	void draw_block_mask(const st_cell& cell,map_block* block);
+	void draw_block_masks();
 };
 
-void map_tl::mask_drawing_image(const st_cell* cell)
+void map_tl::draw_map_begin() 
 {
-
 }
 
-void map_tl::draw_map_image(const st_cell& cell, const char* map_file,int frame)
+void map_tl::draw_map_end() 
 {
-	//should draw 9 map.
-	//first locate cell.pos to x,y
+	//因为3d可以一次绘制所有的mask，就不必像2d那样绘制了。
+	draw_block_masks();
+}
+
+void map_tl::draw_block_masks() 
+{
+	const st_cell& cell = *get_map()->m_in_map;
+
 	int blockw = BLOCKW * cell.room;
 	int blockh = BLOCKH * cell.room;
 
 	int w = -cell.x / blockw;
 	int h = -cell.y / blockh;
 
-	st_cell c;
-	memcpy(&c,&cell,sizeof(c));
+	st_cell cell_block;
+	memcpy(&cell_block,&cell,sizeof(cell_block));
 
 	//const int range = 3; 
-	const int range = 4; //有缩放，改为4
-	for (int x = w; x < w+range; x++)
-	for (int y = h; y < h+range; y++)
+	int wrange = get_window()->get_width() / (BLOCKW * cell.room) + 2;
+	int hrange = get_window()->get_height() / (BLOCKH * cell.room) + 2;
+	for (int x = w; x < w+wrange; x++)
+	for (int y = h; y < h+hrange; y++)
 	{
 		map_block* bl = m_data.get_block(x,y);
 		if (bl)
 		{
-			c.x = x * blockw + cell.x;
-			c.y = y * blockh + cell.y;
-			//bl->draw_block(offx,offy,cell);
-			//get_graph()->draw_image(c,map_file,m_data.pos_2_num(x,y));
-			draw_block(c,bl);
+			cell_block.x = x * blockw + cell.x;
+			cell_block.y = y * blockh + cell.y;
+			draw_block_mask(cell_block,bl);
 		}
 	}
 }
 
-void map_tl::draw_block(const st_cell& cell,map_block* block)
+void map_tl::draw_map_image(const st_cell& cell, const char* map_file,int frame)
+{
+	int blockw = BLOCKW * cell.room;
+	int blockh = BLOCKH * cell.room;
+
+	int w = -cell.x / blockw;
+	int h = -cell.y / blockh;
+
+	st_cell m_cell_map;
+	memcpy(&m_cell_map,&cell,sizeof(m_cell_map));
+
+	//关闭alphablend
+	window_render_gl* gl = get_render_gl();
+	gl->m_director->set_alpha_blending(false);
+
+	//const int range = 3; 
+	int wrange = get_window()->get_width() / (BLOCKW * cell.room) + 2;
+	int hrange = get_window()->get_height() / (BLOCKH * cell.room) + 2;
+	for (int x = w; x < w+wrange; x++)
+	for (int y = h; y < h+hrange; y++)
+	{
+		map_block* bl = m_data.get_block(x,y);
+		if (bl)
+		{
+			m_cell_map.x = x * blockw + cell.x;
+			m_cell_map.y = y * blockh + cell.y;
+			//bl->draw_block(offx,offy,cell);
+			//get_graph()->draw_image(c,map_file,m_data.pos_2_num(x,y));
+			draw_block_image(m_cell_map,bl);
+		}
+	}
+	m_cell_map.x = cell.x;
+	m_cell_map.y = cell.y;
+
+	//打开alphablend
+	gl->m_director->set_alpha_blending(true);
+}
+
+void map_tl::draw_block_image(const st_cell& cell,map_block* block)
 {
 	if (!block->m_Image)
-	{
 		block->load_whole(&m_data);
-	}
+	if (!block->m_Image)
+		return;
+
+	//return;
 	block->m_Image->mark_use_image(get_time_now());
-	char buf[128];
-	sprintf(buf,"%s_%02d%02d",m_data.m_map.c_str(),block->y,block->x);
-	get_render()->draw_image_cell(cell,block->m_Image,buf,NULL);
+	get_render()->draw_image_cell(cell,block->m_Image,block->m_image_name.c_str(),NULL);
+}
+
+void map_tl::draw_block_mask(const st_cell& cell,map_block* block)
+{
+	if (!block->m_Image)
+		return;
+	if (m_data.get_mask_num(block->num) <= 0) //表示贴图是888的，不需要再次绘制。
+		return;
+	texture_gl* gl = (texture_gl*)get_graph()->find_texture(block->m_image_name.c_str());
+	get_render()->draw_image_cell(cell,block->m_Image,block->m_image_name.c_str(),NULL);
 }
 
 

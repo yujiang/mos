@@ -377,16 +377,16 @@ int window_render_gl::draw_text_cell(const st_cell& cell,texture* tex,const g_re
 int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc)
 {
 	s_image_render++;
-	texture* p = get_graph()->find_texture(file);
-	if (p)
-		return _draw_texture_cell(cell,p,rc);
-	texture_gl* gl = new texture_gl;
-	if (!gl->create_texture_gl(img))
+	texture_gl* gl = (texture_gl*)get_graph()->find_texture(file);
+	if (!gl)
 	{
-		delete gl;
-		return -1;
+		gl = new texture_gl;
+		if (!gl->create_texture_gl(img))
+		{
+			delete gl;
+			return -1;
+		}
+		get_graph()->maped_texture(file,gl);
 	}
-	get_graph()->maped_texture(file,gl);
-	_draw_texture_cell(cell,gl,rc);
-	return 0;
+	return _draw_texture_cell(cell,gl,rc);
 }
