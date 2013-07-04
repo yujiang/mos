@@ -299,17 +299,13 @@ void sprite_zgp::render8888(int x,int y,DWORD* buf8888,int pitch,int block,WORD*
 	}
 }
 
-
-
-
 const int pal512 = 256 * 2; //256色的word
-
 
 //在手机上图片都做成png 256色的，每个方向是一行，铺在一起。
 bool image_zgp::loadzgp_file(const char* zgp)
 {
 	size_t size;
-	_data = read_imagefile(zgp,size);
+	_data = read_resourcefile(zgp,size);
 	if (!_data)
 		return false;
 	bool rt = loadzgp_memory(zgp,_data);

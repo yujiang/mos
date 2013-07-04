@@ -1,6 +1,7 @@
 #include "map.h"
 #include "graph.h"
 #include "../device/file.h"
+#include "mapobs.h"
 
 graph_map* get_map()
 {
@@ -23,6 +24,7 @@ void graph_map::draw_map_end()
 
 graph_map::graph_map()
 {
+	m_obs = new mapobs;
 	m_source = NULL;
 }
 
@@ -38,6 +40,8 @@ void graph_map::destroy_map()
 		m_source->destory();
 		m_source = NULL;
 	}
+	delete m_obs;
+	m_obs = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////

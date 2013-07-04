@@ -17,6 +17,10 @@ function move:on_reached(is_reached)
 	
 end
 
+function move:on_change_dir(dir)
+	
+end
+
 function move:on_timer_updatepos(pass)
 	local x,y = self.cell:get_pos()
 	local dx = x + self.x_speed * pass 
@@ -29,7 +33,13 @@ function move:on_timer_updatepos(pass)
 		self.cell:set_pos(self.x_des,self.y_des)	
 		--return nil 到了，不再执行timer!
 		self.timer = nil
-		self.on_reached(true)
+
+		if #self.pos == 0 then
+			self.on_reached(true)
+		else
+			local dir = self:continue_move()
+			self.on_change_dir(dir)
+		end
 	else
 		self.cell:set_pos(dx,dy)	
 		return true
@@ -41,12 +51,9 @@ function move:add_timer()
 	self.timer = g_timer:add_timer_everyframe(move.on_timer_updatepos,self)		
 end
 
-function dir_xy(x0,y0,x,y)
-	
-end
 
 --speed 每秒多少像素？
-function move:move_to(x,y,speed)
+function move:move_to_straight(x,y,speed)
 	assert(speed > 0)
 	local x0,y0 = self.cell:get_pos()
 
@@ -66,6 +73,31 @@ function move:move_to(x,y,speed)
 
 	self:add_timer()
 	return cdriver.get_dir(x-x0,y-y0)
+end
+
+function move:move_to(x,y,speed)
+	self:stop_move()
+
+	local x0,y0 = self.cell:get_pos()
+	local pos = cdriver.find_path(x0,y0,x,y)
+	if not pos then
+		return 
+	end
+
+	print("move:move_to",x,y,pos[1],pos[2])
+
+	self.speed = speed
+	self.pos = pos
+	assert(#pos >= 2)
+	return self:continue_move()
+end
+
+function move:continue_move()
+	local pos = self.pos
+	local nx,ny = pos[#pos-1],pos[#pos]
+	pos[#pos-1] = nil
+	pos[#pos] = nil
+	return self:move_to_straight(nx,ny,self.speed)
 end
 
 --支持一个coroutine的方法。

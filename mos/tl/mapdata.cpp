@@ -235,7 +235,7 @@ bool mapdata::load_map(const std::string& map)
 	destory_mapdata();
 
 	int i;
-	f = mfopen(map.c_str(), "rb");
+	f = mfopen_resource(map.c_str(), "rb");
 	if (!f)
 		return false;
 

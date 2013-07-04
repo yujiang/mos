@@ -144,7 +144,7 @@
     <ClInclude Include="tl\tl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tl\mapobs.h">
+    <ClInclude Include="graph\mapobs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -245,7 +245,7 @@
     <ClCompile Include="tl\tl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tl\mapobs.cpp">
+    <ClCompile Include="graph\mapobs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

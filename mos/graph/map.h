@@ -19,6 +19,8 @@ public:
 typedef map_source*(* map_source_func)();
 
 //not called map confiict with std::map
+class mapobs;
+
 class graph_map
 {
 public:
@@ -42,6 +44,8 @@ public:
 	void init_map();
 	std::unordered_map<std::string,map_source_func> s_mapLoad;
 	void register_map_source(const char* fileext,map_source_func func);
+
+	mapobs* m_obs;
 };
 
 

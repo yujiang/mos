@@ -79,7 +79,7 @@ void image::register_image_file(const char* fileext,load_image_func func)
 image* image::create_image_file(const char* file)
 {
 	size_t sz;
-	char* buf = read_imagefile(file,sz);
+	char* buf = read_resourcefile(file,sz);
 	if (!buf)
 		return false;
 	return create_image_file_buffer(file,buf,sz);

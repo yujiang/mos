@@ -48,7 +48,7 @@ char* read_file(const char* file,size_t& size)
 	return buf;
 }
 
-char* read_imagefile(const char* file,size_t& size)
+char* read_resourcefile(const char* file,size_t& size)
 {
 	return read_file(get_resourcefile(file),size);
 }

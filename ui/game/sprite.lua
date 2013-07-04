@@ -94,11 +94,13 @@ end
 
 function sprite:walk_to(x,y,speed)
 	assert(speed > 0)
-	self:do_ani("walk")
 	local m = self:get_move()
 	local dir = m:move_to(x,y,speed)
 	if dir then
+		self:do_ani("walk")
 		self:set_dir(dir)
+	else
+		self:stand()
 	end
 end
 

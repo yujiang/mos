@@ -308,7 +308,7 @@ function test_sprite(png)
 	end
 
 	local sp = sprite()
-	sp:create_sprite(nil,100,100,0,0120,true)
+	sp:create_sprite(nil,300,300,0,0120,true)
 	local r = g_root
 	local m = r:get_map()
 	m:add_child(sp)

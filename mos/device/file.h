@@ -2,7 +2,7 @@
 #define __DEVICE_FILE_H_
 
 //一次性读取所有内容
-char* read_imagefile(const char* file,size_t& size);
+char* read_resourcefile(const char* file,size_t& size);
 #include <memory.h>
 //read from memory
 inline void mread(void* dest,char*& src,size_t size)

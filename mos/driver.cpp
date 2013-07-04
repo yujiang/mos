@@ -11,6 +11,7 @@
 #include "device/window.h"
 #include "device/window_render.h"
 #include "graph/map.h"
+#include "graph/mapobs.h"
 #include "mos.h"
 
 #include <string>
@@ -239,6 +240,27 @@ static int  lua_get_dir(lua_State *L) {
 	return 1;
 }
 
+static int  lua_find_path(lua_State *L) {
+	int x = luaL_checkinteger(L,1);
+	int y = luaL_checkinteger(L,2);
+	int x1 = luaL_checkinteger(L,3);
+	int y1 = luaL_checkinteger(L,4);
+	std::vector<point2> path;
+	if (!get_map()->m_obs->find_path_pixel(point2(x,y),point2(x1,y1),path))
+		return 0;
+	//push the path.
+	lua_newtable(L);
+	for (int i=0; i<path.size(); i++)
+	{
+		const point2& p = path[i];
+		lua_pushinteger(L,p.x);
+		lua_rawseti(L,-2,i*2+1);
+		lua_pushinteger(L,p.y);
+		lua_rawseti(L,-2,i*2+2);
+	}
+	return 1;
+}
+
 
 //static int  lua_create_zgp_pal_hsv(lua_State *L) {
 //	const char* zgp = luaL_checkstring(L,1);
@@ -272,6 +294,7 @@ static const luaL_reg driver_lib[] = {
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},
 	{"get_dir",				lua_get_dir},
+	{"find_path",			lua_find_path},
 	//{"create_zgp_pal_hsv",	lua_create_zgp_pal_hsv},
 	{NULL, NULL}
 };

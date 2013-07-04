@@ -1,6 +1,7 @@
 #include "map_tl.h"
 
 #include "../graph/map.h"
+#include "../graph/mapobs.h"
 #include "../graph/image.h"
 #include "../graph/graph.h"
 #include "../graph/cell.h"
@@ -11,7 +12,7 @@
 #include "../device/file.h"
 #include "../mos.h"
 #include "mapdata.h"
-#include "mapobs.h"
+//#include "mapobs.h"
 #include <unordered_set>
 
 class map_tl : public map_source
@@ -20,6 +21,7 @@ public:
 	void mask_drawing_image(const st_cell* cell);
 	void draw_map_image(const st_cell& cell, const char* map_file,int frame);
 	bool load_map(const char* file,int frame,g_size& sz);
+	bool load_obs(const char* file);
 	void draw_map_begin() ;
 	void draw_map_end() ;
 	void destory()
@@ -27,7 +29,7 @@ public:
 		delete this;
 	}
 	mapdata m_data;
-	mapobs m_obs;
+	//mapobs m_obs;
 protected:
 	void draw_block_image(const st_cell& cell,map_block* block);
 	
@@ -137,13 +139,67 @@ void map_tl::draw_block_mask(const st_cell& cell,map_block* block)
 
 bool map_tl::load_map(const char* file,int frame,g_size& sz)
 {
-	if (!m_data.load_map(get_resourcefile(file)))
+	if (!m_data.load_map(file))
 		return false;
 	sz.w = m_data.get_width();
 	sz.h = m_data.get_height();
-	m_obs.load_obs(replace_file_ext(get_resourcefile(file),"blk"));
+	load_obs(replace_file_ext(file,"blk"));
 	return true;
 }
+
+struct CHeader{
+	int ver;
+	//		int scale;		//原始阻挡与目前阻挡信息的比例
+	int width;
+	int height;
+};
+
+#define CELLSIZE 20
+
+bool map_tl::load_obs(const char* file)
+{
+	size_t size;
+	char* buf = read_resourcefile(file,size);
+	if (!buf)
+		return false;
+
+	char* p = buf;
+	CHeader cellheader;
+	mread(&cellheader, p, sizeof(CHeader));
+	if (cellheader.ver!='B1.0')
+		return 1;
+
+	int m_width = cellheader.width;
+	int m_height = cellheader.height;
+
+	char* m_buf = new char[m_width*m_height];
+
+	int StackSize=cellheader.width*cellheader.height/2;
+
+	char* des = m_buf;
+
+	char tag[2] = {0x10,0x01};
+
+	for(int i = 0; i< StackSize; ++i)
+	{
+		char cell;
+		mread(&cell, p, 1);
+		for (int k = 0; k < 2; k++,++des)
+		{
+			if (cell & tag[k])
+				*des = 1;
+			else
+				*des = 0;
+		}
+	}
+
+	delete buf;
+
+	get_map()->m_obs->create_obs(m_width,m_height,m_buf,CELLSIZE);
+
+	return true;
+}
+
 
 map_source* get_map_source_tl()
 {

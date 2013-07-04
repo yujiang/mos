@@ -114,6 +114,7 @@
     <ClInclude Include="graph\image.h" />
     <ClInclude Include="graph\image_db.h" />
     <ClInclude Include="graph\map.h" />
+    <ClInclude Include="graph\mapobs.h" />
     <ClInclude Include="graph\point.h" />
     <ClInclude Include="graph\rect.h" />
     <ClInclude Include="graph\texture.h" />
@@ -124,7 +125,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tl\image_zgp.h" />
     <ClInclude Include="tl\mapdata.h" />
-    <ClInclude Include="tl\mapobs.h" />
     <ClInclude Include="tl\map_tl.h" />
     <ClInclude Include="tl\tl.h" />
   </ItemGroup>
@@ -147,6 +147,7 @@
     <ClCompile Include="graph\image.cpp" />
     <ClCompile Include="graph\image_db.cpp" />
     <ClCompile Include="graph\map.cpp" />
+    <ClCompile Include="graph\mapobs.cpp" />
     <ClCompile Include="graph\point.cpp" />
     <ClCompile Include="graph\rect.cpp" />
     <ClCompile Include="graph\texture.cpp" />
@@ -159,7 +160,6 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="tl\image_zgp.cpp" />
     <ClCompile Include="tl\mapdata.cpp" />
-    <ClCompile Include="tl\mapobs.cpp" />
     <ClCompile Include="tl\map_tl.cpp" />
     <ClCompile Include="tl\tl.cpp" />
   </ItemGroup>
