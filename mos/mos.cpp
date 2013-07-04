@@ -58,14 +58,12 @@ bool window_run()
 	return true;
 }
 
-#include "image/image_zgp.h"
-#include "image/map_tl.h"
 //////////////////////////////////////////////////////////////////////////
 //custom your game source == call it from script.
+#include "tl/tl.h"
 void custom_game_source()
 {
-	get_graph()->regist_file_source(get_file_source_zgp());
-	get_map()->register_map_source("map",&get_map_source_tl);
+	init_tl();
 }
 
 int _tmain(int argc, _TCHAR* argv[])

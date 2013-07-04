@@ -160,7 +160,7 @@ function safe_on_init()
 	regist_dog()
 	test_sprite(false)
 	
-	test_win1()
+	--test_win1()
 	--test_win4()
 	--test_notice()
 

@@ -25,7 +25,8 @@ function map:create_map(name,w,h,id)
 
 	self.drag = false
 
-	local jpg = string.format("map/%04d.jpg",id)
+	--local jpg = string.format("map/%04d.jpg",id)
+	local jpg = string.format("map/%04d.map",id)
 	self:set_bg_map(jpg)
 end
 
@@ -87,7 +88,8 @@ function map:on_mouse_msg(mouse_event,x,y,param)
 	if mouse_event == WM_LBUTTONDOWN then
 		if g_root.play then
 			local x2,y2 = self:mouse_2_map(x,y)
-			g_root.play:walk_to(x2,y2,150)
+			print("self:mouse_2_map",x,y,x2,y2)
+			g_root.play:walk_to(x2,y2,250)
 		end
 		--self:topest()
 	elseif mouse_event == WM_RBUTTONDOWN then

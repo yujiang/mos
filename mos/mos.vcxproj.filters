@@ -123,9 +123,6 @@
     <ClInclude Include="graph\dir.h">
       <Filter>graph</Filter>
     </ClInclude>
-    <ClInclude Include="image\image_zgp.h">
-      <Filter>image</Filter>
-    </ClInclude>
     <ClInclude Include="counter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -135,7 +132,16 @@
     <ClInclude Include="graph\map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="image\map_tl.h">
+    <ClInclude Include="tl\image_zgp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tl\map_tl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tl\mapdata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tl\tl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,9 +221,6 @@
     <ClCompile Include="device\opengl\glsl.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>
-    <ClCompile Include="image\image_zgp.cpp">
-      <Filter>image</Filter>
-    </ClCompile>
     <ClCompile Include="crc32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -227,7 +230,16 @@
     <ClCompile Include="graph\map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="image\map_tl.cpp">
+    <ClCompile Include="tl\image_zgp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tl\map_tl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tl\mapdata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tl\tl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

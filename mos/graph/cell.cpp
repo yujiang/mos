@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <assert.h>
 #include <string>
-#include "image/image_zgp.h"
 
 std::unordered_map<std::string,int> g_hmOffsetInt;
 std::unordered_map<std::string,int> g_hmOffsetStr;

@@ -82,6 +82,7 @@ public:
 	void init_graph();
 	void close_graph();
 	image* find_image_raw(const char* file,int frame,const unsigned long* parts_pal_hsv);
+	void set_image_raw(const char* file,image* img);
 protected:
 	int get_text_line(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);
 	g_size get_text_size(const st_cell& text,const g_size& sz_father, const stFont* font, const wchar_t* str);

@@ -110,6 +110,8 @@ public:
 	std::string m_file; //for debug
 	
 	static image* create_image_file(const char* file);
+	static image* create_image_file_buffer(const char* file,void* buf,size_t size);
+
 	static void register_image_file(const char* fileext,load_image_func func);
 
 	bool create_image_dynamic(int width,int height,int m_bits_component);

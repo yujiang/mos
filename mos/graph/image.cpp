@@ -82,11 +82,12 @@ image* image::create_image_file(const char* file)
 	char* buf = read_imagefile(file,sz);
 	if (!buf)
 		return false;
-	int len = strlen(file);
-	if (len <= 3)
-		return false;
-	const char* ext = file+len-3;
-	load_image_func func = s_imageLoad[ext];
+	return create_image_file_buffer(file,buf,sz);
+}
+
+image* image::create_image_file_buffer(const char* file,void* buf,size_t sz)
+{
+	load_image_func func = s_imageLoad[get_file_ext(file)];
 	if (!func)
 		return false;
 	image* i = new image();

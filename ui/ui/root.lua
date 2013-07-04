@@ -28,7 +28,7 @@ function root:create_root(w,h)
 	end
 
 	local m = map()
-	m:create_map("map",w,h,1053)
+	m:create_map("map",w,h,1005)
 	--print(m.name)
 	self:find_child("map"):add_child(m)
 

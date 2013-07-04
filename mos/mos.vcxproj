@@ -118,12 +118,14 @@
     <ClInclude Include="graph\rect.h" />
     <ClInclude Include="graph\texture.h" />
     <ClInclude Include="graph\texture_font.h" />
-    <ClInclude Include="image\image_zgp.h" />
-    <ClInclude Include="image\map_tl.h" />
     <ClInclude Include="mos.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tl\image_zgp.h" />
+    <ClInclude Include="tl\mapdata.h" />
+    <ClInclude Include="tl\map_tl.h" />
+    <ClInclude Include="tl\tl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\utf8.cpp" />
@@ -151,11 +153,13 @@
     <ClCompile Include="image\hsv.cpp" />
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
-    <ClCompile Include="image\image_zgp.cpp" />
-    <ClCompile Include="image\map_tl.cpp" />
     <ClCompile Include="mos.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="tl\image_zgp.cpp" />
+    <ClCompile Include="tl\mapdata.cpp" />
+    <ClCompile Include="tl\map_tl.cpp" />
+    <ClCompile Include="tl\tl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

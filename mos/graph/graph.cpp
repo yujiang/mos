@@ -9,7 +9,6 @@
 #include "font.h"
 #include "image_db.h"
 #include "mos.h"
-#include "image/image_zgp.h"
 #include "map.h"
 #include <iostream>
 
@@ -48,6 +47,12 @@ file_source* graph::find_file_source(const char* file) const
 		return it->second;
 	//return source_map[f];
 	return NULL;
+}
+
+void graph::set_image_raw(const char* file,image* img)
+{
+	img->image_add_ref();
+	image_map[file] = img;
 }
 
 image* graph::find_image_raw(const char* file,int frame,const unsigned long* parts_pal_hsv)

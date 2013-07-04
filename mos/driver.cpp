@@ -4,7 +4,7 @@
 #include "graph/graph.h"
 #include "graph/image.h"
 #include "graph/image_db.h"
-#include "image/image_zgp.h"
+#include "tl/image_zgp.h"
 #include "graph/font.h"
 #include "graph/dir.h"
 #include "graph/texture.h"

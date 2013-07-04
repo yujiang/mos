@@ -321,7 +321,7 @@ function test_sprite(png)
 	bd:set_zgp_part_pal(1,-77,0,0)
 	bd:set_zgp_part_pal(4,54,0,0)
 
-	sp:set_room(0.7)
+	--sp:set_room(0.7)
 
 	r:set_play(sp)
 end
