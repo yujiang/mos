@@ -1,7 +1,7 @@
 #ifndef __GRAPH_GRAPH_H_
 #define __GRAPH_GRAPH_H_
 
-#include "rect.h"
+#include "../core/rect.h"
 #include <unordered_map>
 #include <string>
 

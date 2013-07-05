@@ -6,12 +6,12 @@
 #include "graph/image_db.h"
 #include "tl/image_zgp.h"
 #include "graph/font.h"
-#include "graph/dir.h"
+#include "core/dir.h"
 #include "graph/texture.h"
 #include "device/window.h"
 #include "device/window_render.h"
-#include "graph/map.h"
-#include "graph/mapobs.h"
+#include "map/map.h"
+#include "map/mapobs.h"
 #include "mos.h"
 
 #include <string>
@@ -245,14 +245,15 @@ static int  lua_find_path(lua_State *L) {
 	int y = luaL_checkinteger(L,2);
 	int x1 = luaL_checkinteger(L,3);
 	int y1 = luaL_checkinteger(L,4);
-	std::vector<point2> path;
+	std::list<point2> path;
 	if (!get_map()->m_obs->find_path_pixel(point2(x,y),point2(x1,y1),path))
 		return 0;
 	//push the path.
 	lua_newtable(L);
-	for (int i=0; i<path.size(); i++)
+	int i=0;
+	for (auto it = path.begin(); it!=path.end(); it++,i++)
 	{
-		const point2& p = path[i];
+		const point2& p = *it;
 		lua_pushinteger(L,p.x);
 		lua_rawseti(L,-2,i*2+1);
 		lua_pushinteger(L,p.y);

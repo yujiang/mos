@@ -9,7 +9,8 @@
 #include "font.h"
 #include "image_db.h"
 #include "mos.h"
-#include "map.h"
+#include "map/map.h"
+#include "core/dir32.h"
 #include <iostream>
 
 class auto_free
@@ -509,6 +510,8 @@ bool create_image_jpg(image_struct*,void* data,int size,const char* name);
 
 void graph::init_graph()
 {
+	init_dir32();
+
 	init_cell();
 	init_font();
 	image::register_image_file("png",create_image_png);

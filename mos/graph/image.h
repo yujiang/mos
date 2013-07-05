@@ -1,8 +1,8 @@
 #ifndef __GRAPH_IMAGE_H_
 #define __GRAPH_IMAGE_H_
 
-#include "rect.h"
-#include "../counter.h"
+#include "../core/rect.h"
+#include "../core/counter.h"
 #include <string>
 
 class st_cell;

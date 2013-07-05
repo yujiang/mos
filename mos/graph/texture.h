@@ -1,7 +1,7 @@
 #ifndef __GRAPH_TEXTURE_H_
 #define __GRAPH_TEXTURE_H_
 
-#include "../counter.h"
+#include "../core/counter.h"
 //wrap opengl texture not directx.
 struct g_rect;
 class st_cell;

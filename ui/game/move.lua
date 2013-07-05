@@ -32,13 +32,14 @@ function move:on_timer_updatepos(pass)
 		(dy - self.y_des) * (y - self.y_des) < 0 then
 		self.cell:set_pos(self.x_des,self.y_des)	
 		--return nil 到了，不再执行timer!
-		self.timer = nil
+		--self.timer = nil
 
-		if #self.pos == 0 then
+		--print("move.on_reach,",self.path,#self.path)
+		if not self.path or #self.path <= self.pos or not self:continue_move() then
+			self.timer = nil
 			self.on_reached(true)
 		else
-			local dir = self:continue_move()
-			self.on_change_dir(dir)
+			return true
 		end
 	else
 		self.cell:set_pos(dx,dy)	
@@ -59,7 +60,7 @@ function move:move_to_straight(x,y,speed)
 
 	local distance = math.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
 	if distance <= 0.0001 then
-		return
+		return 
 	end
 
 	self.x_start = x0
@@ -72,31 +73,42 @@ function move:move_to_straight(x,y,speed)
 	--print("move:move_to",x,y,speed,self.x_speed,self.y_speed)
 
 	self:add_timer()
-	return cdriver.get_dir(x-x0,y-y0)
+	local dir = cdriver.get_dir(x-x0,y-y0)
+	self.on_change_dir(dir)
+	return dir
 end
 
 function move:move_to(x,y,speed)
 	self:stop_move()
 
 	local x0,y0 = self.cell:get_pos()
-	local pos = cdriver.find_path(x0,y0,x,y)
-	if not pos then
+	local path = cdriver.find_path(x0,y0,x,y)
+	if not path then
 		return 
 	end
 
-	print("move:move_to",x,y,pos[1],pos[2])
+	local s = ""
+	for i= 1,#path/2,1 do
+		local nx = path[i*2-1]
+		local ny = path[i*2]
+		s = s .. "("..nx..","..ny..") "
+	end
+	print("move:move_to",x0,y0,"-->",x,y)
+	print("path "..#path,s)
 
 	self.speed = speed
-	self.pos = pos
-	assert(#pos >= 2)
+	self.path = path
+	self.pos = 0
+
+	assert(#path >= 2)
 	return self:continue_move()
 end
 
 function move:continue_move()
-	local pos = self.pos
-	local nx,ny = pos[#pos-1],pos[#pos]
-	pos[#pos-1] = nil
-	pos[#pos] = nil
+	local path = self.path
+	local nx,ny = path[self.pos+1],path[self.pos+2]
+	print("move:continue_move()",#path,nx,ny)
+	self.pos = self.pos + 2
 	return self:move_to_straight(nx,ny,self.speed)
 end
 

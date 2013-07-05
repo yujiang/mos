@@ -1,7 +1,7 @@
 #include "map_tl.h"
 
-#include "../graph/map.h"
-#include "../graph/mapobs.h"
+#include "../map/map.h"
+#include "../map/mapobs.h"
 #include "../graph/image.h"
 #include "../graph/graph.h"
 #include "../graph/cell.h"
@@ -172,11 +172,11 @@ bool map_tl::load_obs(const char* file)
 	int m_width = cellheader.width;
 	int m_height = cellheader.height;
 
-	char* m_buf = new char[m_width*m_height];
+	unsigned char* m_buf = new unsigned char[m_width*m_height];
 
 	int StackSize=cellheader.width*cellheader.height/2;
 
-	char* des = m_buf;
+	unsigned char* des = m_buf;
 
 	char tag[2] = {0x10,0x01};
 

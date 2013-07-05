@@ -90,11 +90,16 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cc.h" />
+    <ClInclude Include="core\AStar.h" />
+    <ClInclude Include="core\cc.h" />
+    <ClInclude Include="core\counter.h" />
+    <ClInclude Include="core\crc32.h" />
+    <ClInclude Include="core\dir.h" />
+    <ClInclude Include="core\dir32.h" />
+    <ClInclude Include="core\point.h" />
     <ClInclude Include="core\pool.h" />
+    <ClInclude Include="core\rect.h" />
     <ClInclude Include="core\utf8.h" />
-    <ClInclude Include="counter.h" />
-    <ClInclude Include="crc32.h" />
     <ClInclude Include="device\opengl\director.h" />
     <ClInclude Include="device\file.h" />
     <ClInclude Include="device\opengl\glsl.h" />
@@ -108,17 +113,14 @@
     <ClInclude Include="driver.h" />
     <ClInclude Include="graph\cell.h" />
     <ClInclude Include="graph\color.h" />
-    <ClInclude Include="graph\dir.h" />
     <ClInclude Include="graph\font.h" />
     <ClInclude Include="graph\graph.h" />
     <ClInclude Include="graph\image.h" />
     <ClInclude Include="graph\image_db.h" />
-    <ClInclude Include="graph\map.h" />
-    <ClInclude Include="graph\mapobs.h" />
-    <ClInclude Include="graph\point.h" />
-    <ClInclude Include="graph\rect.h" />
     <ClInclude Include="graph\texture.h" />
     <ClInclude Include="graph\texture_font.h" />
+    <ClInclude Include="map\map.h" />
+    <ClInclude Include="map\mapobs.h" />
     <ClInclude Include="mos.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="stdafx.h" />
@@ -129,8 +131,12 @@
     <ClInclude Include="tl\tl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="core\AStar.cpp" />
+    <ClCompile Include="core\crc32.cpp" />
+    <ClCompile Include="core\dir32.cpp" />
+    <ClCompile Include="core\point.cpp" />
+    <ClCompile Include="core\rect.cpp" />
     <ClCompile Include="core\utf8.cpp" />
-    <ClCompile Include="crc32.cpp" />
     <ClCompile Include="device\opengl\director.cpp" />
     <ClCompile Include="device\file.cpp" />
     <ClCompile Include="device\gdi\texture_gdi.cpp" />
@@ -146,15 +152,13 @@
     <ClCompile Include="graph\graph.cpp" />
     <ClCompile Include="graph\image.cpp" />
     <ClCompile Include="graph\image_db.cpp" />
-    <ClCompile Include="graph\map.cpp" />
-    <ClCompile Include="graph\mapobs.cpp" />
-    <ClCompile Include="graph\point.cpp" />
-    <ClCompile Include="graph\rect.cpp" />
     <ClCompile Include="graph\texture.cpp" />
     <ClCompile Include="graph\texture_font.cpp" />
     <ClCompile Include="image\hsv.cpp" />
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
+    <ClCompile Include="map\map.cpp" />
+    <ClCompile Include="map\mapobs.cpp" />
     <ClCompile Include="mos.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="stdafx.cpp" />

@@ -1,5 +1,5 @@
 #include "map.h"
-#include "graph.h"
+#include "graph/graph.h"
 #include "../device/file.h"
 #include "mapobs.h"
 

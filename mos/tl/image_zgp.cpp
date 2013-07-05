@@ -3,7 +3,7 @@
 #include "device/file.h"
 #include "mos.h"
 #include "../graph/graph.h"
-#include "crc32.h"
+#include "../core/crc32.h"
 
 //本来为了通用，想使用png的格式，
 //并且发现主要zgp的格式并不优化，比png要大一倍，
@@ -15,12 +15,10 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <assert.h>
+
 using namespace std;
 
-#include "../graph/rect.h"
-#include <assert.h>
-#include "../counter.h"
-#include <unordered_map>
 
 typedef unsigned short      WORD;
 typedef unsigned long       DWORD;

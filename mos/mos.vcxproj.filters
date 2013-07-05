@@ -60,17 +60,8 @@
     <ClInclude Include="graph\image.h">
       <Filter>graph</Filter>
     </ClInclude>
-    <ClInclude Include="graph\point.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\rect.h">
-      <Filter>graph</Filter>
-    </ClInclude>
     <ClInclude Include="device\file.h">
       <Filter>device</Filter>
-    </ClInclude>
-    <ClInclude Include="cc.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graph\color.h">
       <Filter>graph</Filter>
@@ -120,18 +111,6 @@
     <ClInclude Include="device\opengl\glsl.h">
       <Filter>device\gl</Filter>
     </ClInclude>
-    <ClInclude Include="graph\dir.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="counter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="crc32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tl\image_zgp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -144,7 +123,34 @@
     <ClInclude Include="tl\tl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graph\mapobs.h">
+    <ClInclude Include="core\AStar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\cc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\counter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\crc32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\dir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\dir32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\point.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\rect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map\map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="map\mapobs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -171,12 +177,6 @@
       <Filter>graph</Filter>
     </ClCompile>
     <ClCompile Include="graph\image.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\point.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\rect.cpp">
       <Filter>graph</Filter>
     </ClCompile>
     <ClCompile Include="script.cpp">
@@ -224,13 +224,7 @@
     <ClCompile Include="device\opengl\glsl.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>
-    <ClCompile Include="crc32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="image\hsv.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tl\image_zgp.cpp">
@@ -245,7 +239,25 @@
     <ClCompile Include="tl\tl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graph\mapobs.cpp">
+    <ClCompile Include="core\AStar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\crc32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\dir32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\point.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map\map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="map\mapobs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

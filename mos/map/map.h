@@ -1,7 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "rect.h"
+#include "../core/rect.h"
 #include <unordered_map>
 
 class st_cell;

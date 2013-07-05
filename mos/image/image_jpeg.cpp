@@ -1,5 +1,5 @@
 #include "../graph/image.h"
-#include "cc.h"
+#include "core/cc.h"
 #include <stdio.h>
 #include <setjmp.h>
 

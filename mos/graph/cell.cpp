@@ -1,7 +1,7 @@
 
 #include "cell.h"
 #include "graph.h"
-#include "map.h"
+#include "map/map.h"
 #include "device/window_render.h"
 #include "mos.h"
 #include <vector>

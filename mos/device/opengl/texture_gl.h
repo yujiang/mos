@@ -5,7 +5,7 @@
 class image;
 #include "graph/texture.h"
 #include "GL/glew.h"
-#include "graph/rect.h"
+#include "core/rect.h"
 
 enum CShaderType;
 

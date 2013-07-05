@@ -9,4 +9,8 @@
 #define CC_SAFE_RETAIN(p)            do { if(p) { (p)->retain(); } } while(0)
 #define CC_BREAK_IF(cond)            if(cond) break
 
+#define QIN_MAX(a,b)    (((a) > (b)) ? (a) : (b))
+#define QIN_MIN(a,b)    (((a) < (b)) ? (a) : (b))
+
+
 #endif

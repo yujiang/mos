@@ -74,11 +74,16 @@ function sprite:get_move()
 		self.move = move()
 		self.move:create_move(self)
 		self.move.on_reached = function(is_reached)
-			--print("sprite.move.on_reached",self.name,is_reached)
+			print("sprite.move.on_reached",self.name,is_reached)
 			if is_reached then	--否则可能是上一个的退出。
 				self:stand() 
 			end
 			self.emitter:emit("reach",is_reached)
+		end
+		self.move.on_change_dir = function(dir)
+			if dir >= 0 then
+				self:set_dir(dir)
+			end
 		end
 	end
 	return self.move
@@ -98,7 +103,7 @@ function sprite:walk_to(x,y,speed)
 	local dir = m:move_to(x,y,speed)
 	if dir then
 		self:do_ani("walk")
-		self:set_dir(dir)
+		--self:set_dir(dir)
 	else
 		self:stand()
 	end

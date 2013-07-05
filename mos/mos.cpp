@@ -7,7 +7,7 @@
 #include "device/window_render.h"
 #include "script.h"
 #include "graph/graph.h"
-#include "graph/map.h"
+#include "map/map.h"
 
 #include "mos.h"
 //#include "../3rd/vld/vld.h" //http://vld.codeplex.com/

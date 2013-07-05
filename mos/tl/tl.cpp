@@ -2,7 +2,7 @@
 #include "image_zgp.h"
 #include "map_tl.h"
 #include "graph/graph.h"
-#include "graph/map.h"
+#include "map/map.h"
 
 
 void init_tl()

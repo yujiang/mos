@@ -8,7 +8,7 @@ extern "C"
 #include "lauxlib.h"
 }
 
-#include "graph/rect.h"
+#include "core/rect.h"
 
 #define CELL_MAX_PARTS 6
 

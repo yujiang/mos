@@ -1,7 +1,7 @@
 #ifndef __DEVICE_WINDOWN_H_
 #define __DEVICE_WINDOWN_H_
 
-#include "graph/rect.h"
+#include "core/rect.h"
 #include <string>
 
 struct st_window_param : public g_rect

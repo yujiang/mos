@@ -1,7 +1,7 @@
 #ifndef __GRAPH_IMAGE_DB_H_
 #define __GRAPH_IMAGE_DB_H_
 
-#include "rect.h"
+#include "core/rect.h"
 #include <string>
 
 struct st_redirect

@@ -1,7 +1,7 @@
 #ifndef __DEVICE_WINDOW_RENDER_H_
 #define __DEVICE_WINDOW_RENDER_H_
 
-#include "graph/rect.h"
+#include "core/rect.h"
 #include <string>
 
 class texture;
