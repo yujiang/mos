@@ -10,6 +10,8 @@ function sprite_body:create_body(name,x,y,z,ani_id,use_zgp)
 	self.use_zgp = use_zgp
 	self._disable = true
 
+	self.need_mask = true
+
 	self.ani = ani()
 	self.ani:create_ani(self)
 end
@@ -49,6 +51,8 @@ end
 function sprite_body:set_weapon(weapon_id)
 	local weapon = image()
 	weapon:create_cell("weapon",0,0,1,0,0)
+	weapon.need_mask = true
+
 	self:add_child(weapon)
 	weapon.weapon_id = weapon_id
 	--assert(self:get_weapon())	

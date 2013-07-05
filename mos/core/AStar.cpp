@@ -270,7 +270,7 @@ int cAStar::trytile(int dir,int x,int y,TREE father)
 	return 0;
 }
 
-// 路径寻找主函数
+// 路径寻找主函数 //from 云风
 bool cAStar::findpath(PATH& listWay)
 {
 	TREE root;

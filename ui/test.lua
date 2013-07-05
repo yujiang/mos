@@ -308,7 +308,8 @@ function test_sprite(png)
 	end
 
 	local sp = sprite()
-	sp:create_sprite(nil,700,600,0,0120,true)
+	--sp:create_sprite(nil,812,1060,0,0120,true)
+	sp:create_sprite(nil,1658,991,0,0120,true)
 	local r = g_root
 	local m = r:get_map()
 	m:add_child(sp)
@@ -353,7 +354,7 @@ function test_fps()
 	local l1 = r:find_child("top")
 
 	local label1 = label()
-	label1:create_label("fps",0,0,0,400,20,"fps:100")
+	label1:create_label("fps",0,0,0,600,20,"fps:100")
 	label1._disable = false
 	label1:get_text():set_color(-1)
 	l1:add_child(label1)

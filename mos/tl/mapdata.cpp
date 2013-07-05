@@ -183,12 +183,12 @@ bool map_block::load_whole(mapdata*head)
 		image* image888 = image::create_image_file_buffer(filename,compress_data,len);
 
 		int m_MaskNum = head->get_mask_num(n);
+		const int *maskindex = head->get_block_maskindex(n, len);
 		if( m_MaskNum > 0)
 		{
 			image* image8 = new image;
 			image8->create_image_dynamic(BLOCKW,BLOCKH,1);
-			//WMask* m_Mask = new WMask[m_MaskNum];
-			const int *maskindex = head->get_block_maskindex(n, len);
+			m_masks = new WMask[m_MaskNum];
 			for(int i=0; i< m_MaskNum; i++)
 			{
 				//if (i != 0)
@@ -200,11 +200,10 @@ bool map_block::load_whole(mapdata*head)
 				int result = decompress(mask->data,temp);
 				ASSERT2(result == size,"decompress mask error!");
 				
-				WMask m;
-				m.Create((int)mask->rect.x-BLOCKW*x, (int)mask->rect.y-BLOCKH*y,mask->rect.w,mask->rect.h, temp);
-				m.Render(image8);
-				
-				delete temp;
+				WMask& m = m_masks[i];
+				m.Create(i,(int)mask->rect.x-BLOCKW*x, (int)mask->rect.y-BLOCKH*y,mask->rect.w,mask->rect.h, temp);
+				m.Render(image8);			
+				//delete temp;
 			}
 
 			m_Image = get_image8888_888_8(image888,image8);
@@ -391,14 +390,19 @@ map_block::~map_block()
 		m_Image->image_release();
 		m_Image = 0;
 	}
+	delete[] m_masks;
+	m_masks = 0;
 }
 
 void WMask::Render(image* img8)
 {
+	//bmp = b;
 	colorbyte* buf = img8->get_buf_offset(kx,ky);
 	colorbyte* desline = buf;
 	colorbyte* srcline = mask;
 	BYTE mm[4] = {0x03,0x0c,0x30,0xc0};
+
+	//用2位其实有2个意思，11表示alpha,10表示only cover not alpha。
 
 	for (int y=0; y<h; y++)
 	{
@@ -417,7 +421,8 @@ void WMask::Render(image* img8)
 				else
 				{
 					*des++ = 0;
-				}
+					//*des++ = mm[i];
+				}			
 			}
 		}
 
@@ -431,6 +436,7 @@ void WMask::Render(image* img8)
 			else
 			{
 				*des++ = 0;
+				//*des++ = mm[i];
 			}
 		}
 
@@ -439,16 +445,28 @@ void WMask::Render(image* img8)
 	}
 }
 
-void WMask::Create(int x,int y,int _w,int _h,void *ptr)
+WMask::~WMask()
 {
+	delete omask;
+	omask = NULL;
+}
+
+void WMask::Create(int i,int x,int y,int _w,int _h,void *ptr)
+{
+	id = i;
 	kx = x;
 	ky = y;
 	w = _w;
 	h = _h;
 
+	oky = y;
+	oh = h;
+	omask = (BYTE *)ptr;
+
 	pitch = up_div(w,4);
 	//printf("WMask::Create x %d y %d w %d h %d\n",x,y,_w,_h);
-	mask = (BYTE *) ptr; //alpha channel
+	mask = omask; //alpha channel
+
 	if (ky < 0)
 	{
 		h -= -ky;
@@ -457,8 +475,35 @@ void WMask::Create(int x,int y,int _w,int _h,void *ptr)
 	}
 	assert(kx >= 0 && ky >= 0 && w >=0 && h >= 0 );
 	if (ky + h > BLOCKH)
+	{
 		h = BLOCKH - ky;
+		assert(h >= 0);
+	}
+
+	//ky = ky2;
+	//h = h2;
+	//mask = mask2;
 
 	assert(kx + w <= BLOCKW && ky + h <= BLOCKH);
-	//bmp = b;
+}
+
+bool WMask::IsCover(int x,int y) const
+{
+	x -= kx;
+	y -= oky;
+	if (y<0 || y>=oh) 
+		return false;
+	
+	if (x<0) 
+	{
+		//临界点左边
+		return !((*(omask+pitch*y)&3)==1);
+	}
+	if (x>=w) 
+	{
+		//右边临界点
+		return !((*(omask+pitch*(y+1)-1)&3)==1);
+	}
+
+	return ((((*(omask+pitch*y+x/4))>>((x&3)*2))&3)!=1);
 }

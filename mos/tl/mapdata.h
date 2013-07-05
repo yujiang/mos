@@ -63,6 +63,10 @@ struct WRect {
 	int y;
 	int w;
 	int h;
+	bool Contain(int x0,int y0) const
+	{
+		return x0>=x && x0<x+w && y0>=y && y0<y+h;
+	}
 };
 
 struct MASK_DATA{
@@ -92,11 +96,22 @@ public:
 	//const image* bmp;
 	int kx,ky,w,h;
 	BYTE * mask;
+
+	int oky,oh;
+	BYTE * omask;
+
+	int id;
 	int pitch;
-	void Create(int x,int y,int _w,int _h,void *ptr);
+	void Create(int i,int x,int y,int _w,int _h,void *ptr);
 	void Render(image* img8);
 	//BYTE* Render8888();
 	//BYTE* Render888();
+	bool IsCover(int x,int y) const;
+	WMask()
+	{
+		omask = NULL;
+	}
+	~WMask();
 };
 
 
@@ -107,6 +122,7 @@ public:
 
 	image* m_Image;
 	std::string m_image_name;
+	WMask* m_masks;
 
 	int x,y,num;
 	void set_pos(int _x,int _y,int _num)
@@ -119,6 +135,7 @@ public:
 	map_block()
 	{
 		m_Image = 0;
+		m_masks = 0;
 	}
 	~map_block();
 };

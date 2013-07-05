@@ -31,6 +31,7 @@ public:
 
 	const char* image_file;
 	int frame;
+	int need_mask;
 
 	const char* shader;
 	float shader_param;

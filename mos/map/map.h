@@ -10,6 +10,7 @@ class map_source
 {
 public:
 	virtual void draw_map_image(const st_cell& cell, const char* map_file,int frame) = 0;
+	virtual void mask_drawing_image(const st_cell& cell) = 0;
 	virtual bool load_map(const char* file,int frame,g_size& sz) = 0;
 	virtual void draw_map_begin() = 0;
 	virtual void draw_map_end() = 0;
@@ -28,7 +29,8 @@ public:
 	~graph_map();
 
 	//准备绘制该image了，更新遮罩。
-	//void mask_drawing_image(const st_cell* cell);
+	void mask_drawing_image(const st_cell& cell);
+
 	void draw_map_image(const st_cell& cell, const char* map_file,int frame);
 	bool load_map(const char* file,int frame,g_size& sz);
 	void destroy_map();

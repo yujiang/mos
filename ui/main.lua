@@ -137,6 +137,26 @@ function show(win,hide)
 	end
 end
 
+function maplayer_get_render_childs(self)
+	--print("maplayer_get_render_childs")
+
+	local tb = cell.get_render_childs(self)
+
+	local tb2 = {}
+	table_copyvalue(tb2,g_root:get_map())
+	tb2.is_map = nil
+	tb2.alpha = 128
+
+	local play = g_root:get_play()
+	local t = play:get_render_childs()
+	table.insert(tb2,t)
+
+	table.insert(tb,tb2)
+
+	return tb
+end
+
+
 function safe_on_init()
 	init_main()
 	local w = 800
@@ -149,6 +169,9 @@ function safe_on_init()
 
 	g_root = root()
 	g_root:create_root(w,h)
+
+	g_root:find_child("map").get_render_childs = maplayer_get_render_childs
+
 	
 	g_camera = camera()
 	g_camera:create_camera(g_root:get_map())

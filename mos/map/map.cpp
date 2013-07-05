@@ -45,6 +45,11 @@ void graph_map::destroy_map()
 }
 
 //////////////////////////////////////////////////////////////////////////
+void graph_map::mask_drawing_image(const st_cell& cell)
+{
+	m_source->mask_drawing_image(cell);
+}
+
 void graph_map::draw_map_image(const st_cell& cell, const char* map_file,int frame)
 {
 	m_source->draw_map_image(cell,map_file,frame);
@@ -77,6 +82,7 @@ public:
 	void destory(){
 		delete this;
 	}
+	void mask_drawing_image(const st_cell& cell) {};
 	void draw_map_begin() {};
 	void draw_map_end() {};
 };

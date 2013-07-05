@@ -87,14 +87,17 @@ function move:move_to(x,y,speed)
 		return 
 	end
 
-	local s = ""
-	for i= 1,#path/2,1 do
-		local nx = path[i*2-1]
-		local ny = path[i*2]
-		s = s .. "("..nx..","..ny..") "
+	local function print_path()
+		local s = ""
+		for i= 1,#path/2,1 do
+			local nx = path[i*2-1]
+			local ny = path[i*2]
+			s = s .. "("..nx..","..ny..") "
+		end
+		print("move:move_to",x0,y0,"-->",x,y)
+		print("path "..#path,s)
 	end
-	print("move:move_to",x0,y0,"-->",x,y)
-	print("path "..#path,s)
+	--print_path()
 
 	self.speed = speed
 	self.path = path
@@ -107,7 +110,7 @@ end
 function move:continue_move()
 	local path = self.path
 	local nx,ny = path[self.pos+1],path[self.pos+2]
-	print("move:continue_move()",#path,nx,ny)
+	--print("move:continue_move()",#path,nx,ny)
 	self.pos = self.pos + 2
 	return self:move_to_straight(nx,ny,self.speed)
 end

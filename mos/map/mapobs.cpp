@@ -73,13 +73,7 @@ bool mapobs::is_block_seam_pixel(const point2& from,const point2& to) const
 	return is_block_seam(p1,p2);
 }
 
-void mapobs::pixel_2_cell(point2& pt) const
-{
-	pt.x /= m_scale;
-	pt.y /= m_scale;
-}
-
-void ExchangeSameX(g_point& p1,g_point& p2)
+inline void ExchangeSameX(g_point& p1,g_point& p2)
 {
 	if (p1.x > p2.x)
 	{
@@ -130,8 +124,9 @@ bool mapobs::find_path(const point2& from,const point2& to,std::list<point2>& pa
 	return m_astar->FindWay(from,to,path);
 }
 
-bool mapobs::find_path_pixel(const point2& from,const point2& to,std::list<point2>& path)
+bool mapobs::find_path_pixel(const point2& from,const point2& _to,std::list<point2>& path)
 {
+	point2 to = _to;
 	if (!is_block_seam_pixel(from,to))
 	{
 		path.push_back(to);
@@ -140,8 +135,18 @@ bool mapobs::find_path_pixel(const point2& from,const point2& to,std::list<point
 
 	point2 p1 = from;
 	pixel_2_cell(p1);
+
 	point2 p2 = to;
 	pixel_2_cell(p2);
+
+	int rt2 = find_notobs_seam(p1,p2);
+	if (rt2 == -1)
+		return false;
+	if (rt2 == 1)
+	{
+		to = p2;
+		cell_2_pixel(to);
+	}
 
 	bool rt = find_path(p1,p2,path);
 	if (!rt)
@@ -161,6 +166,68 @@ bool mapobs::find_path_pixel(const point2& from,const point2& to,std::list<point
 
 	return rt;
 }
+
+int mapobs::find_notobs_seam(const point2& pos, point2& click) const
+{
+	if (click == pos)
+		return 0;
+	if (!is_block_point(click))
+		return 0;
+	//列出直线方程 click-pos，
+	float x1 = click.x;
+	float y1 = click.y;
+	float x2 = pos.x;
+	float y2 = pos.y;
+
+	if (click.x == pos.x)
+	{
+		for (int y = click.y-1; y != pos.y ; y -= (click.y-pos.y)/abs(click.y-pos.y) )
+		{
+			click.y = y;
+			if (!is_block_point(click))
+				return 1;
+		}
+		return -1;
+	}
+	else if (click.y == pos.y)
+	{
+		for (int x = click.x-1; x != pos.x ; x -= (click.x-pos.x)/abs(click.x-pos.x) )
+		{
+			click.x = x;
+			if (!is_block_point(click))
+				return 1;
+		}
+		return -1;
+	}
+
+	float k = (y2-y1)/(x2-x1);
+	if (fabs(k) < 1.f)
+	{
+		float b = y1 - k * x1; 
+		for (int x = click.x-1; x != pos.x ; x -= (click.x-pos.x)/abs(click.x-pos.x) )
+		{
+			click.x = x;
+			click.y = k * x + b;
+			if (!is_block_point(click))
+				return 1;
+		}
+	}
+	else
+	{
+		k = 1.f / k;
+		float b = x1 - k * y1;
+		for (int y = click.y-1; y != pos.y ; y -= (click.y-pos.y)/abs(click.y-pos.y) )
+		{
+			click.y = y;
+			click.x = k * y + b;
+			if (!is_block_point(click))
+				return 1;
+		}
+	}
+
+	return -1;
+}
+
 
 void mapobs::create_obs(int w,int h,unsigned char* buf,int scale)
 {

@@ -5,6 +5,7 @@
 
 local root = class(cell,"root")
 
+
 --layer的z值定下来就不能改变了,--加个name好定位
 function root:create_root(w,h)
 	cell.create_cell(self,"root",0,0,0)	
@@ -21,7 +22,7 @@ function root:create_root(w,h)
 		{"top",100},
 		{"modal",1000},
 	}
-	for _,v in ipairs(layers) do
+	for k,v in ipairs(layers) do
 		local l = layer()
 		l:create_layer(v[1],v[2],w,h)
 		self:add_child(l)

@@ -33,6 +33,7 @@ void init_cell()
 	offsetint(w);
 	offsetint(h);
 	offsetint(frame);
+	offsetint(need_mask);
 
 	offsetint(font);
 	offsetint(align);
@@ -172,6 +173,12 @@ void st_cell::merge(const st_cell& father,const st_cell& me)
 
 	room = r1.room * r2.room;
 
+	w = r2.w;
+	h = r2.h;
+	cx = r2.cx;
+	cy = r2.cy;
+	//need_mask = need_mask | r2.need_mask;
+
 	//color 不必变
 	//alpha 也用个乘法
 	color = r2.color;
@@ -203,8 +210,13 @@ void cell::draw(int level,const st_cell& st) const
 			if (get_graph()->draw_image(st2,image_file,frame) >= 0)
 			{
 				//因为3d可以一次绘制所有的mask，就不必像2d那样绘制了。
-				//if (get_map()->m_in_map)
-				//	get_map()->mask_drawing_image(this);
+				//还是不行，太天真了。
+				if (need_mask && get_map()->m_in_map)
+				{
+					st2.x = x0;
+					st2.y = y0;
+					get_map()->mask_drawing_image(st2);
+				}
 			}
 		}
 		else if(map_file) //地图文件
