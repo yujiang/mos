@@ -224,9 +224,6 @@
     <ClCompile Include="device\opengl\glsl.cpp">
       <Filter>device\gl</Filter>
     </ClCompile>
-    <ClCompile Include="image\hsv.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tl\image_zgp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -258,6 +255,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="map\mapobs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tl\hsv.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

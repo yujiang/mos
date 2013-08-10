@@ -28,6 +28,9 @@
     <Filter Include="resources\shaders">
       <UniqueIdentifier>{32ae5cb4-b2f0-4f60-b84a-16cfd98cf819}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{cfb45cba-3d0a-4042-b53c-75c7f5c7105d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ui\window.lua">
@@ -166,6 +169,15 @@
     </None>
     <None Include="game\image_map.lua">
       <Filter>game</Filter>
+    </None>
+    <None Include="base\ldb.lua">
+      <Filter>base</Filter>
+    </None>
+    <None Include="base\linecache.lua">
+      <Filter>base</Filter>
+    </None>
+    <None Include="base\traceback.lua">
+      <Filter>base</Filter>
     </None>
   </ItemGroup>
 </Project>

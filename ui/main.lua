@@ -4,7 +4,7 @@ require "test"
 function init_libs(dir,files)
 	for _,file in ipairs(files) do
 		--print("require",dir.."."..file)
-		if dir == "ex" then
+		if dir == "ex" or dir == "base" then
 			require(dir.."."..file)
 		else
 			_G[file] = require(dir.."."..file)
@@ -28,6 +28,12 @@ local core_files = {
 	"timer_everyframe",
 }
 
+local base_files = {
+	"linecache",
+	"traceback",
+	"ldb",
+}
+
 local db_files = {
 	"ani_data",
 }
@@ -41,9 +47,6 @@ local game_files = {
 }
 
 function init_main()
-	init_libs("ex",ex_files)
-	init_libs("core",core_files)
-
 	ui = require("ui.ui")
 	ui:init_ui_libs()
 
@@ -57,13 +60,13 @@ function init_main()
 	g_ani_data:create_ani_data()
 end
 
-function safe_on_every_frame()
+function on_every_frame()
 	g_timer:on_every_frame()
 	ui:on_every_frame()
 	--may be game.on_every_frame()
 end
 
-function safe_on_mouse_event(mouse_event,x,y,param)
+function on_mouse_event(mouse_event,x,y,param)
 	assert(mouse_event)
 	if mouse_event ~= WM_MOUSEMOVE then
 		--print("on_mouse_event",mouse_event,x,y)
@@ -76,12 +79,12 @@ function is_keyboard(key,s)
 	return s:byte(1) == key
 end
 
-function safe_on_key_down(key,alt,ctrl,shift)
+function on_key_down(key,alt,ctrl,shift)
 	local rt = ui:on_key_down(key,alt,ctrl,shift)
 	if rt then
 		return
 	end
-	--print("safe_on_key_down",key,alt,ctrl,shift)
+	--print("on_key_down",key,alt,ctrl,shift)
 	if is_keyboard(key,'M') and not ctrl then
 		t_msgbox()
 	end
@@ -157,7 +160,9 @@ function maplayer_get_render_childs(self)
 end
 
 
-function safe_on_init()
+function on_init()
+	--SafeExcept("hi")
+	--a = a + 1
 	init_main()
 	local w = 800
 	local h = 600
@@ -193,7 +198,7 @@ end
 --init()
 
 --÷ÿ”√∫Ø ˝
-function safe_on_input(s) 
+function on_input(s) 
 	--print("on_input",s)
 	--print(string.split(s))
 	local t = split(s, " ")
@@ -244,36 +249,12 @@ function safe_on_input(s)
 end
 
 
--- call from c++ part
-function safe_call(f)
-	local rt,msg = xpcall(
-		f,function(err) return debug.traceback(err) end)
-	if not rt then
-		print(msg)
-	end
-end
-
-function on_init()
-	safe_call(safe_on_init)
-end
-
-function on_input(s) 
-	safe_call(function() safe_on_input(s) end)
-end
-
-function on_every_frame()
-	safe_call(safe_on_every_frame)
-end
-
-function on_mouse_event(mouse_event,x,y,param)
-	safe_call(function() safe_on_mouse_event(mouse_event,x,y,param) end)
-end
-
 function on_mouse_wheel(delta,x,y)
 	--print("on_mouse_wheel",delta,x,y)
 	on_mouse_event(WM_MOUSEWHEEL,x,y,delta)
 end
 
-function on_key_down(key,alt,ctrl,shift)
-	safe_call(function() safe_on_key_down(key,alt,ctrl,shift) end)
-end
+
+init_libs("ex",ex_files)
+init_libs("core",core_files)
+init_libs("base",base_files)
