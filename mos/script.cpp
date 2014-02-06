@@ -22,16 +22,21 @@ int docall (lua_State *L, int narg, int nresults);
 void on_enter_lua(lua_State *L, const char* where);
 void on_exit_lua(lua_State *L, const char* where);
 
+static int on_error(lua_State* L,const char* func,int rt)
+{
+	printf("error running function `%s': %s\n",func, lua_tostring(L, -1));
+	lua_pop(L,1);
+	on_exit_lua(L, func);
+	return rt;
+}
+
 static int call_function(lua_State* L,const char* func)
 {
 	on_enter_lua(L, func);
 	lua_getglobal(L,func);
 	int rt = docall(L,0,0);
 	if (rt != 0)
-	{
-		//will get a error!
-		lua_pop(L,1);
-	}
+		return on_error(L,func,rt);
 	on_exit_lua(L,func);
 	return rt;
 	//int err = lua_pcall(L,0,0,0);
@@ -138,11 +143,8 @@ int lua_call_va (const char *func, const char *sig, ...) {
 	int rt = docall(L, narg, res);
 	if (rt)  /* do the call */
 	{
-		printf("error running function `%s': %s\n",func, lua_tostring(L, -1));
-		lua_pop(L,1);
 		va_end(vl);
-		on_exit_lua(L, func);
-		return rt;
+		return on_error(L,func,rt);
 	}
 
 	/* retrieve results */
