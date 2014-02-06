@@ -79,6 +79,9 @@
     <None Include="..\..\..\..\..\Lib\lua\keyword.lua" />
     <None Include="..\..\..\..\..\Lib\lua\my_keyword.lua" />
     <None Include="..\readme.txt" />
+    <None Include="base\ldb.lua" />
+    <None Include="base\linecache.lua" />
+    <None Include="base\traceback.lua" />
     <None Include="clib\cdriver.lua" />
     <None Include="core\emitter.lua" />
     <None Include="core\timer.lua" />

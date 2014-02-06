@@ -154,7 +154,6 @@
     <ClCompile Include="graph\image_db.cpp" />
     <ClCompile Include="graph\texture.cpp" />
     <ClCompile Include="graph\texture_font.cpp" />
-    <ClCompile Include="image\hsv.cpp" />
     <ClCompile Include="image\image_jpeg.cpp" />
     <ClCompile Include="image\image_png.cpp" />
     <ClCompile Include="map\map.cpp" />
@@ -162,6 +161,7 @@
     <ClCompile Include="mos.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="tl\hsv.cpp" />
     <ClCompile Include="tl\image_zgp.cpp" />
     <ClCompile Include="tl\mapdata.cpp" />
     <ClCompile Include="tl\map_tl.cpp" />
