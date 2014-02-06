@@ -1361,7 +1361,7 @@ int glShaderObject::load(const char* filename)
 	file.open(filename, ios::in);
    if(!file) return -1;
     
-   unsigned long len = getFileLength(file);
+    unsigned long len = getFileLength(file);
     
    if (len==0) return -2;   // "Empty File" 
     

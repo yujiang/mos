@@ -126,7 +126,7 @@ static int lua_get_image_sizecg (lua_State *L) {
 		lua_pushinteger(L,cg.y);
 		return 4;
 	}
-	printf("error! get_image_size %s %d\n",file,frame);
+	printf("error! get_image_sizecg %s %d\n",file,frame);
 	lua_pushinteger(L,0);
 	lua_pushinteger(L,0);
 	lua_pushinteger(L,0);

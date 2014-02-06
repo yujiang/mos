@@ -141,13 +141,16 @@ function maplayer_get_render_childs(self)
 	--print("maplayer_get_render_childs")
 
 	local tb = cell.get_render_childs(self)
+	local play = g_root:get_play()
+	if not play then
+		return tb
+	end
 
 	local tb2 = {}
 	table_copyvalue(tb2,g_root:get_map())
 	tb2.is_map = nil
 	tb2.alpha = 128
 
-	local play = g_root:get_play()
 	local t = play:get_render_childs()
 	table.insert(tb2,t)
 
