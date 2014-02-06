@@ -208,3 +208,39 @@ bool is_key_down(int key)
 	return (GetKeyState(key)&0x8000) != 0;
 }
 
+//////////////////////////////////////////////////////////////////////////
+//use a thread
+HANDLE g_threadInput = NULL;
+static char buffer[1024] = {0};
+
+DWORD WINAPI InputLoop(void * param)
+{
+	for (; ; ) 
+	{
+		gets_s(buffer, 1024);
+		Sleep(100);
+	}
+}
+
+HANDLE begin_thread(LPTHREAD_START_ROUTINE Thread, LPVOID lParam , int nPriority = THREAD_PRIORITY_NORMAL)
+{
+	nPriority;
+	DWORD id;
+	HANDLE handle = CreateThread(NULL,0,Thread,lParam,0,&id);
+	return handle;
+}
+
+const char* get_input_string()
+{
+	static std::string s;
+	if (g_threadInput == NULL)
+	{
+		g_threadInput = begin_thread(InputLoop,0,0);
+		return "";
+	}
+	s = buffer;
+	buffer[0] = 0;
+	return s.c_str();
+}
+
+

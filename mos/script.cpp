@@ -27,6 +27,11 @@ static int call_function(lua_State* L,const char* func)
 	on_enter_lua(L, func);
 	lua_getglobal(L,func);
 	int rt = docall(L,0,0);
+	if (rt != 0)
+	{
+		//will get a error!
+		lua_pop(L,1);
+	}
 	on_exit_lua(L,func);
 	return rt;
 	//int err = lua_pcall(L,0,0,0);
@@ -264,6 +269,35 @@ void on_enter_lua(lua_State *L, const char* where)
 	}
 }
 
+void stackdump_g(lua_State* l)
+{
+	int i;
+	int top = lua_gettop(l);
+
+	printf("total in stack %d\n",top);
+
+	for (i = 1; i <= top; i++)
+	{  /* repeat for each level */
+		int t = lua_type(l, i);
+		switch (t) {
+		case LUA_TSTRING:  /* strings */
+			printf("string: '%s'\n", lua_tostring(l, i));
+			break;
+		case LUA_TBOOLEAN:  /* booleans */
+			printf("boolean %s\n",lua_toboolean(l, i) ? "true" : "false");
+			break;
+		case LUA_TNUMBER:  /* numbers */
+			printf("number: %g\n", lua_tonumber(l, i));
+			break;
+		default:  /* other values */
+			printf("%s\n", lua_typename(l, t));
+			break;
+		}
+		printf("  ");  /* put a separator */
+	}
+	printf("\n");  /* end the listing */
+}
+
 void on_exit_lua(lua_State *L, const char* where)
 {
 	//因为存在没有正确的lua_pop的地方，导致luajit stackoverflow
@@ -273,6 +307,7 @@ void on_exit_lua(lua_State *L, const char* where)
 	if (n != old)
 	{
 		printf("on_exit_lua %s lua_gettop(L) = %d old %d\n",where,n,old);
+		stackdump_g(L);
 		old = n;
 	}
 }

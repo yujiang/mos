@@ -39,19 +39,10 @@ bool init_window(const char* name,const char* title,st_window_param& st)
 	return NULL;
 }
 
-
 bool window_run()
 {
 	if (!g_window || g_window->m_destroy)
 		return false;
-
-	std::string s = get_line_timeout(10);
-	if (!s.empty())
-	{
-		if (s == "q" || s == "quit")
-			return false;
-		lua_call_va("on_input","s",s.c_str());
-	}
 
 	g_window->message_loop();
 	if (g_window->m_destroy)
@@ -59,7 +50,7 @@ bool window_run()
 
 	g_time_now = get_time();
 	get_render()->render_start0();
-	//lua_call_function("on_every_frame");
+	lua_call_function("on_every_frame");
 	get_render()->render_end();
 
 	return true;
@@ -73,6 +64,8 @@ void custom_game_source()
 	init_tl();
 }
 
+bool g_exit = false;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	get_graph()->init_graph();
@@ -84,6 +77,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	while(1)
 	{
 		if (!window_run())
+			break;
+		if (g_exit)
 			break;
 	}
 

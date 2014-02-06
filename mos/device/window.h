@@ -48,7 +48,8 @@ public:
 };
 
 unsigned long get_time();
-const char* get_line_timeout(unsigned int timeout);
+//const char* get_line_timeout(unsigned int timeout);
+const char* get_input_string();
 bool is_key_down(int key);
 
 

@@ -61,6 +61,14 @@ function init_main()
 end
 
 function on_every_frame()
+	local s = cdriver.get_input_string()
+	if s and s ~= "" then
+		if s == "q" or s == "quit" then
+			cdriver.exit()
+			return
+		end
+		on_input(s)
+	end
 	g_timer:on_every_frame()
 	ui:on_every_frame()
 	--may be game.on_every_frame()
@@ -214,9 +222,9 @@ function on_input(s)
 		end
 	end
 	if t[1] == '?' then
-		print("r reload ")
-		print("l load window ")	
-		print("s show window ")
+		print("r reload [module]")
+		print("l loadwindow ")	
+		print("s showwindow ")
 		print("df dofile ")
 		print("p r(p) g_root(play) print ")
 		print("pr r(p) g_root(play) print_render")

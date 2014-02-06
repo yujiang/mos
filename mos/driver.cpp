@@ -262,6 +262,18 @@ static int  lua_find_path(lua_State *L) {
 	return 1;
 }
 
+static int lua_get_input_string(lua_State *L) {
+	const char* s = get_input_string();
+	lua_pushstring(L,s);
+	return 1;	
+}
+
+extern bool g_exit;
+
+static int lua_exit(lua_State* L){
+	g_exit = true;
+	return 0;
+}
 
 //static int  lua_create_zgp_pal_hsv(lua_State *L) {
 //	const char* zgp = luaL_checkstring(L,1);
@@ -296,6 +308,8 @@ static const luaL_reg driver_lib[] = {
 	{"get_graph_trace",		lua_get_graph_trace},
 	{"get_dir",				lua_get_dir},
 	{"find_path",			lua_find_path},
+	{"get_input_string",	lua_get_input_string},
+	{"exit",				lua_exit},
 	//{"create_zgp_pal_hsv",	lua_create_zgp_pal_hsv},
 	{NULL, NULL}
 };
