@@ -2,6 +2,7 @@
 #define MAP_H
 
 #include "../core/rect.h"
+#include <string>
 #include <unordered_map>
 
 class st_cell;

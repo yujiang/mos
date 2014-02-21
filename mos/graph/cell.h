@@ -1,13 +1,7 @@
 #ifndef __GRAPH_CELL_H_
 #define __GRAPH_CELL_H_
 
-struct lua_State;
-extern "C"
-{
-#include "lua.h"
-#include "lauxlib.h"
-}
-
+#include "lua.hpp"
 #include "core/rect.h"
 
 #define CELL_MAX_PARTS 6

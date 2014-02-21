@@ -5,6 +5,7 @@
 *.sdf
 *.exp
 *.user
+*.opensdf
 ui/*.exe
 Debug.win32
 ui/resources/char

@@ -1,11 +1,6 @@
 #include "driver.h"
 #include <string.h>
-extern "C"
-{
-#include "lua/src/lua.h"
-#include "lua/src/lauxlib.h"
-#include "lua/src/lualib.h"
-}
+#include "lua.hpp"
 #include "script.h"
 
 #define FUNCTION_INIT "on_init"
@@ -80,9 +75,9 @@ lua_State* init_lua()
 
 	if (err)
 	{
-		lua_close(L);
-		g_L = NULL;
-		return NULL;
+		//lua_close(L);
+		//g_L = NULL;
+		//return NULL;
 	}	
 	return L;
 }
