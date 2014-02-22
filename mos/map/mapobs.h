@@ -33,7 +33,7 @@ public:
 		m_astar = NULL;
 	}
 	~mapobs();
-	void destory_obs();
+	void destroy_obs();
 
 	//Ѱ·
 	cAStar* m_astar;

@@ -157,7 +157,7 @@ public:
 		_blocks = 0;
 	}
 	~mapdata();
-	void destory_mapdata();
+	void destroy_mapdata();
 
 	NORMAL_MAP_HEADER _map_header;
 	NORMAL_MAP_POSITION _map_position;

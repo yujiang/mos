@@ -94,7 +94,7 @@ end
 
 function ani:stop_timer()
 	if self.timer then
-		self.timer.invalid = true
+		self.timer:destroy()
 		self.timer = nil
 	end
 end

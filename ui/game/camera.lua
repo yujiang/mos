@@ -10,19 +10,20 @@ function camera:create_camera(map,type)
 	end
 end
 
-function camera:run_normal() --
-	if self.timer then
-		self.timer.invalid = true
+function camera:ontimer_everyframe() 
+	local player = g_root:get_play()
+	if player then
+		local x,y = player:get_pos()
+		self.map:center_play(x,y,g_root.w,g_root.h)
 	end
-	self.timer = g_timer:add_timer_everyframe(
-		function() 
-			local player = g_root:get_play()
-			if player then
-				local x,y = player:get_pos()
-				self.map:center_play(x,y,g_root.w,g_root.h)
-			end
-			return true
-		end)
+	return true
+end
+
+function camera:run_normal() 
+	if self.timer then
+		self.timer:destroy()
+	end
+	self.timer = g_timer:add_timer_everyframe(self.ontimer_everyframe,self)
 end
 
 

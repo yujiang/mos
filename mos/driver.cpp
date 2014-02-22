@@ -1,5 +1,6 @@
 
 #include "driver.h"
+#include "lua.hpp"
 #include "graph/cell.h"
 #include "graph/graph.h"
 #include "graph/image.h"
@@ -294,24 +295,31 @@ static int lua_exit(lua_State* L){
 static const luaL_reg driver_lib[] = {
 	{"render",				lua_render},
 	{"create_window",		lua_create_window},
+	{"get_input_string",	lua_get_input_string},
+	{"exit",				lua_exit},
+
 	{"get_image_size",		lua_get_image_size},
-	{"load_map",			lua_load_map},
 	{"get_image_sizecg",	lua_get_image_sizecg},
+	{"in_image",			lua_in_image},
+
+	{"load_map",			lua_load_map},
+
 	{"get_text_line",		lua_get_text_line},
 	{"get_text_size",		lua_get_text_size},
-	{"in_image",			lua_in_image},
+
 	{"regist_font",			lua_regist_font},
 	{"regist_image",		lua_regist_image},
 	{"regist_zgp",			lua_regist_zgp},
 	{"regist_image_palette",lua_regist_image_palette},
+
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},
+
 	{"get_dir",				lua_get_dir},
 	{"find_path",			lua_find_path},
-	{"get_input_string",	lua_get_input_string},
-	{"exit",				lua_exit},
+
 	//{"create_zgp_pal_hsv",	lua_create_zgp_pal_hsv},
-	{NULL, NULL}
+	{NULL, NULL},
 };
 
 

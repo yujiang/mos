@@ -3,7 +3,7 @@ local sprite_body = class(image,"sprite_body")
 
 function sprite_body:create_body(name,x,y,z,ani_id,use_zgp)
 	--self:set_image(image_file,frame)
-	print("sprite_body:create_body",name,x,y,z)
+	--print("sprite_body:create_body",name,x,y,z)
 	cell.create_cell(self,name,x,y,z,0,0)
 	self.ani_id = ani_id
 	self.ani_id2 = ani_id2
@@ -25,7 +25,7 @@ end
 
 function sprite_body:set_weapon_image()
 	local w = self:get_weapon()
-	if w then
+	if w and self.image_file then
 		--从image_file来才对；self.ani_name可能是个别名并不等于文件名。
 		local i,j = string.rfind(self.image_file,"/")
 		--print(image_file,i,j)

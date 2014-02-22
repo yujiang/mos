@@ -7,7 +7,7 @@ end
 
 function move:stop_move()
 	if self.timer then
-		self.timer.invalid = true
+		self.timer:destroy()
 		self.timer = nil
 		self.on_reached(false)
 	end

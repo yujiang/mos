@@ -80,7 +80,7 @@ changelog
 	加了fps
 1.30
 	无法简单的loadmap，因为move挂在了全局的timer上，导致没有释放。
-	所以addchild的时候必须先destroy掉,destory会调用stop_move。
+	所以addchild的时候必须先destroy掉,destroy会调用stop_move。
 2.2 
 	写了对timer的测试
 	c++层没有动态释放——重构把资源都放到graph，还是先不释放，因为没啥可以leak的。

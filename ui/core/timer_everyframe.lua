@@ -6,7 +6,8 @@ function timer_everyframe:on_every_frame(pass)
 	local t = self.timers
 	self.timers = {}
 	for _,timer in ipairs(t) do
-		if not timer.invalid and timer.func(timer.param,pass) then
+		--print(timer)
+		if timer:call(pass) then
 			self:add_timer(timer)
 		end		
 	end

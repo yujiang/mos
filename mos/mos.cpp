@@ -66,13 +66,31 @@ void custom_game_source()
 
 bool g_exit = false;
 
+int g_argc;
+_TCHAR** g_argv;
+
+int get_argc()
+{
+	return g_argc;
+}
+
+_TCHAR** get_argv()
+{
+	return g_argv;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
+	g_argc = argc;
+	g_argv = argv;
+	if (argc < 2)
+		return -1;
+
 	get_graph()->init_graph();
 	
 	custom_game_source();
 
-	init_lua();
+	init_lua(argv[1]);
 
 	while(1)
 	{

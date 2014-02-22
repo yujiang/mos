@@ -16,10 +16,10 @@ int mapobs::is_block_safe(int x,int y) const
 
 mapobs::~mapobs()
 {
-	destory_obs();
+	destroy_obs();
 }
 
-void mapobs::destory_obs()
+void mapobs::destroy_obs()
 {
 	delete m_buf;
 	m_buf = NULL;
@@ -231,7 +231,7 @@ int mapobs::find_notobs_seam(const point2& pos, point2& click) const
 
 void mapobs::create_obs(int w,int h,unsigned char* buf,int scale)
 {
-	destory_obs();
+	destroy_obs();
 	m_width = w;
 	m_height = h;
 	m_buf = buf;

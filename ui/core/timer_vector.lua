@@ -19,7 +19,7 @@ function on_every_frame_vector(time,v,clock)
 	while(true) do
 		if v[i] then
 			timer = v[i]
-			if not timer.invalid and timer.func(timer.param) then
+			if timer:call(pass) then
 				-- just pass
 			else
 				v[i] = nil

@@ -231,7 +231,7 @@ bool map_block::load_whole(mapdata*head)
 
 bool mapdata::load_map(const std::string& map)
 {
-	destory_mapdata();
+	destroy_mapdata();
 
 	int i;
 	f = mfopen_resource(map.c_str(), "rb");
@@ -324,7 +324,7 @@ void mapdata::load_all_blocks()
 	}
 }
 
-void mapdata::destory_mapdata()
+void mapdata::destroy_mapdata()
 {
 	if (f)
 	{
@@ -344,7 +344,7 @@ void mapdata::destory_mapdata()
 
 mapdata::~mapdata()
 {
-	destory_mapdata();
+	destroy_mapdata();
 }
 
 

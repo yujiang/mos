@@ -24,7 +24,7 @@ public:
 	bool load_obs(const char* file);
 	void draw_map_begin() ;
 	void draw_map_end() ;
-	void destory()
+	void destroy()
 	{
 		delete this;
 	}

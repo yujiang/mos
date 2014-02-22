@@ -31,6 +31,9 @@
     <Filter Include="base">
       <UniqueIdentifier>{cfb45cba-3d0a-4042-b53c-75c7f5c7105d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{1f78783b-844c-4155-a5dd-e1d28795b0f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ui\window.lua">
@@ -178,6 +181,15 @@
     </None>
     <None Include="base\traceback.lua">
       <Filter>base</Filter>
+    </None>
+    <None Include="net\msg.lua">
+      <Filter>net</Filter>
+    </None>
+    <None Include="base\serpent.lua">
+      <Filter>base</Filter>
+    </None>
+    <None Include="net\socket.lua">
+      <Filter>net</Filter>
     </None>
   </ItemGroup>
 </Project>

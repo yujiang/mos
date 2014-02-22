@@ -344,7 +344,7 @@ function test_sprite2()
 	local m = r:get_map()
 	m:add_child(sp)
 	sp:stop()
-	sp:set_name("精灵",0x00ff00)
+	sp:set_name("精灵",0x0000ff)
 
 	r:set_play(sp)
 end
@@ -391,3 +391,76 @@ function test()
 	print("game:\ttest_map(),test_sprite()")
 	print("other:\ttest_fps(),test_msgbox(),test_notice(),test_png8")
 end
+
+function test_mos()
+	--SafeExcept("hi")
+	--a = a + 1
+	init_base()
+	init_main()
+	local w = 800
+	local h = 600
+	local render = "gdi"
+	local render = "opengl"
+	cdriver.create_window("main","test",100,100,w,h,0,render);
+
+	ui:regist_font(0,"simhei.ttf",16,16,1,2);
+
+	g_root = root()
+	g_root:create_root(w,h)
+
+	g_root:find_child("map").get_render_childs = maplayer_get_render_childs
+	
+	g_camera = camera()
+	g_camera:create_camera(g_root:get_map())
+	g_camera:run_normal()
+
+	test_fps()
+	--test_png8_shader()
+	--test_map()
+	regist_dog()
+	test_sprite(false)
+	
+	--test_win1()
+	--test_win4()
+	--test_notice()
+
+	print("input ? or test() get example.")
+end
+
+function add_sprite(num)
+	local r = g_root
+	local m = r:get_map()
+	--sp:create_sprite(nil,812,1060,0,0120,true)
+	for i=1,num do
+		local sp = sprite()
+		sp:create_sprite(nil,1658+math.random(1,800)-400,991+math.random(1,600)-300,0,0120,true)
+		local bd = sp:get_body()
+		bd:set_weapon(2)	
+		m:add_child(sp)
+		sp:stop()
+		sp:set_name("test"..i,0x0000ff)
+		--sp:random_walk()
+	end
+end
+
+
+function handle1(client,p1,p2)
+	print("test:handle1",p1,p2)
+end
+function handle2(client,data)
+	print("test:handle2",data)
+end
+
+function c()
+	g_client:connect("127.0.0.1",8081)
+	g_msg.handles[1] = handle1
+	g_msg.handles[2] = handle2
+end
+
+function s(type,...)
+	--g_client:send("{"..type..",'"..s.."'}")
+	g_msg.send(g_client,type,...)
+end
+
+test_mos()
+c()

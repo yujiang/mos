@@ -37,7 +37,7 @@ void graph_map::destroy_map()
 {
 	if (m_source)
 	{
-		m_source->destory();
+		m_source->destroy();
 		m_source = NULL;
 	}
 	delete m_obs;
@@ -58,7 +58,7 @@ void graph_map::draw_map_image(const st_cell& cell, const char* map_file,int fra
 bool graph_map::load_map(const char* file,int frame,g_size& sz)
 {
 	if (m_source)
-		m_source->destory();
+		m_source->destroy();
 	m_source = s_mapLoad[get_file_ext(file)]();
 	return m_source->load_map(file,frame,sz);
 }
@@ -79,7 +79,7 @@ public:
 	bool load_map(const char* file,int frame,g_size& sz){
 		return get_graph()->get_image_size(file,frame,sz);
 	}
-	void destory(){
+	void destroy(){
 		delete this;
 	}
 	void mask_drawing_image(const st_cell& cell) {};

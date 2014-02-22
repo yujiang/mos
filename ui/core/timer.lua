@@ -52,8 +52,40 @@ function timer:_add_timer(t)
 	return t
 end
 
+local timer_slot = class("timer_slot")
+
+function timer_slot:destroy()
+	self.invalid = true
+end
+
+function timer_slot:is_valid()
+	return not self.invalid
+end
+
+function timer_slot:call(pass)
+	--print("timer_slot:call",self.invalid)
+	if self.invalid then
+		return
+	end
+	local ok,rt = pcall(self.func,self.param,pass) 
+	--print("timer_slot:call",self.func,self.param,pass,ok,rt)
+	if not ok then
+		return
+	end
+	return rt
+end
+
+function timer_slot:create_timerslot(time,type,func,param)
+	self.time = time
+	self.func = func
+	self.param = param
+	self.type = type
+end
+
+
 function timer:add_timer_type(time,type,func,param)
-	local t = {time = time,func = func,param = param,type = type}
+	local t = timer_slot()
+	t:create_timerslot(time,type,func,param)
 	if self.in_on_every_frame then
 		table.insert(self.pause_add_timer,t)		
 	else

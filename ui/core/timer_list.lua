@@ -13,7 +13,7 @@ function on_every_frame_list(time,v,clock)
 		v.start = v.start + 1
 		v.num = v.num - 1
 
-		if not timer.invalid and timer.func(timer.param) then
+		if timer:call() then
 			--²åÈëµ½Ä©Î²
 			timer.clock_time = clock + time
 			v[v.start + v.num] = timer

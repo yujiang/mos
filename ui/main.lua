@@ -1,5 +1,5 @@
---c++ µÄ³õÊ¼»¯ºÍÏûÏ¢Èë¿Ú
-require "test"
+--c++ çš„åˆå§‹åŒ–å’Œæ¶ˆæ¯å…¥å£
+--require "test"
 
 function init_libs(dir,files)
 	for _,file in ipairs(files) do
@@ -46,12 +46,21 @@ local game_files = {
 	"camera",
 }
 
+function init_base()
+	init_libs("ex",ex_files)
+	init_libs("core",core_files)
+	init_libs("base",base_files)
+end
+
 function init_main()
 	ui = require("ui.ui")
 	ui:init_ui_libs()
 
 	init_libs("game",game_files)
 	init_libs("db",db_files)
+
+	g_msg = require("net.msg")
+	g_client = require("net.socket")
 
 	g_timer = timer()
 	g_timer:create_timer()
@@ -172,43 +181,11 @@ end
 
 
 function on_init()
-	--SafeExcept("hi")
-	--a = a + 1
+	init_base()
 	init_main()
-	local w = 800
-	local h = 600
-	local render = "gdi"
-	local render = "opengl"
-	cdriver.create_window("main","test",100,100,w,h,0,render);
-
-	ui:regist_font(0,"simhei.ttf",16,16,1,2);
-
-	g_root = root()
-	g_root:create_root(w,h)
-
-	g_root:find_child("map").get_render_childs = maplayer_get_render_childs
-
-	
-	g_camera = camera()
-	g_camera:create_camera(g_root:get_map())
-	g_camera:run_normal()
-
-	test_fps()
-	--test_png8_shader()
-	--test_map()
-	regist_dog()
-	test_sprite(false)
-	
-	--test_win1()
-	--test_win4()
-	--test_notice()
-
-	print("input ? or test() get example.")
 end
 
---init()
-
---ÖØÓÃº¯Êı
+--é‡ç”¨å‡½æ•°
 function on_input(s) 
 	--print("on_input",s)
 	--print(string.split(s))
@@ -233,6 +210,8 @@ function on_input(s)
 		print("test() get example.")
 	elseif t[1] == 's' then
 		show(t[2],t[3])
+	elseif t[1] == 'send' then
+		g_client:send(t[2])
 	elseif t[1] == 'pr' then
 		local des = find_des(t[2])
 		if des then
@@ -266,6 +245,3 @@ function on_mouse_wheel(delta,x,y)
 end
 
 
-init_libs("ex",ex_files)
-init_libs("core",core_files)
-init_libs("base",base_files)

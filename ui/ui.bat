@@ -1,2 +1,1 @@
-lua monk.lua
-pause
+mos test.lua

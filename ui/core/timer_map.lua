@@ -11,10 +11,10 @@ function timer_map:on_every_frame()
 	self.timers = {}
 	for _,timer in ipairs(t) do
 		local rt = true
-		if timer.invalid then
+		if not timer:is_valid() then
 			rt = false
 		elseif timer.clock_time < clock then
-			rt = timer.func(timer.param)
+			rt = timer:call()
 			if rt then
 				if rt == true then
 					rt = timer.time

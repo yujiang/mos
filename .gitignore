@@ -10,3 +10,4 @@ ui/*.exe
 Debug.win32
 Release
 Debug
+ipch

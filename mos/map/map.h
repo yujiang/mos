@@ -15,7 +15,7 @@ public:
 	virtual bool load_map(const char* file,int frame,g_size& sz) = 0;
 	virtual void draw_map_begin() = 0;
 	virtual void draw_map_end() = 0;
-	virtual void destory() = 0;
+	virtual void destroy() = 0;
 };
 
 typedef map_source*(* map_source_func)();

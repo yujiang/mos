@@ -1,4 +1,5 @@
 #include "driver.h"
+//#include "net.h"
 #include <string.h>
 #include "lua.hpp"
 #include "script.h"
@@ -49,20 +50,27 @@ int lua_dostring(const char* str)
 {
 	int err = luaL_dostring(g_L,str);
 	if (err)
+	{
 		printf("lua_dostring %s rt:%d %s\n",str,err,lua_tostring(g_L,-1));
+		lua_pop(g_L,1);
+	}
 	return err;
 }
 
-lua_State* init_lua()
+lua_State* init_lua(const char* arg)
 {
 	g_L = lua_open();
 	lua_State* L = g_L;
-	tolua_driver_open(L);
 	luaL_openlibs(L);
+
+	tolua_driver_open(L);
+	//tolua_net_open(L);
+
 	int err = luaL_dofile(L,"main.lua");
 	if (err)
 	{
 		printf("main.lua %d %s\n",err,lua_tostring(L,-1));
+		lua_pop(L,1);
 	}
 	else
 	{
@@ -70,15 +78,19 @@ lua_State* init_lua()
 		if (err)
 		{
 			printf("main.lua %s() %d %s\n",FUNCTION_INIT,err,lua_tostring(L,-1));
+			lua_pop(L,1);
+		}
+		else
+		{
+			err = luaL_dofile(L,arg);
+			if (err)
+			{
+				printf("arg %s %d %s\n",arg,err,lua_tostring(L,-1));
+				lua_pop(L,1);
+			}
 		}
 	}
 
-	if (err)
-	{
-		//lua_close(L);
-		//g_L = NULL;
-		//return NULL;
-	}	
 	return L;
 }
 

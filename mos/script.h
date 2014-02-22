@@ -8,7 +8,7 @@ int lua_call_function(const char* func);
 //call_va("f", "dd>d", x, y, &z);
 int lua_call_va (const char *func, const char *sig, ...);
 
-lua_State* init_lua();
+lua_State* init_lua(const char* arg);
 void close_lua();
 
 #endif

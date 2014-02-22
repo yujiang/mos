@@ -1,7 +1,8 @@
 #ifndef __GRAPH_CELL_H_
 #define __GRAPH_CELL_H_
 
-#include "lua.hpp"
+//#include "lua.hpp"
+struct lua_State;
 #include "core/rect.h"
 
 #define CELL_MAX_PARTS 6
@@ -53,7 +54,7 @@ public:
 	//st_cell(const st_cell& r1,const st_cell& r2);
 	void merge(const st_cell& r1,const st_cell& r2);
 
-	void set_kv(const char* key,lua_Number value);
+	void set_kv(const char* key,double value);
 	void set_kv(const char* key,const char* value);
 
 	void st_print(int level) const;
