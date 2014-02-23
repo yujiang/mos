@@ -153,8 +153,26 @@ void window_render_gl::render_start()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void window_render_gl::flush_draws()
+{
+	for (auto it = m_draws.begin(); it != m_draws.end(); ++it)
+	{
+		auto st = *it;
+		if (st._tex)
+		{
+			_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex ? &st.rc : 0);
+		}
+		else
+		{
+			_draw_box(st.x,st.y,st.color,st.alpha,st.w,st.h);
+		}
+	}
+	m_draws.clear();
+}
+
 void window_render_gl::render_end()
 {
+	flush_draws();
 	if (m_hDC != NULL)
 	{
 		::SwapBuffers(m_hDC);
@@ -216,8 +234,28 @@ bool get_cliped_rect2(g_rect& rect,const g_rect& clip,int& offx,int& offy)
 }
 
 
-//room做成shader算了。
 int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex)
+{
+	st_draw st = {0};
+	st.x = x;
+	st.y = y;
+	st.room = room;
+	st.color = color;
+	st.alpha = alpha;
+	st.shader = shader;
+	st.shader_param = shader_param;
+	st._tex = _tex;
+	st.rc_tex = rc_tex;
+	if (rc_tex)
+		st.rc = *rc_tex;
+
+	//_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex);
+	m_draws.push_back(st);
+	return 0;
+}
+
+//room做成shader算了。
+int window_render_gl::_draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex)
 {
 	texture_gl* tex = (texture_gl*)_tex;
 	g_rect rect0 = rc_tex ? *rc_tex : tex->get_rect();
@@ -311,7 +349,7 @@ int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,co
 	}
 
 	//glFlush();
-	s_triangle_render += 2;
+	s_triangle_render ++;
 
 	CHECK_GL_ERROR_DEBUG();
 
@@ -327,10 +365,25 @@ int window_render_gl::draw_box_cell(const st_cell& cell,int w,int h)
 
 int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 {
+	st_draw st = {0};
+	st.x = x;
+	st.y = y;
+	st.color = color;
+	st.alpha = alpha;
+	st.w = w;
+	st.h = h;
+	st._tex = 0;
+	st.rc_tex = 0;
+	m_draws.push_back(st);
+	return 0;
+}
+
+int window_render_gl::_draw_box(int x,int y,int color,int alpha,int w,int h)
+{
 	if (!get_cliped_box(x,y,w,h,m_window->m_width,m_window->m_height))
 		return -1;
 
-	s_triangle_render += 2;
+	s_triangle_render ++;
 
 	s_f2 f3[4];
 

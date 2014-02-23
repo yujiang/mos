@@ -81,6 +81,9 @@ public:
 	void mark_use_texture(unsigned int time){
 		m_time_use = time;
 	}
+
+	//name for debug
+	const char* m_name;
 };
 
 //texture class: 

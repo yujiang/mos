@@ -14,6 +14,9 @@ public:
 	void set_alpha_blending(bool bOn);
 	void set_depth_test(bool bOn);
 	void set_projection();
+
+	bool m_alpha_blending;
+	bool m_depth_test;
 };
 
 #endif

@@ -116,6 +116,7 @@ void graph::maped_texture(const char* file,texture* p)
 {
 	p->mark_use_texture(g_time_now);
 	texture_map[file] = p;
+	p->m_name = file;
 }
 
 texture* graph::find_texture(const char* file)

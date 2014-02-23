@@ -3,6 +3,7 @@
 
 #include "../window_render.h"
 #include <windows.h>
+#include <vector>
 class director;
 
 class glShaderManager;
@@ -12,6 +13,25 @@ enum CShaderType
 {
 	shader_null,
 	shader_256,
+};
+
+struct st_draw{
+	int x;
+	int y;
+	float room;
+	int color;
+	int alpha;
+
+	//texture
+	const char* shader;
+	float shader_param;
+	texture* _tex;
+	const g_rect* rc_tex;	
+	g_rect rc;
+
+	//box
+	int w;
+	int h;
 };
 
 class window_render_gl : public window_render
@@ -28,11 +48,15 @@ public:
 
 	void render_start();
 	void render_end();
+	void flush_draws();
+
 
 	int _draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
 	int draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
+	int _draw_texture(int x,int y, float room,int color,int alpha,const char* shader,float shader_param,texture* _tex,const g_rect* rc);
 	int draw_texture(int x,int y, float room,int color,int alpha,const char* shader,float shader_param,texture* _tex,const g_rect* rc);
 	int draw_box_cell(const st_cell& cell,int w,int h);
+	int _draw_box(int x,int y,int color,int alpha,int w,int h);
 	int draw_box(int x,int y,int color,int alpha,int w,int h);
 
 	int draw_text_cell(const st_cell& cell,texture* tex,const g_rect* rc);
@@ -48,6 +72,8 @@ public:
 
 	//some default shader.
 	glShader*	m_shader_palette;
+
+	std::vector<st_draw> m_draws;
 };
 
 #endif

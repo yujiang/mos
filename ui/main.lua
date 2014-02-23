@@ -165,7 +165,7 @@ function maplayer_get_render_childs(self)
 	if not play then
 		return tb
 	end
-
+	--主角繪製2次，第二次半透明。
 	local tb2 = {}
 	table_copyvalue(tb2,g_root:get_map())
 	tb2.is_map = nil

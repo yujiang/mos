@@ -8,6 +8,8 @@
 director::director(window_render_gl* w)
 {
 	m_wgl = w;
+	m_alpha_blending = false;
+	m_depth_test = false;
 }
 
 void director::create_director()
@@ -22,7 +24,10 @@ void director::create_director()
 
 void director::set_alpha_blending(bool bOn)
 {
-
+	if (m_alpha_blending == bOn)
+		return;
+	m_wgl->flush_draws();
+	m_alpha_blending = bOn;
 	if (bOn)
 	{
 		glEnable(GL_BLEND);
@@ -37,6 +42,10 @@ void director::set_alpha_blending(bool bOn)
 
 void director::set_depth_test(bool bOn)
 {
+	if (m_depth_test == bOn)
+		return;
+	m_wgl->flush_draws();
+	m_depth_test = bOn;
 	if (bOn)
 	{
 		glClearDepth(1.0f);
