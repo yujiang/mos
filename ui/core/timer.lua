@@ -67,8 +67,8 @@ function timer_slot:call(pass)
 	if self.invalid then
 		return
 	end
-	local ok,rt = pcall(self.func,self.param,pass) 
-	--print("timer_slot:call",self.func,self.param,pass,ok,rt)
+	--local ok,rt = pcall(self.func,self.param,pass) 
+	local ok,rt = xpcall( function() return self.func(self.param,pass) end , debug.excepthook)
 	if not ok then
 		return
 	end

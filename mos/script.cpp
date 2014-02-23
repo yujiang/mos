@@ -1,7 +1,7 @@
 #include "driver.h"
 //#include "net.h"
 #include <string.h>
-#include "lua.hpp"
+#include "lua_x.hpp"
 #include "script.h"
 
 #define FUNCTION_INIT "on_init"

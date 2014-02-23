@@ -1,6 +1,6 @@
 
 #include "driver.h"
-#include "lua.hpp"
+#include "lua_x.hpp"
 #include "graph/cell.h"
 #include "graph/graph.h"
 #include "graph/image.h"

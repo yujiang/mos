@@ -165,18 +165,6 @@
 
 #endif
 
-//always use lua as dll!
-#if defined(LUA_CORE) || defined(LUA_LIB)
-#else
-#ifdef _DEBUG
-#pragma comment(lib,"lua51_d.lib")
-#pragma message("import lua51_d.lib")
-#else
-#pragma comment(lib,"lua51.lib")
-//#pragma message("lua51.lib")
-#endif
-#endif
-
 /* more often than not the libs go together with the core */
 #define LUALIB_API	LUA_API
 

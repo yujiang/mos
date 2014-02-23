@@ -451,15 +451,24 @@ function handle2(client,data)
 	print("test:handle2",data)
 end
 
+socket = require("net.socket")
+msg = require("net.msg")
+local m = msg()
+
 function c()
+	g_client = socket()
 	g_client:connect("127.0.0.1",8081)
-	g_msg.handles[1] = handle1
-	g_msg.handles[2] = handle2
+	m:register(1,handle1)
+	m:register(2,handle2)
+	m:prefix_size(true)
+	g_client:bind_handle(function(param,data) m:handle(g_client,data) end)
 end
 
 function s(type,...)
 	--g_client:send("{"..type..",'"..s.."'}")
-	g_msg.send(g_client,type,...)
+	if g_client then
+		m:send(g_client,type,...)
+	end
 end
 
 test_mos()

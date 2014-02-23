@@ -153,7 +153,7 @@
     <ClInclude Include="map\mapobs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lua.hpp">
+    <ClInclude Include="lua_x.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

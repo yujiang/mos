@@ -1,14 +1,13 @@
 local table = require "table"
 
 local socket = class("socket")
-local msg = require "net.msg"
 local net = require "socket.core"
 
+
 function socket:send(s)
-	assert(self:is_connected())
-	--print("socket:send",s)
+	assert(self:is_connected(),"self:is_connected()")
 	local num,msg,param = self._tcp:send(s)
-	if not num then
+	if not num and msg ~= "timeout" then
 		self._tcp = nil
 		self:on_error("send",msg)
 		return nil,msg
@@ -40,6 +39,7 @@ end
 
 function socket:_connect()
 	--self._tcp = net.tcp()
+	--连接就不必异步了
 	local ok,msg = net.connect(self._ip,self._port)	
 	if not ok then
 		print(msg)
@@ -70,6 +70,15 @@ function socket:close()
 	--self:on_error("close")
 end
 
+function socket:recieve_timeout()
+	local __body, __status, __partial = self._tcp:receive("*a")	-- read the package body
+	if __body == nil and __status == "timeout" then
+		return __partial
+	end
+	return __body, __status
+end
+
+
 --无法作为消息处理，socket没有把len先发，无法正确的解包
 function socket:ontimer_run()
 	if not self:is_connected() then
@@ -77,29 +86,19 @@ function socket:ontimer_run()
 	end
 
 	while true do
-		-- if use "*l" pattern, some buffer will be discarded, why?
-		local __body, __status, __partial = self._tcp:receive("*a")	-- read the package body
-		--print("body:", __body, "__status:", __status, "__partial:", __partial)
-    	if __status == STATUS_CLOSED or __status == STATUS_NOT_CONNECTED then
-			self:on_error("receive")
-		    self:close()
-		   	return
-	    end
+		local __body, __status = self:recieve_timeout()	
 		if not __body then
-			__body = __partial
-			__partial = nil
-		elseif __partial then 
-			__body = __body .. __partial 
+			self:on_error("receive",__status)
+			self:close()
+		   	return
 		end
 
 		if #__body == 0 then
 			return true
 		end
-		--print("body:", __body, "__status:", __status, "__partial:", __partial)
+		--print("body:", __body, "__status:", __status, "__partial:", __partial,self._callback_data)
 		if self._callback_data then
 			self._callback_data(self,__body)
-		else
-			msg.handle(self,__body)
 		end
 	end
 

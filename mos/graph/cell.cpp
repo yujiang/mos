@@ -4,7 +4,7 @@
 #include "map/map.h"
 #include "device/window_render.h"
 #include "mos.h"
-#include "lua.hpp"
+#include "lua_x.hpp"
 #include <vector>
 #include <unordered_map>
 #include <assert.h>

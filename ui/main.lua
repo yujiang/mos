@@ -59,8 +59,8 @@ function init_main()
 	init_libs("game",game_files)
 	init_libs("db",db_files)
 
-	g_msg = require("net.msg")
-	g_client = require("net.socket")
+	--g_msg = require("net.msg")
+	--g_client = require("net.socket")
 
 	g_timer = timer()
 	g_timer:create_timer()
