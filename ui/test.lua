@@ -125,18 +125,22 @@ function test_win3()
 	local r = g_root
 	local l1 = r:find_child("top")
 	local win3 = window()
-	win3:create_window("win3",200,200,10,200,200)
+	win3:create_window("win3",100,100,10,200,200)
 	l1:add_window(win3)
 	win3:set_bg("land.png")
 	win3:get_bg().alpha = 200
 
 	local img = image()
-	img:create_image("ani_dog",40,-40,0,"dog",1)
+	img:create_image("ani_dog",40,40,0,"dog",1)
 	win3:add_child(img)
 	img:set_ani(0.5,1,3,true)
 
-	local mv = win3:get_move()
-	mv:move_to(400,400,100)
+	local mv3 = action.action_shadow()
+	mv3:shadow(win3,1,255,50,-50)
+	local mv = action.action_move()
+	mv:move_to(win3,400,400,100,function() print("moved over2") mv3:destroy() end)
+	--local mv2 = action.action_fade()
+	--mv2:fade(win3,255,100,-50,function() print("faded over") end)
 end
 
 function test_win4()
@@ -193,6 +197,7 @@ function test_png8()
 	l2:add_window(win2)
 	win2:set_bg(file)
 	win2:get_bg().alpha = 200
+
 end
 
 function test_png8_shader()
@@ -472,4 +477,5 @@ function s(type,...)
 end
 
 test_mos()
-c()
+test_win3()
+--c()

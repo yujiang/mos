@@ -214,3 +214,12 @@ function table_has_value(tt,value)
 		end
 	end
 end
+
+function table_remove_i(tt,value)
+	for i,v in ipairs(tt) do
+		if v == value then
+			table.remove(tt,i)
+			return true
+		end
+	end
+end

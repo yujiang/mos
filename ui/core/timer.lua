@@ -102,11 +102,19 @@ function timer:add_timer(time,func,param)
 	return self:add_timer_type(time,TIMER_TYPE_MAP,func,param)
 end
 
+function timer:add_timer_list(time,func,param)
+	return self:add_timer_type(time,TIMER_TYPE_LIST,func,param)
+end
+
+function timer:add_timer_vector(time,func,param)
+	return self:add_timer_type(time,TIMER_TYPE_VECTOR,func,param)
+end
+
 
 function timer:on_every_frame()
 	self.in_on_every_frame = true
 	
-	local clock = os.clock() - self.time_clock
+	local clock = os.clock() - self.time_clock --µ¥Î»ÊÇÃë
 	self.time_clock = os.clock()
 
 	if self.time_clock - self.time_fps >= 1 then

@@ -523,13 +523,24 @@ end
 
 --打印cell
 --move和ai自己重建，而不存储了。
-local print_ignores = {father = true,move = true,ai = true}
+local print_ignores = {father = true,move = true,ai = true,timer = true}
 function cell:print()
 	table_print(self,nil,nil,print_ignores)
 end
 
 function cell:to_string()
 	return table.show(self,self.name,nil,print_ignores)
+end
+
+function cell:clone()
+	local s = self:to_string()
+	local str = "local "..s .."\nreturn "..self.name
+	--print(str)
+	local c = assert(loadstring(str))()
+	if c then
+		cell.loaded(c)
+		return c
+	end
 end
 
 --window的console不支持utf8的输出，所以要改下。
@@ -646,7 +657,7 @@ function cell:load_from_table()
 		cell.assign_class(v,v.class_name)
 		v:load_from_table()
 	end
-	v:on_loaded_from_table()
+	self:on_loaded_from_table()
 end
 
 function cell.loaded(win)
@@ -685,16 +696,6 @@ function cell:on_mouse_scroll_room(param,min,max)
 	end	
 	--print("self:set_room",self.name,room)
 	self:set_room(room)
-end
-
-------------------------------------------------------
-function cell:get_move()
-	if not self.move then
-		self.move = move()
-		self.move:create_move(self)
-		--可以用在屏幕的动态移动的特效中。
-	end
-	return self.move
 end
 
 return cell

@@ -41,7 +41,7 @@ local db_files = {
 local game_files = {
 	"ani",
 	"sprite", "sprite_body",
-	"move","ai",
+	"move","ai","action",
 	"map","image_map",
 	"camera",
 }

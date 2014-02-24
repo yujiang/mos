@@ -38,7 +38,7 @@ g_timer
 	t = add_timer(time,func,param)
 	del_timer的方法:
 		1. func返回false，timer不再执行
-		2. t.invalid = true
+		2. t:destroy()
 g_db
 	所有的表格资源。比如action的定义
 

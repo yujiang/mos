@@ -95,6 +95,7 @@
     <None Include="ex\sort_ex.lua" />
     <None Include="ex\string_ex.lua" />
     <None Include="ex\table_ex.lua" />
+    <None Include="game\action.lua" />
     <None Include="game\ai.lua" />
     <None Include="game\ani.lua" />
     <None Include="game\camera.lua" />

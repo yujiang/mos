@@ -191,5 +191,8 @@
     <None Include="net\socket.lua">
       <Filter>net</Filter>
     </None>
+    <None Include="game\action.lua">
+      <Filter>game</Filter>
+    </None>
   </ItemGroup>
 </Project>
