@@ -229,7 +229,7 @@ static int  lua_get_graph_trace (lua_State *L) {
 		window_render::s_image_render,
 		window_render::s_text_render,
 		window_render::s_box_render,
-		window_render::s_triangle_render);
+		window_render::s_triangle_render_prev);
 	lua_pushstring(L,buf);
 	return 1;
 }

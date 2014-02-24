@@ -351,6 +351,8 @@ function test_sprite2()
 	--sp:create_sprite(nil,100,100,0,101)
 	sp:create_sprite(nil,1414,777,0,0120,true)
 	m:add_child(sp)
+	local bd = sp:get_body()
+	bd:set_weapon(2)	
 	sp:stop()
 	sp:set_name("精灵rotate",0x0000ff)
 	local mv4 = action.action_rotate()
@@ -360,10 +362,19 @@ function test_sprite2()
 	--sp:create_sprite(nil,100,100,0,101)
 	sp:create_sprite(nil,1614,777,0,0120,true)
 	m:add_child(sp)
+	local bd = sp:get_body()
+	bd:set_weapon(2)	
 	sp:stop()
 	sp:set_name("精灵customani",0x0000ff)
 	local ani = sp:get_body().ani
-	ani:custom_ani({1,3,5,7,9,11,33,35,37,39})
+	local tb = {}
+	for i=1,32,4 do 
+		table.insert(tb,i-1)
+	end
+	for i=32,1,-4 do 
+		table.insert(tb,i-1)
+	end
+	ani:custom_ani(tb)
 	ani.loop = true
 
 	--r:set_play(sp)

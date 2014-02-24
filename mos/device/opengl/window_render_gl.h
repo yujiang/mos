@@ -26,12 +26,18 @@ struct st_draw{
 	const char* shader;
 	float shader_param;
 	texture* _tex;
+	
 	const g_rect* rc_tex;	
 	g_rect rc;
+
+	g_rect rect;
+	g_rect rc_screen;
 
 	//box
 	int w;
 	int h;
+
+	bool drawed;
 };
 
 class window_render_gl : public window_render
@@ -53,7 +59,7 @@ public:
 
 	int _draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
 	int draw_texture_cell(const st_cell& cell,texture* tex,const g_rect* rc);
-	int _draw_texture(int x,int y, float room,int color,int alpha,const char* shader,float shader_param,texture* _tex,const g_rect* rc);
+	int _draw_texture(int x,int y, float room,int color,int alpha,const char* shader,float shader_param,texture* _tex,const g_rect* rc, const g_rect& rect);
 	int draw_texture(int x,int y, float room,int color,int alpha,const char* shader,float shader_param,texture* _tex,const g_rect* rc);
 	int draw_box_cell(const st_cell& cell,int w,int h);
 	int _draw_box(int x,int y,int color,int alpha,int w,int h);
@@ -74,6 +80,7 @@ public:
 	glShader*	m_shader_palette;
 
 	std::vector<st_draw> m_draws;
+	int draw_batch(std::vector<st_draw*>& batch);
 };
 
 #endif

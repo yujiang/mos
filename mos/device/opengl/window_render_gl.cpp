@@ -12,6 +12,7 @@
 #include "graph/color.h"
 #include "gl_macro.h"
 #include "glsl.h"
+#include <assert.h>
 
 //using namespace cwc;
 
@@ -155,17 +156,51 @@ void window_render_gl::render_start()
 
 void window_render_gl::flush_draws()
 {
+	std::vector<st_draw*> batch;
+	int max_area = m_window->m_height*m_window->m_width/4;
+	//printf("flush_draws %d\n",m_draws.size());
 	for (auto it = m_draws.begin(); it != m_draws.end(); ++it)
 	{
-		auto st = *it;
-		if (st._tex)
-		{
-			_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex ? &st.rc : 0);
-		}
-		else
+		st_draw& st = *it;
+		if (st.drawed)
+			continue;
+
+		if (!st._tex)
 		{
 			_draw_box(st.x,st.y,st.color,st.alpha,st.w,st.h);
+			continue;
 		}
+		if (st.shader)
+		{
+			_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex ? &st.rc : 0, st.rect);
+			continue;
+		}
+
+		batch.clear();
+		batch.push_back(&st);
+		//st_draw& p = *(batch.back());
+		//assert(&p == &st);
+		g_rect rc_dirty;
+
+		auto it2 = it;
+		++it2;
+		for (; it2 != m_draws.end(); ++it2)
+		{
+			st_draw& st2 = *it2;
+			if (st2.drawed)
+				continue;
+			if (st2.shader || st2._tex != st._tex || rect_intersection(st2.rc_screen,rc_dirty))
+			{
+				rc_dirty = rc_dirty + st2.rc_screen;
+				if (rc_dirty.get_area() >= max_area)
+					break;
+			}
+			else
+			{
+				batch.push_back(&st2);
+			}
+		}
+		draw_batch(batch);
 	}
 	m_draws.clear();
 }
@@ -188,6 +223,10 @@ struct s_uv
 {
 	GLfloat u;
 	GLfloat v;
+};
+struct s_color
+{
+	unsigned char r, g, b, a;
 };
 
 int window_render_gl::draw_texture_cell(const st_cell& cell,texture* _tex,const g_rect* rc)
@@ -236,27 +275,6 @@ bool get_cliped_rect2(g_rect& rect,const g_rect& clip,int& offx,int& offy)
 
 int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex)
 {
-	st_draw st = {0};
-	st.x = x;
-	st.y = y;
-	st.room = room;
-	st.color = color;
-	st.alpha = alpha;
-	st.shader = shader;
-	st.shader_param = shader_param;
-	st._tex = _tex;
-	st.rc_tex = rc_tex;
-	if (rc_tex)
-		st.rc = *rc_tex;
-
-	//_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex);
-	m_draws.push_back(st);
-	return 0;
-}
-
-//room做成shader算了。
-int window_render_gl::_draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex)
-{
 	texture_gl* tex = (texture_gl*)_tex;
 	g_rect rect0 = rc_tex ? *rc_tex : tex->get_rect();
 
@@ -274,6 +292,35 @@ int window_render_gl::_draw_texture(int x,int y,float room,int color,int alpha,c
 	//if (m_rc_clip && !get_cliped_rect2(rect,*m_rc_clip,x,y))
 	if (!get_cliped_rect(rect,rc_window,x,y,m_rc_clip))
 		return -1;
+
+	st_draw st = {0};
+	st.x = x;
+	st.y = y;
+	st.room = room;
+	st.color = color;
+	st.alpha = alpha;
+	st.shader = shader;
+	st.shader_param = shader_param;
+	st._tex = _tex;
+	st.rc_tex = rc_tex;
+	if (rc_tex)
+		st.rc = *rc_tex;
+	st.rect = rect;
+	st.rc_screen = g_rect(x,y,x+rect.width(),y+rect.height());
+
+	//_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex);
+	m_draws.push_back(st);
+	return 0;
+}
+
+//room做成shader算了。
+int window_render_gl::_draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex, const g_rect& rect)
+{
+	texture_gl* tex = (texture_gl*)_tex;
+	g_rect rect0 = rc_tex ? *rc_tex : tex->get_rect();
+
+	float u0 = (float)rect0.l/tex->m_tex_width;
+	float v0 = (float)rect0.t/tex->m_tex_height;
 
 	s_f2 f3[4];
 	s_uv uv[4];
@@ -320,10 +367,12 @@ int window_render_gl::_draw_texture(int x,int y,float room,int color,int alpha,c
 			int palette = cur_shader->GetUniformLocation("palette");
 			glUniform1i(palette,1);
 		}
-
-		int param = cur_shader->GetUniformLocation("param");
-		//shader_param
-		glUniform1f(param,shader_param);
+		else
+		{
+			int param = cur_shader->GetUniformLocation("param");
+			//shader_param
+			glUniform1f(param,shader_param);
+		}
 	}
 	else
 	{
@@ -365,6 +414,9 @@ int window_render_gl::draw_box_cell(const st_cell& cell,int w,int h)
 
 int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 {
+	if (!get_cliped_box(x,y,w,h,m_window->m_width,m_window->m_height))
+		return -1;
+
 	st_draw st = {0};
 	st.x = x;
 	st.y = y;
@@ -380,11 +432,6 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 
 int window_render_gl::_draw_box(int x,int y,int color,int alpha,int w,int h)
 {
-	if (!get_cliped_box(x,y,w,h,m_window->m_width,m_window->m_height))
-		return -1;
-
-	s_triangle_render ++;
-
 	s_f2 f3[4];
 
 	f3[0].x = x;
@@ -415,6 +462,7 @@ int window_render_gl::_draw_box(int x,int y,int color,int alpha,int w,int h)
 	glEnd();
 
 	//glFlush();
+	s_triangle_render ++;
 
 	CHECK_GL_ERROR_DEBUG();
 
@@ -442,4 +490,122 @@ int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char*
 		get_graph()->maped_texture(file,gl);
 	}
 	return _draw_texture_cell(cell,gl,rc);
+}
+
+int window_render_gl::draw_batch(std::vector<st_draw*>& batch)
+{
+	if (batch.empty())
+		return 0;
+	st_draw& st = *(batch.front());
+	texture_gl* tex = (texture_gl*)st._tex;
+
+	int size = batch.size() * 6;
+	std::vector <s_f2> af3(size);
+	std::vector <s_uv> auv(size);
+	std::vector <s_color> acolor(size);
+
+	int i = 0;
+	s_f2* f3 = &af3[0];
+	s_uv* uv = &auv[0];
+	s_color* color = &acolor[0];
+
+	for (auto it = batch.begin(); it != batch.end(); ++ it,f3+=6,uv+=6)
+	{
+		st_draw& st = *(*it);
+		st.drawed = true;
+
+		g_rect rect0 = st.rc_tex ? st.rc : tex->get_rect();
+		int x = st.x;
+		int y = st.y;
+		const g_rect& rect = st.rect;
+		float room = st.room;
+
+		float u0 = (float)rect0.l/tex->m_tex_width;
+		float v0 = (float)rect0.t/tex->m_tex_height;
+
+		//fill_texture(st,pf3,puv,pcolor);
+		f3[0].x = x;
+		f3[0].y = y;
+		uv[0].u = u0 + (float)(rect.l-rect0.l)/tex->m_tex_width/room;
+		uv[0].v = v0 + (float)(rect.t-rect0.t)/tex->m_tex_height/room;
+		f3[5].x = x + rect.width() ;
+		f3[5].y = y + rect.height() ;
+		uv[5].u = u0 + (float)(rect.r-rect0.l)/tex->m_tex_width/room;
+		uv[5].v = v0 + (float)(rect.b-rect0.t)/tex->m_tex_height/room;
+		
+		f3[1].x = f3[0].x;
+		f3[1].y = f3[5].y;
+		uv[1].u = uv[0].u;
+		uv[1].v = uv[5].v;
+		f3[2].x = f3[5].x;
+		f3[2].y = f3[0].y;
+		uv[2].u = uv[5].u;
+		uv[2].v = uv[0].v;
+
+		f3[3] = f3[1];
+		f3[4] = f3[2];
+
+		uv[3] = uv[1];
+		uv[4] = uv[2];
+
+		s_color c;
+		G_GET_RGB(st.color,c.r,c.g,c.b);
+		c.a = st.alpha;
+		for (i=0; i<6; i++,color++)
+		{
+			*color = c;
+		}
+	}
+
+	glShader* cur_shader = NULL;
+	if (cur_shader == NULL && tex->use_palette())
+		cur_shader = m_shader_palette;
+
+	if (cur_shader)
+	{
+		cur_shader->begin();
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
+
+		if (tex->use_palette())
+		{
+			int texid = cur_shader->GetUniformLocation("texture");
+			glUniform1i(texid,0);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, tex->m_textureId_pal);
+			int palette = cur_shader->GetUniformLocation("palette");
+			glUniform1i(palette,1);
+		}
+
+		//int param = cur_shader->GetUniformLocation("param");
+		//shader_param
+		//glUniform1f(param,shader_param);
+	}
+	else
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, tex->m_textureId);
+	}
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glEnableClientState( GL_COLOR_ARRAY );
+    glVertexPointer( 2, GL_INT, sizeof(s_f2), &af3[0]);
+    glTexCoordPointer( 2, GL_FLOAT, sizeof(s_uv), &auv[0]);
+    glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof(s_color), &acolor[0]);
+    glDrawArrays( GL_TRIANGLES, 0, size );
+
+	if (cur_shader)
+	{
+		cur_shader->end();
+	}
+
+	//glFlush();
+	s_triangle_render ++;
+
+	CHECK_GL_ERROR_DEBUG();
+
+	return 0;
 }

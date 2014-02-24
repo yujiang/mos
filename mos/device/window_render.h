@@ -17,6 +17,7 @@ public:
 	static int s_text_render;
 	static int s_image_render;
 	static int s_triangle_render;
+	static int s_triangle_render_prev;
 
 	window_render(window* w);
 	virtual ~window_render();
