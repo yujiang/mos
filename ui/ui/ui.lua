@@ -74,6 +74,8 @@ function ui:on_every_frame()
 		local play = g_root:get_play()
 		if play then
 			local x,y = play:get_pos()
+			x = math.floor(x)
+			y = math.floor(y)
 			s = s .. " play " .. x .. " " .. y
 		end
 		l:set_string(s)

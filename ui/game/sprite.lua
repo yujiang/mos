@@ -113,6 +113,10 @@ function sprite:set_dir(dir)
 	self:get_body():set_dir(dir)
 end
 
+function sprite:get_dir()
+	return self:get_body():get_dir()
+end
+
 function sprite:stand()
 	self:get_body():stand()
 end

@@ -108,18 +108,35 @@ function ani:on_loaded_from_table()
 	self:add_timer()
 end
 
+function ani:custom_ani(frames)
+	self.custom_frames = frames
+	self.custom_index = 0
+end
+
 function ani:_on_timer_updateframe()
 	local img = self.image
+
+	if self.custom_frames then
+		self.custom_index = self.custom_index + 1
+		local rt = true
+		if self.custom_index <= #self.custom_frames then
+		elseif self.loop then
+			self.custom_index = 1
+		else
+			self.custom_index = #self.custom_frames
+			rt = false
+		end
+		frame = self.custom_frames[self.custom_index]
+		return rt,frame
+	end
+
 	--print("ani:on_timer_updateframe()",img.frame)
-	frame = img.frame + self.step
+	local frame = img.frame + self.step
 	if frame >= self.frame_end then
 		if self.loop then
 			frame = self.frame_start
 		else
 			frame = self.frame_end - 1
-			if self.on_aniend then
-				self.on_aniend(true)
-			end
 			return false,frame
 		end
 	elseif frame < self.frame_start then --µ¹´ø¡£
@@ -127,9 +144,6 @@ function ani:_on_timer_updateframe()
 			frame = self.frame_end - 1
 		else
 			frame = self.frame_start
-			if self.on_aniend then
-				self.on_aniend(true)
-			end
 			return false,frame
 		end		
 	end
@@ -138,6 +152,11 @@ end
 
 function ani:on_timer_updateframe()
 	local rt , frame = self:_on_timer_updateframe()
+	if not rt then
+		if self.on_aniend then
+			self.on_aniend(true)
+		end
+	end
 	self.image:change_frame(frame)
 	return rt
 end

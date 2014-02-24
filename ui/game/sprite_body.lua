@@ -6,7 +6,6 @@ function sprite_body:create_body(name,x,y,z,ani_id,use_zgp)
 	--print("sprite_body:create_body",name,x,y,z)
 	cell.create_cell(self,name,x,y,z,0,0)
 	self.ani_id = ani_id
-	self.ani_id2 = ani_id2
 	self.use_zgp = use_zgp
 	self._disable = true
 
@@ -104,6 +103,10 @@ end
 
 function sprite_body:set_dir(dir)
 	self.ani:set_ani_dir(dir)
+end
+
+function sprite_body:get_dir()
+	return self.ani.ani_dir
 end
 
 function sprite_body:stand()

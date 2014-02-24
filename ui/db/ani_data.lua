@@ -52,7 +52,7 @@ function ani_data:find_ani_data(shape,name,use_zgp)
 		local rt,dir,frame 
 		local s = string.format("char/%04d/%s.zgp",shape,default.file)
 		rt,dir,frame = cdriver.regist_zgp(s)
-		--print(rt,dir,frame)
+		--print("find_ani_data",s,rt,dir,frame)
 		if not rt then
 			return
 		end

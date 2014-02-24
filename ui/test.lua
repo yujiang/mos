@@ -136,9 +136,11 @@ function test_win3()
 	img:set_ani(0.5,1,3,true)
 
 	local mv3 = action.action_shadow()
-	mv3:shadow(win3,1,255,50,-50)
+	mv3:shadow(win3,0.3,255,50,-50)
 	local mv = action.action_move()
 	mv:move_to(win3,400,400,100,function() print("moved over2") mv3:destroy() end)
+	local mv4 = action.action_room()
+	mv4:room(win3,0.5,1,0.3,function() print("roomed over") end)
 	--local mv2 = action.action_fade()
 	--mv2:fade(win3,255,100,-50,function() print("faded over") end)
 end
@@ -343,15 +345,28 @@ end
 
 function test_sprite2()
 	local r = g_root
+	local m = r:get_map()
 
 	local sp = sprite()
-	sp:create_sprite(nil,100,100,0,101)
-	local m = r:get_map()
+	--sp:create_sprite(nil,100,100,0,101)
+	sp:create_sprite(nil,1414,777,0,0120,true)
 	m:add_child(sp)
 	sp:stop()
-	sp:set_name("精灵",0x0000ff)
+	sp:set_name("精灵rotate",0x0000ff)
+	local mv4 = action.action_rotate()
+	mv4:rotate(sp,0.2)
 
-	r:set_play(sp)
+	local sp = sprite()
+	--sp:create_sprite(nil,100,100,0,101)
+	sp:create_sprite(nil,1614,777,0,0120,true)
+	m:add_child(sp)
+	sp:stop()
+	sp:set_name("精灵customani",0x0000ff)
+	local ani = sp:get_body().ani
+	ani:custom_ani({1,3,5,7,9,11,33,35,37,39})
+	ani.loop = true
+
+	--r:set_play(sp)
 end
 
 function test_fps()
@@ -478,4 +493,5 @@ end
 
 test_mos()
 test_win3()
+test_sprite2()
 --c()
