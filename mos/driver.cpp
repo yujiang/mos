@@ -308,7 +308,7 @@ static int lua_exit(lua_State* L){
 //	return 1;
 //}
 
-static const luaL_reg driver_lib[] = {
+static const luaL_Reg driver_lib[] = {
 	{"render",				lua_render},
 	{"render_texture",		lua_render_texture},
 
@@ -344,6 +344,8 @@ static const luaL_reg driver_lib[] = {
 
 int tolua_driver_open(lua_State* L)
 {
-	luaL_register(L, "cdriver", driver_lib);
+	luaL_newlib(L,driver_lib);
+	//luaL_register(L, "cdriver", driver_lib);
+	lua_setglobal(L, "cdriver");
 	return 0;
 }

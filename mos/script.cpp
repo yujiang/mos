@@ -59,7 +59,8 @@ int lua_dostring(const char* str)
 
 lua_State* init_lua(const char* arg)
 {
-	g_L = lua_open();
+	//g_L = lua_open();
+	g_L = luaL_newstate();
 	lua_State* L = g_L;
 	luaL_openlibs(L);
 

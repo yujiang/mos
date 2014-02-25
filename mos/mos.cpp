@@ -84,7 +84,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	g_argc = argc;
 	g_argv = argv;
 	if (argc < 2)
+	{
+		printf("please use mos.exe xxx.lua\n");
 		return -1;
+	}
 
 	get_graph()->init_graph();
 	
