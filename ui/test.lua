@@ -540,7 +540,7 @@ function s(type,...)
 end
 
 test_mos()
-test_win3()
-test_sprite2()
-test_td()
+--test_win3()
+--test_sprite2()
+--test_td()
 --c()

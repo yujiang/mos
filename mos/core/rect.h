@@ -124,6 +124,10 @@ struct g_rect{
 bool clip_rect(g_rect& des,g_rect& src,const g_rect& rc_clip);
 
 inline g_rect operator + (const g_rect &r1, const g_rect &r2){
+	if (r1.is_empty())
+		return r2;
+	if (r2.is_empty())
+		return r1;
 	return g_rect(min(r1.l,r2.l),min(r1.t,r2.t),max(r1.r,r2.r),max(r1.b,r2.b));
 }
 inline g_rect operator - (const g_rect &r1, const g_rect &r2){

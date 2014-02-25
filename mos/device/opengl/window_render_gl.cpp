@@ -192,7 +192,12 @@ void window_render_gl::flush_draws()
 				continue;
 			if (st2.shader || st2._tex != st._tex || rect_intersection(st2.rc_screen,rc_dirty))
 			{
-				rc_dirty = rc_dirty + st2.rc_screen;
+				if (!st2._tex) //box
+				{
+					rc_dirty = rc_dirty + g_rect(st2.x,st2.y,st2.x+st2.w,st2.y+st2.h);
+				}
+				else
+					rc_dirty = rc_dirty + st2.rc_screen;
 				if (rc_dirty.get_area() >= max_area)
 					break;
 			}
@@ -502,6 +507,12 @@ int window_render_gl::draw_batch(std::vector<st_draw*>& batch)
 {
 	if (batch.empty())
 		return 0;
+
+	if (batch.size() > 20)
+	{
+		int i;
+		i = 0;
+	}
 	st_draw& st = *(batch.front());
 	texture_gl* tex = (texture_gl*)st._tex;
 
