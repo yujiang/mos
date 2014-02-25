@@ -15,8 +15,6 @@
 #include <assert.h>
 
 //using namespace cwc;
-#define DRAW_BATCH
-
 window_render_gl::window_render_gl(window* w):window_render(w)
 {
 	m_director = new director(this);
@@ -311,11 +309,10 @@ int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,co
 		st.rc = *rc_tex;
 	st.rect = rect;
 	st.rc_screen = g_rect(x,y,x+rect.width(),y+rect.height());
-#ifdef DRAW_BATCH
-	m_draws.push_back(st);
-#else
-	_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex,st.rect);
-#endif
+	if (is_batch)
+		m_draws.push_back(st);
+	else
+		_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex,st.rect);
 	return 0;
 }
 
@@ -431,11 +428,10 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 	st.h = h;
 	st._tex = 0;
 	st.rc_tex = 0;
-#ifdef DRAW_BATCH
-	m_draws.push_back(st);
-#else
-	_draw_box(x,y,color,alpha,w,h);
-#endif
+	if (is_batch)
+		m_draws.push_back(st);
+	else
+		_draw_box(x,y,color,alpha,w,h);
 	return 0;
 }
 
@@ -503,7 +499,8 @@ texture_sub* window_render_gl::create_texturesub(image* img,const g_rect* rc)
 	if (!mul)
 	{
 		mul = new texture_mul;
-		mul->create_texture_dynamic(512,512,kCCTexture2DPixelFormat_RGBA8888);
+		mul->m_texture = new texture_gl;
+		mul->m_texture->create_texture_dynamic(512,512,kCCTexture2DPixelFormat_RGBA8888);
 		get_graph()->texture_muls.push_back(mul);
 	}
 	return mul->add_image_ontexture(img,r);
@@ -513,7 +510,7 @@ int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char*
 {
 	s_image_render++;
 
-	//if (rc == 0)
+	if (is_mul)
 	{
 		enum_objtype obj = get_objtype_byfile(file);
 		if (obj == obj_char) //
@@ -526,7 +523,7 @@ int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char*
 					return -1;
 			}
 			get_graph()->maped_texturesub(file,gl);
-			return _draw_texture_cell(cell,gl->m_tex,&gl->m_rc);
+			return _draw_texture_cell(cell,gl->m_tex->m_texture,&gl->m_rc_tex);
 		}
 	}
 
@@ -549,11 +546,6 @@ int window_render_gl::draw_batch(std::vector<st_draw*>& batch)
 	if (batch.empty())
 		return 0;
 
-	if (batch.size() > 20)
-	{
-		int i;
-		i = 0;
-	}
 	st_draw& st = *(batch.front());
 	texture_gl* tex = (texture_gl*)st._tex;
 

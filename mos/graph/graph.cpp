@@ -132,7 +132,7 @@ texture* graph::find_texturemul_index(int index)
 {
 	if (index < 0 || texture_muls.size() <= index)
 		return 0;
-	return (texture* )texture_muls[index];
+	return texture_muls[index]->m_texture;
 }
 
 
@@ -267,6 +267,35 @@ void graph::auto_clear_resource()
 				++it2;
 		}
 	}
+
+	for (auto it = texturesub_map.begin(); it != texturesub_map.end();)
+	{
+		texture_sub* tex = it->second;
+		if (tex && TIME_NOTUSE(tex,m_clear_texture))
+		{
+#ifdef _DEBUG_RESOURCE
+			std::cout << "clear texturesub " << it->first << " time: " << TIME(tex) << std::endl;
+#endif
+			tex->m_tex->released_sub(tex);
+			it = texturesub_map.erase(it);
+		}
+		else 
+			++it;
+	}	
+	for (auto it = texture_muls.begin(); it != texture_muls.end();)
+	{
+		texture_mul* tex = *it;
+		if (tex && TIME_NOTUSE(tex->m_texture,m_clear_texture))
+		{
+#ifdef _DEBUG_RESOURCE
+			std::cout << "clear texture_mul " << it->first << " time: " << TIME(tex) << std::endl;
+#endif
+			delete tex;
+			it = texture_muls.erase(it);
+		}
+		else 
+			++it;
+	}	
 }
 
 void graph::close_resource()

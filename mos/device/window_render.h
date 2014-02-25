@@ -64,6 +64,10 @@ public:
 	virtual int draw_box_cell(const st_cell& cell,int w,int h) = 0;
 
 	virtual int draw_text_cell(const st_cell& cell,texture* tex,const g_rect* rc) = 0;
+
+
+	bool is_batch;
+	bool is_mul;
 };
 
 

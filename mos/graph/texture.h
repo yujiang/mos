@@ -3,6 +3,7 @@
 
 #include "../core/counter.h"
 #include "../core/rect.h"
+#include <vector>
 //wrap opengl texture not directx.
 struct g_rect;
 class st_cell;
@@ -77,6 +78,15 @@ public:
 
 	virtual int draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) = 0;
 
+	//系统贴图的大小，不必是2的幂
+	int m_tex_width,m_tex_height;
+	int get_tex_width() const{
+		return m_tex_width;
+	}
+	int get_tex_height() const{
+		return m_tex_height;
+	}
+
 	//int draw_cell(const st_cell& cell,const g_rect* rc );
 
 	unsigned int m_time_use;
@@ -95,26 +105,55 @@ public:
 //texture,		比如动画这些不拼的
 //texture_font	把所有字合并在同一个贴图，并根据使用的频繁做更新，
 //texture_char	类似part，是font的一个rect
+class texture_mul;
 
 class texture_sub 
 {
 public:
-	texture_sub(texture* tex,const g_rect& r):m_tex(tex),m_rc(r){ m_released = false; }
-	texture* m_tex; 
+	texture_sub(texture_mul* tex,const g_rect& r):m_tex(tex),m_rc(r){ m_released = false; }
+	texture_mul* m_tex; 
+	g_rect m_rc_tex;
 	g_rect m_rc;
 	bool m_released;
 
-	bool release(){
+	void release(){
 		m_released = true;
 	}
 
 	unsigned int m_time_use;
-	void mark_use_texture(unsigned int time){
-		m_time_use = time;
-		m_tex->mark_use_texture(time);
-	}
+	void mark_use_texture(unsigned int time);
 	const char* m_name;
 
+};
+
+struct st_line{
+	g_rect rc;
+	std::vector<texture_sub*> subs;
+};
+
+class texture_mul 
+{
+public:
+	texture_mul():m_sub_num(0),m_release_sub(0){}
+	~texture_mul();
+	counter<texture_mul> m_counter;
+	texture* m_texture;
+
+	texture_sub* create_line_sub(st_line& line,int w);
+	texture_sub* create_sub(const image* img,const g_rect& rc) ;
+
+	texture_sub* add_image_ontexture(const image* img,const g_rect& rc) ;
+	//记录一系列的矩形。
+	bool find_free(int w,int h) const;
+	std::vector<st_line> m_lines;
+	int get_last_height() const;
+	int get_free_height() const;
+
+	void released_sub(texture_sub* sub);
+	void merge();
+
+	int m_sub_num;
+	int m_release_sub;
 };
 
 #endif

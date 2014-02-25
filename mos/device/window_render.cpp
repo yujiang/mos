@@ -13,6 +13,9 @@ window_render::window_render(window* w) : m_window(w)
 	m_in_text = false;
 	m_in_window = NULL;
 	//m_in_map = NULL;
+
+	is_batch = true;
+	is_mul = true;
 }
 
 window_render::~window_render()
