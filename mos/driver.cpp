@@ -294,6 +294,8 @@ static int lua_exit(lua_State* L){
 
 static const luaL_reg driver_lib[] = {
 	{"render",				lua_render},
+	{"render_texture",		lua_render_texture},
+
 	{"create_window",		lua_create_window},
 	{"get_input_string",	lua_get_input_string},
 	{"exit",				lua_exit},

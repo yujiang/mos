@@ -119,6 +119,15 @@ void graph::maped_texture(const char* file,texture* p)
 	p->m_name = file;
 }
 
+texture* graph::find_texture_index(int index)
+{
+	if (index < 0 || texture_map.size() <= index)
+		return 0;
+	auto it = texture_map.begin();
+	for (int i=0; i<index; i++,++it);
+	return it->second;
+}
+
 texture* graph::find_texture(const char* file)
 {
 	texture* t = texture_map[file];
@@ -335,6 +344,21 @@ int graph::draw_box(const st_cell& cell,int w,int h)
 	return get_render()->draw_box_cell(cell,w,h);
 }
 
+int graph::draw_texture(const st_cell& cell,const char* file)
+{
+	texture* _tex = find_texture(file);
+	if (!_tex)
+		return 0;
+	return get_render()->draw_texture_cell(cell,_tex,NULL);
+}
+
+int graph::draw_texture(const st_cell& cell,int index)
+{
+	texture* _tex = find_texture_index(index);
+	if (!_tex)
+		return 0;
+	return get_render()->draw_texture_cell(cell,_tex,NULL);
+}
 //////////////////////////////////////////////////////////////////////////
 //text
 static bool is_english(short c)

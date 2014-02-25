@@ -58,6 +58,7 @@ const formatinfo* get_formatinfo(CCTexture2DPixelFormat format);
 unsigned int bitsPerPixelForFormat(CCTexture2DPixelFormat format);
 bool hasAlpha(CCTexture2DPixelFormat format);
 
+enum enum_objtype;
 
 class texture
 {
@@ -84,6 +85,7 @@ public:
 
 	//name for debug
 	const char* m_name;
+	enum_objtype m_obj_type;
 };
 
 //texture class: 

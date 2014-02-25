@@ -85,6 +85,27 @@ image* image::create_image_file(const char* file)
 	return create_image_file_buffer(file,buf,sz);
 }
 
+std::string c_obj_type[] = {
+	"default",
+	"map",
+	"char",
+	"ui",
+	"effect",		//特效
+	"icon",			//道具技能图标
+	"header",		//头像
+	"background",	//背景图
+};
+
+enum_objtype get_objtype_byfile(const std::string& s)
+{
+	for (int i=0;i<obj_num;i++)
+	{
+		if (s.find(c_obj_type[i]) == 0)
+			return (enum_objtype)i;
+	}
+	return obj_default;
+}
+
 image* image::create_image_file_buffer(const char* file,void* buf,size_t sz)
 {
 	load_image_func func = s_imageLoad[get_file_ext(file)];
@@ -95,6 +116,7 @@ image* image::create_image_file_buffer(const char* file,void* buf,size_t sz)
 	{
 		i->m_create_type = image_create_file;
 		i->m_file = file;
+		i->m_obj_type = get_objtype_byfile(i->m_file);
 		if (i->is_256())
 			i->m_use_palette = is_image_use_palette(file);
 		return i;

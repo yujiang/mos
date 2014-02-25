@@ -15,16 +15,13 @@ local ui_files = {
 	"root","layer","window",
 	"box","image","button",
 	"label","text",
-	"msgbox","menu","menu_popup","mitem",
+	"msgbox","menu","menu_popup","mitem", --for debug when rightdown
 }
 
 function ui:init_ui_libs()
 	for _,file in ipairs(ui_files) do
 		_G[file] = require ("ui."..file)
 	end
-	--auto_test()
-	--test_class()
-	--g_root = test_ui()
 end
 
 function ui:reload(file)

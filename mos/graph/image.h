@@ -93,6 +93,18 @@ struct image_struct
 
 };
 
+enum enum_objtype{
+	obj_default,
+	obj_map,
+	obj_prite,
+	obj_ui,
+	obj_effect,		//特效
+	obj_icon,		//道具技能图标
+	obj_header,		//头像
+	obj_background,	//背景图
+	obj_num,
+};
+
 class image : public image_struct
 {
 public:
@@ -110,7 +122,10 @@ public:
 		image_create_image,
 	};
 
+	enum_objtype m_obj_type;
+
 	enum_createtype m_create_type;
+
 	std::string m_file; //for debug
 	
 	static image* create_image_file(const char* file);

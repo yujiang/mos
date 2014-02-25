@@ -428,6 +428,38 @@ function test()
 	print("other:\ttest_fps(),test_msgbox(),test_notice(),test_png8")
 end
 
+function test_td()
+	local win = window()
+	win:create_window("td",0,32,10,200,200)
+	win:set_box(0x008080ff,180)
+	g_texture_debug = win
+
+	local img = image()
+	img:create_image("test",40,40,0,"dog",1)
+	
+	img.frame = 1
+	img.image_file = ""
+
+	win:add_child(img)
+
+	local label1 = label()
+	label1:create_label("text",0,0,0,600,20,"tex1")
+	label1._disable = false
+	label1:get_text():set_color(-1)
+	win:add_child(label1)
+end
+
+function td(index)
+	local img = g_texture_debug:find_child("test")
+	if not index then
+		img.frame = img.frame + 1
+	else
+		img.frame = index
+	end
+	local label1 = g_texture_debug:find_child("text")
+	label1:get_text():set_string("tex"..img.frame)
+end
+
 function test_mos()
 	--SafeExcept("hi")
 	--a = a + 1
@@ -510,4 +542,5 @@ end
 test_mos()
 test_win3()
 test_sprite2()
+test_td()
 --c()

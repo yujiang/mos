@@ -408,7 +408,6 @@ int window_render_gl::_draw_texture(int x,int y,float room,int color,int alpha,c
 	return 0;
 }
 
-
 int window_render_gl::draw_box_cell(const st_cell& cell,int w,int h)
 {
 	s_box_render ++;

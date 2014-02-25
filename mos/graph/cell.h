@@ -61,6 +61,8 @@ public:
 };
 
 int lua_render(lua_State *L);
+int lua_render_texture(lua_State *L);
+
 void init_cell();
 
 #endif

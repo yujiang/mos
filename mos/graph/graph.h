@@ -61,6 +61,8 @@ public:
 	//绘制
 	int draw_image(const st_cell& cell,const char* file,int frame);
 	int draw_box(const st_cell& cell,int w,int h);
+	int draw_texture(const st_cell& cell,const char* file);
+	int draw_texture(const st_cell& cell,int index);
 	
 	//特殊的绘制地图
 	int draw_image_map(const st_cell& cell,const char* file);
@@ -93,6 +95,8 @@ protected:
 public:
 	texture* find_texture(const char* file);
 	void maped_texture(const char* file,texture* p);
+
+	texture* find_texture_index(int i);
 };
 
 graph* get_graph();

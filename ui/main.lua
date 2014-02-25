@@ -81,6 +81,14 @@ function on_every_frame()
 	g_timer:on_every_frame()
 	ui:on_every_frame()
 	--may be game.on_every_frame()
+	--
+	if g_texture_debug then
+		local rd = g_texture_debug:get_render_childs()
+		--g_texture_debug:print_render()
+		if rd then
+			cdriver.render_texture(rd)
+		end
+	end
 end
 
 function on_mouse_event(mouse_event,x,y,param)
@@ -243,5 +251,4 @@ function on_mouse_wheel(delta,x,y)
 	--print("on_mouse_wheel",delta,x,y)
 	on_mouse_event(WM_MOUSEWHEEL,x,y,delta)
 end
-
 

@@ -131,6 +131,7 @@ public:
 	void add_child(cell* r,int index);
 	void print(int level) const;
 	void draw(int level,const st_cell& st) const;
+	void draw_texture(int level,const st_cell& st) const;
 };
 
 #include "core/pool.h"
@@ -184,6 +185,38 @@ void st_cell::merge(const st_cell& father,const st_cell& me)
 	//alpha 也用个乘法
 	color = r2.color;
 	alpha = r1.alpha * r2.alpha / 255;
+}
+
+void cell::draw_texture(int level,const st_cell& st) const
+{
+	//st_cell st2(st,*this);
+	st_cell st2;
+	st2.merge(st,*this);
+
+	if (is_window)
+	{
+	}
+	else if(is_box)
+	{
+		st2.color = color;
+		get_graph()->draw_box(st2,w,h);
+	}
+	else 
+	{
+		if(text)
+		{			
+			g_rect r;
+			r.set_xywh(st.x,st.y,w,h);
+			get_graph()->draw_text(st2,*this,r); 
+		}
+		else if (image_file && strlen(image_file)>0)
+			get_graph()->draw_texture(st2,image_file);
+		else
+			get_graph()->draw_texture(st2,frame);
+	}
+
+	for (auto it = childs.begin(); it != childs.end(); ++it)
+		(*it)->draw_texture(level+1,st2);
 }
 
 void cell::draw(int level,const st_cell& st) const
@@ -304,3 +337,13 @@ int lua_render(lua_State *L)
 }
 
 
+int lua_render_texture(lua_State *L) 
+{
+	cell* root = g_cells.construct();
+	lua_walk(L,root);
+	st_cell st;
+	root->draw_texture(0,st);
+	g_cells.clear_all();
+
+	return 1;
+}

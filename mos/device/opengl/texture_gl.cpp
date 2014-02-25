@@ -47,6 +47,7 @@ texture_gl::~texture_gl()
 
 bool texture_gl::create_texture_gl(image* img) 
 {
+	m_obj_type = img->m_obj_type;
 	int width = img->get_width();
 	int height = img->get_height();
 
