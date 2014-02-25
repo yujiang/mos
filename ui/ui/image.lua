@@ -19,6 +19,7 @@ end
 
 function image:_change_frame(frame)
 	if self.frame ~= frame then
+		assertex(frame >= 0 and frame < 1000,frame)
 		self.frame = frame
 --		if frame >= 64 and string.find(self.image_file,"walk") then
 --			print("image:change_frame",self.image_file,frame)

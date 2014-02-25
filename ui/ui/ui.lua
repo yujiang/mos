@@ -185,6 +185,7 @@ function ui:on_sprite_mouse_rd(win,x,y)
 		--print("ui:on_window_mouse_rd",menu.name,btn.name,btn:get_caption_string())
 		local menu = btn:get_caption_string()
 		--print(menu,menu == "walk_path")
+		--[[
 		local ai = win:get_ai()
 		local path = {{200,200},{500,200},{500,500},{200,500}}
 		if menu == "walk_path" then
@@ -194,6 +195,7 @@ function ui:on_sprite_mouse_rd(win,x,y)
 		elseif menu == "walk random" then
 			ai:walk_random(200,100)
 		end
+		--]]
 	end
 
 	m.on_lclick = function (menu,btn)

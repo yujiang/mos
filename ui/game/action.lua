@@ -18,9 +18,26 @@ function action:destroy()
 	self.co = nil
 end
 
+local coroutine_wrap = coroutine.create
+--[[
+local coroutine_wrap = function(func)
+	local ok,ret = {xpcall(function() return func() end, debug.excepthook)}
+	return ok and ret
+end
+--]]
+
+--local coroutine_resume = coroutine.resume
+local coroutine_resume = function(...)
+	local ok,rt = coroutine.resume(...)
+	if not ok then
+		print("coroutine.resume error",rt)
+	end
+	return ok,rt
+end
+
 function action:on_timer_update(pass)
 	assert(self.co)
-	local ok,rt = coroutine.resume(self.co,pass)
+	local ok,rt = coroutine_resume(self.co,pass)
 	if not ok then
 		self:on_end(false)
 	elseif rt then
@@ -40,6 +57,7 @@ function action_move:move_to(cell,x,y,speed,callback)
 	local x0,y0 = cell:get_pos()
 	local distance = math.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
 	if distance <= 0.01 then
+		--print("distance <= 0.01",x,y,x0,y0)
 		self:on_end()
 		return 
 	end
@@ -47,14 +65,14 @@ function action_move:move_to(cell,x,y,speed,callback)
 	local x_speed = (x-x0) / distance * speed
 	local y_speed = (y-y0) / distance * speed
 
-	self.co = coroutine.create(
+	self.co = coroutine_wrap(
 		function()
 			while true do
 				local pass = coroutine.yield()
 				local x0,y0 = cell:get_pos()
-				local dx = x0 + speed * pass 
-				local dy = y0 + speed * pass 
-				--print ("action_move:move_to",pass,dx,dy)
+				local dx = x0 + x_speed * pass 
+				local dy = y0 + y_speed * pass 
+				--print ("action_move:move_to",pass,dx,dy,x,y)
 
 				if dx == x and dy == y or
 					(dx - x) * (x0 - x) < 0 or 
@@ -69,6 +87,10 @@ function action_move:move_to(cell,x,y,speed,callback)
 	)
 
 	self:add_timer()
+	if cell.set_dir then --cell会变方向吗?
+		local dir = cdriver.get_dir(x-x0,y-y0)
+		cell:set_dir(dir)
+	end
 	return true
 end
 
@@ -78,7 +100,7 @@ function action_fade:fade(cell,alpha_start,alpha_end,speed,callback)
 	assert(speed ~= 0)
 	cell.alpha = alpha_start
 	
-	self.co = coroutine.create(
+	self.co = coroutine_wrap(
 		function()
 			while true do
 				local pass = coroutine.yield()
@@ -107,7 +129,7 @@ function action_shadow:shadow(cell,time_once,alpha_start,alpha_end,alpha_speed)
 	local f = cell.father
 	assert(f)
 	
-	self.co = coroutine.create(
+	self.co = coroutine_wrap(
 		function()
 			while true do
 				local pass = coroutine.yield()
@@ -140,7 +162,7 @@ function action_room:room(cell,room_start,room_end,speed,callback)
 
 	--print("action_room:room")
 	
-	self.co = coroutine.create(
+	self.co = coroutine_wrap(
 		function()
 			while true do
 				local pass = coroutine.yield()
@@ -167,7 +189,7 @@ function action_rotate:rotate(sprite,time_once)
 	local dir = sprite:get_dir()
 	assert(dir)
 
-	self.co = coroutine.create(
+	self.co = coroutine_wrap(
 		function()
 			while true do
 				local pass = coroutine.yield()
@@ -186,10 +208,64 @@ function action_rotate:rotate(sprite,time_once)
 	return true		
 end
 
-local action_ani = class(action,"action_ani")
-function action_ani:ani(sprite,frames,loop,callback)
-	self.callback = callback
-	
+local action_movepath = class(action,"action_movepath")
+function action_movepath:move_path(sprite,paths,loop,speed,callback)
+	assert(speed ~= 0)
+	assert(#paths > 0)
+	--print("action_path:path",#paths)
+	local co = coroutine_wrap(
+		function()
+			local index = 1
+			while true do
+				local pos = paths[index]
+				--print("action_path:path",index,pos[1],pos[2])
+				local mv = action_move()
+				mv:move_to(sprite,pos[1],pos[2],speed,function() coroutine_resume(self.co) end)
+				index = index + 1
+				if index > #paths then
+					if not loop then
+						break
+					else
+						index = 1
+					end
+				end
+				coroutine.yield()
+			end
+			if callback then
+				callback()
+			end
+		end
+	)
+	self.co = co
+	coroutine_resume(co)
+end
+
+
+local action_moverandom = class(action,"action_moverandom")
+function action_moverandom:move_random(sprite,l,t,r,b,speed,sleepmin,sleepmax)
+	assert(speed > 0)
+	--print("action_path:path",#paths)
+	local co = coroutine_wrap(
+		function()
+			while true do
+				local x = math.random(l,r)
+				local y = math.random(t,b)
+				local mv = action_move()
+				mv:move_to(sprite,x,y,speed,
+					function() 
+						if not sleepmin then
+							coroutine_resume(self.co) 
+						else
+							local sleep = math.random(sleepmin,sleepmax)
+							g_timer:add_timer(sleep/1000,function() coroutine_resume(self.co) end)
+						end
+					end)
+				coroutine.yield()
+			end
+		end
+	)
+	self.co = co
+	coroutine_resume(co)
 end
 
 return {action_move = action_move,
@@ -197,4 +273,6 @@ return {action_move = action_move,
 	action_shadow = action_shadow,
 	action_room = action_room,
 	action_rotate = action_rotate,
-	action_ani = action_ani,}
+	action_movepath =  action_movepath,
+	action_moverandom =  action_moverandom,
+}

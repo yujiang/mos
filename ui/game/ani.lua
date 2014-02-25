@@ -70,6 +70,13 @@ function ani:set_ani_dir(dir)
 		local tb = self.ani_tb
 		local base = get_dir_base(tb,self.ani_dir) * tb.dir_frame
 		local off = self.image.frame - self.frame_start
+
+		if off < 0 then
+			off = 0
+		elseif off >= tb.dir_frame then
+			off = tb.dir_frame-1
+		end
+		--print("set_ani_dir",base,off,tb.frame_start)
 		self.image:change_frame(base + off + tb.frame_start)
 		--print("ani:set_ani_dir dir frame",dir,base + off)
 		self.frame_start = base + tb.frame_start

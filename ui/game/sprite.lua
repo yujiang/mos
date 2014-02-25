@@ -89,16 +89,8 @@ function sprite:get_move()
 	return self.move
 end
 
-function sprite:get_ai()
-	if not self.ai then
-		self.ai = ai()
-		self.ai:create_ai(self)
-	end
-	return self.ai
-end
-
 function sprite:walk_to(x,y,speed)
-	assert(speed > 0)
+	assertex(speed > 0 and speed < 1000,speed)
 	local m = self:get_move()
 	local dir = m:move_to(x,y,speed)
 	if dir then
@@ -110,6 +102,7 @@ function sprite:walk_to(x,y,speed)
 end
 
 function sprite:set_dir(dir)
+	assertex(dir >= 0 and dir < 8,dir)
 	self:get_body():set_dir(dir)
 end
 
@@ -158,12 +151,6 @@ function sprite:on_mouse_msg(mouse_event,x,y,param)
 	end
 
 	return self
-end
-
-function sprite:on_reload_class(old,new)
-	if self.ai and getmetatable(self.ai) == old then
-		setmetatable(self.ai,new)
-	end
 end
 
 function sprite:on_loaded_from_table()

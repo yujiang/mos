@@ -358,6 +358,9 @@ function test_sprite2()
 	local mv4 = action.action_rotate()
 	mv4:rotate(sp,0.2)
 
+	local p = action.action_movepath()
+	p:move_path(sp,{{1214,777},{1214,888},{1414,777}},true,100)
+
 	local sp = sprite()
 	--sp:create_sprite(nil,100,100,0,101)
 	sp:create_sprite(nil,1614,777,0,0120,true)
@@ -377,6 +380,8 @@ function test_sprite2()
 	ani:custom_ani(tb)
 	ani.loop = true
 
+	local p = action.action_moverandom
+	p:move_random(sp,1214,666,1614,888,100,1000,2000)
 	--r:set_play(sp)
 end
 

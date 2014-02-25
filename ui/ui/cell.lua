@@ -523,7 +523,7 @@ end
 
 --打印cell
 --move和ai自己重建，而不存储了。
-local print_ignores = {father = true,move = true,ai = true,timer = true}
+local print_ignores = {father = true,move = true,timer = true}
 function cell:print()
 	table_print(self,nil,nil,print_ignores)
 end

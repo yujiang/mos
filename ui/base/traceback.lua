@@ -4,6 +4,16 @@ local string=string
 local debug=debug
 --__auto_local__end--
 
+function assertex(b,msg)
+	if not b then
+		print(msg)
+		if coroutine.running() then
+			print(debug.traceback())
+		end
+		assert(b)
+	end
+end
+
 traceback = {}
 
 -- frame count exclude gettop

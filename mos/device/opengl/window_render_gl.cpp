@@ -15,6 +15,7 @@
 #include <assert.h>
 
 //using namespace cwc;
+#define DRAW_BATCH
 
 window_render_gl::window_render_gl(window* w):window_render(w)
 {
@@ -307,9 +308,11 @@ int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,co
 		st.rc = *rc_tex;
 	st.rect = rect;
 	st.rc_screen = g_rect(x,y,x+rect.width(),y+rect.height());
-
-	//_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex);
+#ifdef DRAW_BATCH
 	m_draws.push_back(st);
+#else
+	_draw_texture(st.x,st.y,st.room,st.color,st.alpha,st.shader,st.shader_param,st._tex,st.rc_tex,st.rect);
+#endif
 	return 0;
 }
 
@@ -426,7 +429,11 @@ int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 	st.h = h;
 	st._tex = 0;
 	st.rc_tex = 0;
+#ifdef DRAW_BATCH
 	m_draws.push_back(st);
+#else
+	_draw_box(x,y,color,alpha,w,h);
+#endif
 	return 0;
 }
 
