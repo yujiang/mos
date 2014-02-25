@@ -168,7 +168,7 @@ void window_render_gl::flush_draws()
 
 		if (!st._tex)
 		{
-			_draw_box(st.x,st.y,st.color,st.alpha,st.w,st.h);
+			_draw_box(st.x,st.y,st.color,st.alpha,st.w,st.h); //box 不多，就不合并了。
 			continue;
 		}
 		if (st.shader)
@@ -193,9 +193,7 @@ void window_render_gl::flush_draws()
 			if (st2.shader || st2._tex != st._tex || rect_intersection(st2.rc_screen,rc_dirty))
 			{
 				if (!st2._tex) //box
-				{
 					rc_dirty = rc_dirty + g_rect(st2.x,st2.y,st2.x+st2.w,st2.y+st2.h);
-				}
 				else
 					rc_dirty = rc_dirty + st2.rc_screen;
 				if (rc_dirty.get_area() >= max_area)
@@ -486,9 +484,52 @@ int window_render_gl::draw_text_cell(const st_cell& cell,texture* tex,const g_re
 	return _draw_texture_cell(cell,tex,rc);
 }
 
+texture_mul* find_free_texture_mul(int w,int h)
+{
+	std::vector <texture_mul*>& v = get_graph()->texture_muls;
+	for (auto it = v.begin(); it != v.end(); ++it)
+	{
+		if ((*it)->find_free(w,h))
+			return *it;
+	}
+	return 0;
+}
+
+texture_sub* window_render_gl::create_texturesub(image* img,const g_rect* rc)
+{
+	g_rect r = rc ? *rc : img->get_rect();
+	assert(r.width() <= 512 && r.height() <= 512);
+	texture_mul* mul = find_free_texture_mul(r.width(),r.height());
+	if (!mul)
+	{
+		mul = new texture_mul;
+		mul->create_texture_dynamic(512,512,kCCTexture2DPixelFormat_RGBA8888);
+		get_graph()->texture_muls.push_back(mul);
+	}
+	return mul->add_image_ontexture(img,r);
+}
+
 int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc)
 {
 	s_image_render++;
+
+	//if (rc == 0)
+	{
+		enum_objtype obj = get_objtype_byfile(file);
+		if (obj == obj_char) //
+		{
+			texture_sub* gl = (texture_sub*)get_graph()->find_texturesub(file);
+			if (!gl)
+			{
+				gl = create_texturesub(img,rc);
+				if (!gl)
+					return -1;
+			}
+			get_graph()->maped_texturesub(file,gl);
+			return _draw_texture_cell(cell,gl->m_tex,&gl->m_rc);
+		}
+	}
+
 	texture_gl* gl = (texture_gl*)get_graph()->find_texture(file);
 	if (!gl)
 	{

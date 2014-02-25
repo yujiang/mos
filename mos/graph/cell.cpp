@@ -209,10 +209,13 @@ void cell::draw_texture(int level,const st_cell& st) const
 			r.set_xywh(st.x,st.y,w,h);
 			get_graph()->draw_text(st2,*this,r); 
 		}
-		else if (image_file && strlen(image_file)>0)
-			get_graph()->draw_texture(st2,image_file);
-		else
-			get_graph()->draw_texture(st2,frame);
+		else if (image_file) 
+		{
+			if (image_file[0] == 'm')
+				get_graph()->draw_texturemul_index(st2,frame);
+			else
+				get_graph()->draw_texturemap_index(st2,frame);
+		}
 	}
 
 	for (auto it = childs.begin(); it != childs.end(); ++it)

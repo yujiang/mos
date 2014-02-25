@@ -438,7 +438,7 @@ function test_td()
 	img:create_image("test",40,40,0,"dog",1)
 	
 	img.frame = 1
-	img.image_file = ""
+	img.image_file = "m"
 
 	win:add_child(img)
 
@@ -542,5 +542,5 @@ end
 test_mos()
 --test_win3()
 --test_sprite2()
---test_td()
+test_td()
 --c()

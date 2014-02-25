@@ -96,7 +96,7 @@ struct image_struct
 enum enum_objtype{
 	obj_default,
 	obj_map,
-	obj_prite,
+	obj_char,
 	obj_ui,
 	obj_effect,		//特效
 	obj_icon,		//道具技能图标
@@ -188,6 +188,7 @@ bool get_cliped_rect(g_rect& rect,const g_rect& rc,int& offx,int& offy,const g_r
 bool get_cliped_box(int& offx,int& offy,int& w,int& h, int width,int height);
 
 image* get_image8888_888_8(image* image888,image* image8);
+enum_objtype get_objtype_byfile(const std::string& s);
 
 struct image_ref
 {

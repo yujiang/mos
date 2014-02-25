@@ -6,6 +6,8 @@
 #include "gl_macro.h"
 #include "window_render_gl.h"
 
+DECLARE_COUNTER(texture_mul)
+
 bool is_2_mi(unsigned int n)
 {
 	return (n &(n-1)) == 0;
@@ -117,10 +119,15 @@ bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFor
 	return rt;
 }
 
-int texture_gl::draw_image_ontexture(int x,int y,const image* img) 
+int texture_gl::draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) 
 {
-	colorbyte* buf = img->get_buffer();
-	return update_data(buf,img->m_width,x,y,img->m_width,img->m_height);
+	const formatinfo* info = get_formatinfo(m_format);
+	if (!info)
+		return false;
+
+	g_rect r = rc ? *rc : img->get_rect();
+	colorbyte* buf = img->get_buffer() + (info->bits)/8 * (r.l+r.t*img->m_width);
+	return update_data(buf,img->m_width,x,y,r.width(),r.height());
 }
 
 bool texture_gl::update_data(const void* data, int rowLength,int offx,int offy,int width, int height)
@@ -194,3 +201,92 @@ unsigned int bitsPerPixelForFormat(CCTexture2DPixelFormat format)
 	return get_formatinfo(format)->bits;
 }
 
+texture_sub* texture_mul::create_line_sub(st_line& line,int w)
+{
+	g_rect rc = line.rc;
+	rc.l = line.rc.r;
+	rc.r = rc.l + w;
+	line.rc.r = rc.r;
+	texture_sub* sub = new texture_sub(this,rc);
+	line.subs.push_back(sub);
+	return sub;
+}
+
+texture_sub* texture_mul::add_image_ontexture(const image* img,const g_rect& rc) 
+{
+	texture_sub* sub = create_sub(img,rc);
+	draw_image_ontexture(sub->m_rc.l,sub->m_rc.t,img,&rc);
+	assert(sub);
+	return sub;
+}
+
+texture_sub* texture_mul::create_sub(const image* img,const g_rect& rc) 
+{
+	int w = rc.width();
+	int h = rc.height();
+	assert(w <= get_tex_width() && h <= get_tex_height());
+
+	for (auto it = m_lines.begin(); it != m_lines.end(); ++it)
+	{
+		st_line& line = *it;
+		if (line.rc.height() >= h)
+		{
+			for (auto it2 = line.subs.begin(); it2 != line.subs.end(); ++it2)
+			{
+				auto sub = *it2;
+				if (sub->m_released && sub->m_rc.width() >= w)
+				{
+					sub->m_released = false;
+					sub->m_rc.r = sub->m_rc.l + w;
+					sub->m_rc.b = sub->m_rc.t + h;
+					return sub;
+				}
+			}
+			if (line.rc.r + w <= get_tex_width())
+			{
+				return create_line_sub(line,w);
+			}
+		}
+	}
+
+	int lh = get_free_height();
+	if (lh >= h) 
+	{
+		st_line t;
+		t.rc = g_rect(0,get_last_height(),0,get_last_height()+h);
+		m_lines.push_back(t);
+		st_line& line = m_lines.back();
+		return create_line_sub(line,w);
+	}
+	return 0;
+}
+
+bool texture_mul::find_free(int w,int h) const
+{
+	if (get_free_height() >= h) 
+		return true;
+	for (auto it = m_lines.begin(); it != m_lines.end(); ++it)
+	{
+		const st_line& line = *it;
+		if (line.rc.height() >= h)
+		{
+			if (line.rc.r + w <= get_tex_width())
+				return true;
+			for (auto it2 = line.subs.begin(); it2 != line.subs.end(); ++it2)
+			{
+				auto sub = *it2;
+				if (sub->m_released && sub->m_rc.width() >= w)
+					return true;
+			}
+		}
+	}
+	return false;
+}
+
+int texture_mul::get_last_height() const
+{
+	if (m_lines.empty())
+		return 0;
+	auto it = m_lines.back();
+	return it.rc.b;
+}

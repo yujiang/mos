@@ -38,7 +38,7 @@ bool texture_gdi::create_texture_dynamic(int width,int height,CCTexture2DPixelFo
 	return true;
 }
 
-int texture_gdi::draw_image_ontexture(int x,int y,const image* img) 
+int texture_gdi::draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) 
 {
 	return m_image->draw_image(x,y,-1,255,img,NULL,NULL);
 }

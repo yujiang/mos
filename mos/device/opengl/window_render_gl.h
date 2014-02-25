@@ -4,7 +4,9 @@
 #include "../window_render.h"
 #include <windows.h>
 #include <vector>
+
 class director;
+class texture_sub;
 
 class glShaderManager;
 class glShader;
@@ -81,6 +83,8 @@ public:
 
 	std::vector<st_draw> m_draws;
 	int draw_batch(std::vector<st_draw*>& batch);
+
+	texture_sub* create_texturesub(image* img,const g_rect* rc);
 };
 
 #endif

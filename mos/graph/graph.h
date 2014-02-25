@@ -10,6 +10,8 @@
 //button.jpg 1 --> ui.jpg ui (200,300,64,32) true ui为了drawbatch，所以true
 //walk.ani 2 -->walk.jpg walk2 (200,300,64,32) false walk下一帧这一帧就没用了，所以false
 class texture;
+class texture_sub;
+class texture_mul;
 class image;
 class st_cell;
 struct stFont;
@@ -48,9 +50,10 @@ public:
 	bool get_image_sizecg(const char* file,int frame,g_size& sz,g_point& cg);
 
 	std::unordered_map<std::string,texture*> texture_map;
-	texture* find_texture(const char* file,int frame);
-
 	std::unordered_map<int,texture_font*> texture_font_map;
+
+	std::vector <texture_mul*> texture_muls;
+	std::unordered_map<std::string,texture_sub*> texturesub_map;
 
 	//clear 
 	int m_compress_image,m_clear_image,m_clear_texture,m_clear_texturefont;
@@ -62,8 +65,9 @@ public:
 	int draw_image(const st_cell& cell,const char* file,int frame);
 	int draw_box(const st_cell& cell,int w,int h);
 	int draw_texture(const st_cell& cell,const char* file);
-	int draw_texture(const st_cell& cell,int index);
-	
+	int draw_texturemap_index(const st_cell& cell,int index);
+	int draw_texturemul_index(const st_cell& cell,int index);
+
 	//特殊的绘制地图
 	int draw_image_map(const st_cell& cell,const char* file);
 	
@@ -96,7 +100,11 @@ public:
 	texture* find_texture(const char* file);
 	void maped_texture(const char* file,texture* p);
 
-	texture* find_texture_index(int i);
+	texture* find_texturemap_index(int i);
+	texture* find_texturemul_index(int i);
+
+	texture_sub* find_texturesub(const char* file);
+	void maped_texturesub(const char* file,texture_sub* p);
 };
 
 graph* get_graph();

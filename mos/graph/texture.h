@@ -2,6 +2,7 @@
 #define __GRAPH_TEXTURE_H_
 
 #include "../core/counter.h"
+#include "../core/rect.h"
 //wrap opengl texture not directx.
 struct g_rect;
 class st_cell;
@@ -74,7 +75,7 @@ public:
 	virtual bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) = 0;
 	//virtual bool create_texture(image* img,const g_rect* rc,CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_Default) = 0;
 
-	virtual int draw_image_ontexture(int x,int y,const image* img) = 0;
+	virtual int draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) = 0;
 
 	//int draw_cell(const st_cell& cell,const g_rect* rc );
 
@@ -95,5 +96,25 @@ public:
 //texture_font	把所有字合并在同一个贴图，并根据使用的频繁做更新，
 //texture_char	类似part，是font的一个rect
 
+class texture_sub 
+{
+public:
+	texture_sub(texture* tex,const g_rect& r):m_tex(tex),m_rc(r){ m_released = false; }
+	texture* m_tex; 
+	g_rect m_rc;
+	bool m_released;
+
+	bool release(){
+		m_released = true;
+	}
+
+	unsigned int m_time_use;
+	void mark_use_texture(unsigned int time){
+		m_time_use = time;
+		m_tex->mark_use_texture(time);
+	}
+	const char* m_name;
+
+};
 
 #endif

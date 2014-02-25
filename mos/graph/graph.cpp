@@ -119,13 +119,36 @@ void graph::maped_texture(const char* file,texture* p)
 	p->m_name = file;
 }
 
-texture* graph::find_texture_index(int index)
+texture* graph::find_texturemap_index(int index)
 {
 	if (index < 0 || texture_map.size() <= index)
 		return 0;
 	auto it = texture_map.begin();
 	for (int i=0; i<index; i++,++it);
 	return it->second;
+}
+
+texture* graph::find_texturemul_index(int index)
+{
+	if (index < 0 || texture_muls.size() <= index)
+		return 0;
+	return (texture* )texture_muls[index];
+}
+
+
+void graph::maped_texturesub(const char* file,texture_sub* p)
+{
+	p->mark_use_texture(g_time_now);
+	texturesub_map[file] = p;
+	p->m_name = file;
+}
+
+texture_sub* graph::find_texturesub(const char* file)
+{
+	texture_sub* t = texturesub_map[file];
+	if (t)
+		t->mark_use_texture(g_time_now);
+	return t;
 }
 
 texture* graph::find_texture(const char* file)
@@ -352,9 +375,17 @@ int graph::draw_texture(const st_cell& cell,const char* file)
 	return get_render()->draw_texture_cell(cell,_tex,NULL);
 }
 
-int graph::draw_texture(const st_cell& cell,int index)
+int graph::draw_texturemap_index(const st_cell& cell,int index)
 {
-	texture* _tex = find_texture_index(index);
+	texture* _tex = find_texturemap_index(index);
+	if (!_tex)
+		return 0;
+	return get_render()->draw_texture_cell(cell,_tex,NULL);
+}
+
+int graph::draw_texturemul_index(const st_cell& cell,int index)
+{
+	texture* _tex = find_texturemul_index(index);
 	if (!_tex)
 		return 0;
 	return get_render()->draw_texture_cell(cell,_tex,NULL);

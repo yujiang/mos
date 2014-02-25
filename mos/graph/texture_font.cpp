@@ -76,7 +76,7 @@ bool texture_font::create_char(texture_char* tc,int char_value)
 	image* img = create_font_image(m_st_font,char_value,tc->advance);
 	if (!img)
 		return false;
-	m_texture->draw_image_ontexture(tc->rc.l,tc->rc.t,img);
+	m_texture->draw_image_ontexture(tc->rc.l,tc->rc.t,img,0);
 
 	delete img;
 	return true;

@@ -221,9 +221,11 @@ static int  lua_dump_resource (lua_State *L) {
 
 static int  lua_get_graph_trace (lua_State *L) {
 	static char buf[1024];
-	sprintf(buf,"img:%d tex:%d zgp:%d,rd:t%d i%d t%d b%d tri:%d",
+	sprintf(buf,"img:%d tex:%d mul:%d ft:%d zgp:%d, rd:t%d i%d t%d b%d tri:%d",
 		counter<image>::s_count_num,
 		counter<texture>::s_count_num,
+		counter<texture_mul>::s_count_num,
+		counter<texture_font>::s_count_num,
 		counter<image_zgp>::s_count_num,
 		window_render::s_texture_render,
 		window_render::s_image_render,
