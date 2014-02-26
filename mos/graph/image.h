@@ -19,7 +19,7 @@ struct color_palette
 	colorbyte blue;
 };
 
-const int c_pal_size = 256; //256ɫ
+const int c_pal_size = 256; //256
 
 struct image_struct
 {
@@ -98,10 +98,10 @@ enum enum_objtype{
 	obj_map,
 	obj_char,
 	obj_ui,
-	obj_effect,		//特效
-	obj_icon,		//道具技能图标
-	obj_header,		//头像
-	obj_background,	//背景图
+	obj_effect,		//
+	obj_icon,		//
+	obj_header,		//
+	obj_background,	//
 	obj_num,
 };
 

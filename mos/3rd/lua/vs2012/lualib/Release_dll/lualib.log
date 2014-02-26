@@ -1,0 +1,87 @@
+﻿生成启动时间为 2014/2/26 10:32:57。
+     1>项目“D:\git\mos\mos\3rd\lua\vs2012\lualib\lualib.vcxproj”在节点 3 上(Build 个目标)。
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(346,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+     1>InitializeBuildStatus:
+         正在创建“Release_dll\lualib.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D LUA_BUILD_AS_DLL /D WIN32 /D NDEBUG /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release_dll\\" /Fd"Release_dll\vc110.pdb" /Gd /TC /analyze- /errorReport:prompt /wd4996 ..\..\src\lapi.c ..\..\src\lauxlib.c ..\..\src\lbaselib.c ..\..\src\lbitlib.c ..\..\src\lcode.c ..\..\src\lcorolib.c ..\..\src\lctype.c ..\..\src\ldblib.c ..\..\src\ldebug.c ..\..\src\ldo.c ..\..\src\ldump.c ..\..\src\lfunc.c ..\..\src\lgc.c ..\..\src\linit.c ..\..\src\liolib.c ..\..\src\llex.c ..\..\src\lmathlib.c ..\..\src\lmem.c ..\..\src\loadlib.c ..\..\src\lobject.c ..\..\src\lopcodes.c ..\..\src\loslib.c ..\..\src\lparser.c ..\..\src\lstate.c ..\..\src\lstring.c ..\..\src\lstrlib.c ..\..\src\ltable.c ..\..\src\ltablib.c ..\..\src\ltm.c ..\..\src\luac.c ..\..\src\lundump.c ..\..\src\lvm.c ..\..\src\lzio.c
+         lapi.c
+         lauxlib.c
+         lbaselib.c
+         lbitlib.c
+         lcode.c
+         lcorolib.c
+         lctype.c
+         ldblib.c
+         ldebug.c
+         ldo.c
+         ldump.c
+         lfunc.c
+         lgc.c
+         linit.c
+         liolib.c
+         llex.c
+         lmathlib.c
+         lmem.c
+         loadlib.c
+         lobject.c
+         正在编译...
+         lopcodes.c
+         loslib.c
+         lparser.c
+         lstate.c
+         lstring.c
+         lstrlib.c
+         ltable.c
+         ltablib.c
+         ltm.c
+         luac.c
+         lundump.c
+         lvm.c
+         lzio.c
+       Link:
+         F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"../../../libs\lua52.dll" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"../../../libs\lua52.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"../../../libs\lua52.lib" /MACHINE:X86 /SAFESEH /DLL Release_dll\lapi.obj
+         Release_dll\lauxlib.obj
+         Release_dll\lbaselib.obj
+         Release_dll\lbitlib.obj
+         Release_dll\lcode.obj
+         Release_dll\lcorolib.obj
+         Release_dll\lctype.obj
+         Release_dll\ldblib.obj
+         Release_dll\ldebug.obj
+         Release_dll\ldo.obj
+         Release_dll\ldump.obj
+         Release_dll\lfunc.obj
+         Release_dll\lgc.obj
+         Release_dll\linit.obj
+         Release_dll\liolib.obj
+         Release_dll\llex.obj
+         Release_dll\lmathlib.obj
+         Release_dll\lmem.obj
+         Release_dll\loadlib.obj
+         Release_dll\lobject.obj
+         Release_dll\lopcodes.obj
+         Release_dll\loslib.obj
+         Release_dll\lparser.obj
+         Release_dll\lstate.obj
+         Release_dll\lstring.obj
+         Release_dll\lstrlib.obj
+         Release_dll\ltable.obj
+         Release_dll\ltablib.obj
+         Release_dll\ltm.obj
+         Release_dll\luac.obj
+         Release_dll\lundump.obj
+         Release_dll\lvm.obj
+         Release_dll\lzio.obj
+            正在创建库 ../../../libs\lua52.lib 和对象 ../../../libs\lua52.exp
+         正在生成代码
+         已完成代码的生成
+         lualib.vcxproj -> D:\git\mos\mos\3rd\lua\vs2012\lualib\../../../libs\lua52.dll
+       FinalizeBuildStatus:
+         正在删除文件“Release_dll\lualib.unsuccessfulbuild”。
+         正在对“Release_dll\lualib.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“D:\git\mos\mos\3rd\lua\vs2012\lualib\lualib.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.45

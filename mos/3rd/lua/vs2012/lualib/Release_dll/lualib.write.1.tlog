@@ -1,0 +1,10 @@
+^D:\libs\lua\lua-5.2.3\vs2010\lualib\lualib.vcxproj
+D:\libs\lua\lua-5.2.3\lib\lua52.lib
+D:\libs\lua\lua-5.2.3\lib\lua52.lib
+D:\libs\lua\lua-5.2.3\lib\lua52.exp
+D:\libs\lua\lua-5.2.3\lib\lua52.exp
+^D:\git\mos\mos\3rd\lua\vs2012\lualib\lualib.vcxproj
+D:\git\mos\mos\3rd\libs\lua52.lib
+D:\git\mos\mos\3rd\libs\lua52.lib
+D:\git\mos\mos\3rd\libs\lua52.exp
+D:\git\mos\mos\3rd\libs\lua52.exp

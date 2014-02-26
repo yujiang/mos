@@ -10,7 +10,8 @@
 #include "map/map.h"
 
 #include "mos.h"
-//#include "../3rd/vld/vld.h" //http://vld.codeplex.com/
+//#define VLD_FORCE_ENABLE
+#include "../3rd/vld/vld.h" //http://vld.codeplex.com/
 
 window* g_window = NULL;
 unsigned int g_time_now = 0;
@@ -112,4 +113,3 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	return 0;
 }
-

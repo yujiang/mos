@@ -1,0 +1,87 @@
+﻿生成启动时间为 2014/2/26 10:33:08。
+     1>项目“D:\git\mos\mos\3rd\lua\vs2012\lualib\lualib.vcxproj”在节点 3 上(Build 个目标)。
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(346,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+     1>InitializeBuildStatus:
+         正在创建“Debug_dll\lualib.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D LUA_BUILD_AS_DLL /D WIN32 /D _DEBUG /D _WINDLL /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug_dll\\" /Fd"Debug_dll\vc110.pdb" /Gd /TC /analyze- /errorReport:prompt /wd4996 ..\..\src\lapi.c ..\..\src\lauxlib.c ..\..\src\lbaselib.c ..\..\src\lbitlib.c ..\..\src\lcode.c ..\..\src\lcorolib.c ..\..\src\lctype.c ..\..\src\ldblib.c ..\..\src\ldebug.c ..\..\src\ldo.c ..\..\src\ldump.c ..\..\src\lfunc.c ..\..\src\lgc.c ..\..\src\linit.c ..\..\src\liolib.c ..\..\src\llex.c ..\..\src\lmathlib.c ..\..\src\lmem.c ..\..\src\loadlib.c ..\..\src\lobject.c ..\..\src\lopcodes.c ..\..\src\loslib.c ..\..\src\lparser.c ..\..\src\lstate.c ..\..\src\lstring.c ..\..\src\lstrlib.c ..\..\src\ltable.c ..\..\src\ltablib.c ..\..\src\ltm.c ..\..\src\luac.c ..\..\src\lundump.c ..\..\src\lvm.c ..\..\src\lzio.c
+         lzio.c
+         lvm.c
+         lundump.c
+         luac.c
+         ltm.c
+         ltablib.c
+         ltable.c
+         lstrlib.c
+         lstring.c
+         lstate.c
+         lparser.c
+         loslib.c
+         lopcodes.c
+         lobject.c
+         loadlib.c
+         lmem.c
+         lmathlib.c
+         llex.c
+         liolib.c
+         linit.c
+         正在生成代码...
+         正在编译...
+         lgc.c
+         lfunc.c
+         ldump.c
+         ldo.c
+         ldebug.c
+         ldblib.c
+         lctype.c
+         lcorolib.c
+         lcode.c
+         lbitlib.c
+         lbaselib.c
+         lauxlib.c
+         lapi.c
+         正在生成代码...
+       Link:
+         F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"../../../libs\lua52_d.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"../../../libs\lua52_d.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"../../../libs\lua52_d.lib" /MACHINE:X86 /DLL Debug_dll\lapi.obj
+         Debug_dll\lauxlib.obj
+         Debug_dll\lbaselib.obj
+         Debug_dll\lbitlib.obj
+         Debug_dll\lcode.obj
+         Debug_dll\lcorolib.obj
+         Debug_dll\lctype.obj
+         Debug_dll\ldblib.obj
+         Debug_dll\ldebug.obj
+         Debug_dll\ldo.obj
+         Debug_dll\ldump.obj
+         Debug_dll\lfunc.obj
+         Debug_dll\lgc.obj
+         Debug_dll\linit.obj
+         Debug_dll\liolib.obj
+         Debug_dll\llex.obj
+         Debug_dll\lmathlib.obj
+         Debug_dll\lmem.obj
+         Debug_dll\loadlib.obj
+         Debug_dll\lobject.obj
+         Debug_dll\lopcodes.obj
+         Debug_dll\loslib.obj
+         Debug_dll\lparser.obj
+         Debug_dll\lstate.obj
+         Debug_dll\lstring.obj
+         Debug_dll\lstrlib.obj
+         Debug_dll\ltable.obj
+         Debug_dll\ltablib.obj
+         Debug_dll\ltm.obj
+         Debug_dll\luac.obj
+         Debug_dll\lundump.obj
+         Debug_dll\lvm.obj
+         Debug_dll\lzio.obj
+            正在创建库 ../../../libs\lua52_d.lib 和对象 ../../../libs\lua52_d.exp
+         lualib.vcxproj -> D:\git\mos\mos\3rd\lua\vs2012\lualib\../../../libs\lua52_d.dll
+       FinalizeBuildStatus:
+         正在删除文件“Debug_dll\lualib.unsuccessfulbuild”。
+         正在对“Debug_dll\lualib.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“D:\git\mos\mos\3rd\lua\vs2012\lualib\lualib.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:01.45

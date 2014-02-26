@@ -1,5 +1,6 @@
 #include "math.h"
 #include <windows.h>
+#pragma warning(disable:4244)
 
 typedef float Float;
 #define DeclspecAlign(size) __declspec(align(size))

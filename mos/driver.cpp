@@ -233,6 +233,20 @@ static int lua_set_render_param(lua_State *L) {
 	return 0;
 }
 
+static int lua_get_program_param(lua_State *L) {
+	std::string key = luaL_checkstring(L,1);
+	if (key == "debug")
+	{
+#ifdef _DEBUG
+		lua_pushboolean(L,true);
+#else
+		lua_pushboolean(L,false);
+#endif
+		return 1;
+	}
+	return 0;
+}
+
 static int  lua_get_graph_trace (lua_State *L) {
 	static char buf[1024];
 	sprintf(buf,"img:%d tex:%d mul:%d ft:%d zgp:%d, rd:t%d i%d t%d b%d tri:%d",
@@ -333,6 +347,7 @@ static const luaL_Reg driver_lib[] = {
 	{"dump_resource",		lua_dump_resource},
 	{"get_graph_trace",		lua_get_graph_trace},
 	{"set_render_param",	lua_set_render_param},
+	{"get_program_param",	lua_get_program_param},
 
 	{"get_dir",				lua_get_dir},
 	{"find_path",			lua_find_path},

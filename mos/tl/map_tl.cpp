@@ -14,6 +14,7 @@
 #include "mapdata.h"
 //#include "mapobs.h"
 #include <unordered_set>
+#pragma warning(disable:4244)
 
 class map_tl : public map_source
 {

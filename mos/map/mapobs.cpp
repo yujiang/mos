@@ -3,6 +3,7 @@
 #include "core/AStar.h"
 #include "core/cc.h"
 #include "core/dir32.h"
+#pragma warning(disable:4244)
 
 int mapobs::is_block_safe(int x,int y) const
 {

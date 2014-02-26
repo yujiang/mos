@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <assert.h>
 #include <string>
+#pragma warning(disable:4244)
 
 std::unordered_map<std::string,int> g_hmOffsetInt;
 std::unordered_map<std::string,int> g_hmOffsetStr;

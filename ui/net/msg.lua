@@ -1,9 +1,17 @@
 local serpent = require("base.serpent")
 local table = require "table"
 
+--[[
+local luabins
+if cdriver.get_program_param("debug") then
+	net = require "luabins_d"
+else
+	net = require "luabins"
+end
+local load = luabins.load
+local save = luabins.save
+--]]
 
---local load = require('luabins').load
---local save = require('luabins').save
 local save = serpent.short
 local load = function(data)
 	return true,assert(loadstring("return "..data))()

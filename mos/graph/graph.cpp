@@ -315,6 +315,11 @@ void graph::close_resource()
 	for (auto it = texture_font_map.begin(); it != texture_font_map.end(); ++it)
 		delete it->second;
 	texture_font_map.clear();
+
+	for (auto it = texture_muls.begin(); it != texture_muls.end();++it)
+		delete *it;
+	texture_muls.clear();
+	texturesub_map.clear();
 }
 
 //why not image:dump 因为也只有这里用，写到类里没意思。

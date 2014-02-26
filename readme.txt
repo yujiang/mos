@@ -42,13 +42,23 @@ g_timer
 g_db
 	所有的表格资源。比如action的定义
 
+常用ui
+	最底层的 box,image,text,mitem
+	组装了几个常用对象：
+	window-->box
+	label-->text
+	menu-->mitem
+	cell-->bg(image) caption(lable) box(box)
+	button-->handle event
+	看上去设计有点嵌套，用起来方便即可。
+
 c++的数据结构
 graph
 	所有的资源cache
 image_db
 	定义一个image+frame是来自一个图片的某个rect——常见的是把所有ui资源做到一个大图中。
 device
-	平台相关的部分，现有gdi和opengl两个实现
+	平台相关的部分，现有gdi和opengl两个实现，gdi不再支持了。
 
 输入常用命令(在main.lua)
 r reload 比如改了一个button；r button，会遍历root，把所有button对象的metatable替换成新的。
@@ -57,3 +67,4 @@ s show window
 df dofile 常用df main.lua 
 dump cdriver.dump_resource 看c++的cache
 其他执行dostring: test()获得常见测试
+

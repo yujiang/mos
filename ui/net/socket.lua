@@ -1,7 +1,13 @@
 local table = require "table"
 
 local socket = class("socket")
-local net = require "socket.core"
+
+local net
+if cdriver.get_program_param("debug") then
+	net = require "socket.core_d"
+else
+	net = require "socket.core"
+end
 
 
 function socket:send(s)
