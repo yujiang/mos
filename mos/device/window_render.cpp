@@ -16,6 +16,7 @@ window_render::window_render(window* w) : m_window(w)
 
 	is_batch = true;
 	is_mul = true;
+	is_thread = true;
 }
 
 window_render::~window_render()
@@ -32,4 +33,11 @@ void window_render::render_start0()
 	s_triangle_render_prev = s_triangle_render;
 	s_triangle_render = 0;
 	render_start();
+}
+
+
+void window_render::render_end()
+{
+	//其下可以用一个渲染线程来做。
+	m_render_start = false;
 }

@@ -56,7 +56,7 @@ function ani_data:find_ani_data(shape,name,use_zgp)
 		if not rt then
 			return
 		end
-		return self:regist_ani_data(shape,name,s,default.speed,dir,frame,0,frame,1,default.loop,true)
+		return self:regist_ani_data(shape,name,s,default.speed,dir,frame,0,frame-1,1,default.loop,true)
 	end
 	return tb
 end

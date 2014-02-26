@@ -19,6 +19,11 @@ window_render_gl::window_render_gl(window* w):window_render(w)
 {
 	m_director = new director(this);
 	m_shader_manager = 0;
+	m_render_start = false;
+	m_in_flush = false;
+	m_hRCThread = 0;
+	m_hDC = 0;
+	m_hRC = 0;
 }
 
 window_render_gl::~window_render_gl()
@@ -55,13 +60,17 @@ static void SetupPixelFormat(HDC hDC)
 	SetPixelFormat(hDC, pixelFormat, &pfd);
 }
 	
-
 bool window_render_gl::create_render(int width,int height)
 {
 	m_hDC = GetDC((HWND)m_window->m_hWnd);
 	SetupPixelFormat(m_hDC);
 	m_hRC = wglCreateContext(m_hDC);
 	wglMakeCurrent(m_hDC, m_hRC);
+	if (is_thread)
+	{
+		m_hRCThread = wglCreateContext(m_hDC);
+		BOOL rt = wglShareLists(m_hRC, m_hRCThread);
+	}
 
 	// check OpenGL version at first
 	const GLubyte* glVersion = glGetString(GL_VERSION);
@@ -145,16 +154,25 @@ void window_render_gl::on_destroy()
 		// deselect rendering context and delete it
 		wglMakeCurrent(m_hDC, NULL);
 		wglDeleteContext(m_hRC);
+		wglDeleteContext(m_hRCThread);
+		m_hDC = NULL;
+		m_hRC = NULL;
+		m_hRCThread = NULL;
 	}
 }
 
 void window_render_gl::render_start()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	if (is_thread || is_batch)
+		;
+	else
+		glClear(GL_COLOR_BUFFER_BIT);
+	m_render_start = true;
 }
 
 void window_render_gl::flush_draws()
 {
+	m_in_flush = true;
 	std::vector<st_draw*> batch;
 	int max_area = m_window->m_height*m_window->m_width/4;
 	//printf("flush_draws %d\n",m_draws.size());
@@ -163,6 +181,14 @@ void window_render_gl::flush_draws()
 		st_draw& st = *it;
 		if (st.drawed)
 			continue;
+		if (st.op)
+		{
+			if (st.op == op_alpha_blend)
+			{
+				m_director->_set_alpha_blending(st.value);
+			}
+			continue;
+		}
 
 		if (!st._tex)
 		{
@@ -186,6 +212,8 @@ void window_render_gl::flush_draws()
 		for (; it2 != m_draws.end(); ++it2)
 		{
 			st_draw& st2 = *it2;
+			if (st2.op)
+				break;
 			if (st2.drawed)
 				continue;
 			if (st2.shader || st2._tex != st._tex || rect_intersection(st2.rc_screen,rc_dirty))
@@ -205,16 +233,30 @@ void window_render_gl::flush_draws()
 		draw_batch(batch);
 	}
 	m_draws.clear();
+	m_in_flush = false;
 }
 
 void window_render_gl::render_end()
 {
+	if (is_thread)
+	{
+		HGLRC rc = wglGetCurrentContext();
+		if (rc == NULL)
+		{
+			wglMakeCurrent(m_hDC, m_hRCThread);
+			m_director->create_director();
+		}
+	}
+
+	if (is_thread || is_batch)
+		glClear(GL_COLOR_BUFFER_BIT);	
 	flush_draws();
 	if (m_hDC != NULL)
 	{
 		::SwapBuffers(m_hDC);
 	}
 }
+
 
 struct s_f2
 {    
@@ -277,6 +319,7 @@ bool get_cliped_rect2(g_rect& rect,const g_rect& clip,int& offx,int& offy)
 
 int window_render_gl::draw_texture(int x,int y,float room,int color,int alpha,const char* shader,float shader_param, texture* _tex,const g_rect* rc_tex)
 {
+	assert(!m_in_flush);
 	texture_gl* tex = (texture_gl*)_tex;
 	g_rect rect0 = rc_tex ? *rc_tex : tex->get_rect();
 
@@ -416,6 +459,7 @@ int window_render_gl::draw_box_cell(const st_cell& cell,int w,int h)
 
 int window_render_gl::draw_box(int x,int y,int color,int alpha,int w,int h)
 {
+	assert(!m_in_flush);
 	if (!get_cliped_box(x,y,w,h,m_window->m_width,m_window->m_height))
 		return -1;
 
@@ -658,4 +702,13 @@ int window_render_gl::draw_batch(std::vector<st_draw*>& batch)
 	CHECK_GL_ERROR_DEBUG();
 
 	return 0;
+}
+
+void window_render_gl::batch_set_alpha_blending(bool bOn)
+{
+	assert(!m_in_flush);
+	st_draw st = {0};
+	st.op = op_alpha_blend;
+	st.value = bOn;
+	m_draws.push_back(st);
 }

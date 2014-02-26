@@ -230,6 +230,10 @@ static int lua_set_render_param(lua_State *L) {
 	{
 		get_render()->is_mul = param;
 	}
+	else if (key == "is_thread")
+	{
+		get_render()->is_thread = param;
+	}
 	return 0;
 }
 

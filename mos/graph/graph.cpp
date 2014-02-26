@@ -574,14 +574,6 @@ int graph::draw_text(const st_cell& cell,const st_cell& text,const g_rect& rc_fa
 
 //////////////////////////////////////////////////////////////////////////
 //loop
-void graph::render_begin()
-{
-}
-
-void graph::render_end()
-{
-	auto_clear_resource();
-}
 
 void graph::draw_win_begin(int x,int y,int w,int h,const st_cell& win)
 {

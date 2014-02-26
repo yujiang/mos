@@ -17,8 +17,6 @@ function sprite:create_sprite(id,x,y,z,ani_id,use_zgp)
 	--self.dir = 0
 	--self.use_zgp = use_zgp
 
-	self:get_move()
-
 	local body = sprite_body()
 	body:create_body("body",0,0,-1000,ani_id,use_zgp)
 	self:add_child(body)
@@ -28,6 +26,10 @@ end
 
 function sprite:get_body()
 	return self:find_child("body")
+end
+
+function sprite:get_ani()
+	return self:get_body().ani
 end
 
 function sprite:in_rect(x,y)
@@ -69,36 +71,33 @@ function sprite:do_ani(ani_name)
 	body:do_ani(ani_name)
 end
 
-function sprite:get_move()
-	if not self.move then
-		self.move = move()
-		self.move:create_move(self)
-		self.move.on_reached = function(is_reached)
-			--print("sprite.move.on_reached",self.name,is_reached)
-			if is_reached then	--否则可能是上一个的退出。
-				self:stand() 
-			end
-			self.emitter:emit("reach",is_reached)
-		end
-		self.move.on_change_dir = function(dir)
-			if dir >= 0 then
-				self:set_dir(dir)
-			end
-		end
-	end
-	return self.move
-end
-
-function sprite:walk_to(x,y,speed)
+function sprite:walk_to(x,y,speed,callback)
 	assertex(speed > 0 and speed < 1000,speed)
-	local m = self:get_move()
-	local dir = m:move_to(x,y,speed)
-	if dir then
-		self:do_ani("walk")
-		--self:set_dir(dir)
-	else
-		self:stand()
+
+	local x0,y0 = self:get_pos()
+	local path = cdriver.find_path(x0,y0,x,y)
+	if not path then
+		return 
 	end
+
+	if self.action then
+		self.action:stop_action()
+	end
+
+	self:do_ani("walk")
+	local mv = action.action_movepath()
+	self.action = mv
+	mv:move_path(self,path,false,speed,
+		function()
+			local ani = self:get_ani()
+			--print("mv:move_path end")
+			ani:ani_aniend(function()
+				 --print("ani:ani_toend") 
+				 self:stand() end)
+			if callback then
+				callback()
+			end
+		end)
 end
 
 function sprite:set_dir(dir)
@@ -115,10 +114,11 @@ function sprite:stand()
 end
 
 function sprite:stop()
-	self:stand()
-	if self.move then
-		self.move:stop_move()
+	if self.action then
+		self.action:stop_action()
+		self.action = nil
 	end
+	self:stand()
 end
 
 --function sprite:recv_mouse_msg(mouse_event,x,y,param)

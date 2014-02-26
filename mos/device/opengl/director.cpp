@@ -16,18 +16,28 @@ void director::create_director()
 {
 	glEnable(GL_TEXTURE_2D);
 	set_alpha_blending(true);
-	set_depth_test(false);
 	set_projection();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void director::set_alpha_blending(bool bOn)
 {
 	if (m_alpha_blending == bOn)
 		return;
-	m_wgl->flush_draws();
 	m_alpha_blending = bOn;
+	if (m_wgl->m_render_start)
+	{
+		m_wgl->batch_set_alpha_blending(bOn);
+	}
+	else
+	{
+		_set_alpha_blending(bOn);
+	}
+}
+
+void director::_set_alpha_blending(bool bOn)
+{
 	if (bOn)
 	{
 		glEnable(GL_BLEND);
@@ -39,7 +49,7 @@ void director::set_alpha_blending(bool bOn)
 	}
 	CHECK_GL_ERROR_DEBUG();
 }
-
+/*
 void director::set_depth_test(bool bOn)
 {
 	if (m_depth_test == bOn)
@@ -58,7 +68,7 @@ void director::set_depth_test(bool bOn)
 	}
 	CHECK_GL_ERROR_DEBUG();
 }
-
+*/
 void director::set_projection()
 {
 	int w = m_wgl->m_window->get_width();

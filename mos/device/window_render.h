@@ -28,6 +28,7 @@ public:
 	virtual void on_destroy() = 0;
 
 	void render_start0();
+	bool m_render_start ;
 	virtual void render_start() = 0;
 	virtual void render_end() = 0;
 
@@ -68,6 +69,9 @@ public:
 
 	bool is_batch;
 	bool is_mul;
+	bool is_thread;
+
+	void wait_render_finish();
 };
 
 

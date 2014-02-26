@@ -9,6 +9,8 @@
 #include <unordered_map>
 #include <assert.h>
 #include <string>
+#include <thread>
+
 #pragma warning(disable:4244)
 
 std::unordered_map<std::string,int> g_hmOffsetInt;
@@ -323,19 +325,68 @@ static int lua_walk(lua_State *L,cell* f)
 }
 
 
+std::thread* g_thread_render;
+bool g_renderfinish_notifyed = false;
+bool g_renderstart_notifyed = false;
+
+void wait_render_finish()
+{
+	while(!g_renderfinish_notifyed)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+	g_renderfinish_notifyed = false;
+}
+
+void wait_render_start()
+{
+	while(!g_renderstart_notifyed)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+	g_renderstart_notifyed = false;
+}
+
+void thread_render_func()
+{
+	while(true)
+	{
+		wait_render_start();
+		get_render()->render_end();
+		g_renderfinish_notifyed = true;
+	}
+}
+
 int lua_render(lua_State *L) 
 {
-	get_graph()->render_begin();
-
 	cell* root = g_cells.construct();
 	lua_walk(L,root);
-	//root->print(0);
-	//printf("\n");
+
+	if (get_render()->is_thread)
+	{
+		if (!g_thread_render)
+		{
+			g_thread_render = new std::thread(&thread_render_func);
+			g_thread_render->detach();
+		}
+		else
+			wait_render_finish();
+	}
+
+	get_render()->render_start0();
 	st_cell st;
 	root->draw(0,st);
 	g_cells.clear_all();
+	get_graph()->auto_clear_resource();
 
-	get_graph()->render_end();
+	if (get_render()->is_thread)
+	{
+		g_renderstart_notifyed = true;
+	}
+	else
+	{		
+		get_render()->render_end();
+	}
 
 	return 1;
 }

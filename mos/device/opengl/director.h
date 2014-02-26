@@ -12,7 +12,8 @@ public:
 	director(window_render_gl* w);
 
 	void set_alpha_blending(bool bOn);
-	void set_depth_test(bool bOn);
+	void _set_alpha_blending(bool bOn);
+	//void set_depth_test(bool bOn);
 	void set_projection();
 
 	bool m_alpha_blending;

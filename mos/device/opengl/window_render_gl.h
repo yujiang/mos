@@ -17,6 +17,10 @@ enum CShaderType
 	shader_256,
 };
 
+enum draw_op{
+	op_alpha_blend = 1,
+};
+
 struct st_draw{
 	int x;
 	int y;
@@ -39,6 +43,10 @@ struct st_draw{
 	int w;
 	int h;
 
+	//op
+	int op;
+	int value;
+
 	bool drawed;
 };
 
@@ -56,6 +64,7 @@ public:
 
 	void render_start();
 	void render_end();
+	void render_func();
 	void flush_draws();
 
 
@@ -72,6 +81,7 @@ public:
 
 	HDC  m_hDC;
 	HGLRC m_hRC;
+	HGLRC m_hRCThread;
 	director* m_director;
 
 	unsigned int m_program_palette;
@@ -81,8 +91,10 @@ public:
 	//some default shader.
 	glShader*	m_shader_palette;
 
+	bool m_in_flush;
 	std::vector<st_draw> m_draws;
 	int draw_batch(std::vector<st_draw*>& batch);
+	void batch_set_alpha_blending(bool bOn);
 
 	texture_sub* create_texturesub(image* img,const g_rect* rc);
 };

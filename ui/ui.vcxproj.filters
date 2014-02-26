@@ -107,9 +107,6 @@
     <None Include="core\timer_map.lua">
       <Filter>core</Filter>
     </None>
-    <None Include="game\move.lua">
-      <Filter>game</Filter>
-    </None>
     <None Include="game\ani.lua">
       <Filter>game</Filter>
     </None>
@@ -127,9 +124,6 @@
     </None>
     <None Include="core\timer_everyframe.lua">
       <Filter>core</Filter>
-    </None>
-    <None Include="game\ai.lua">
-      <Filter>game</Filter>
     </None>
     <None Include="core\emitter.lua">
       <Filter>core</Filter>

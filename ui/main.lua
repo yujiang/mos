@@ -41,7 +41,7 @@ local db_files = {
 local game_files = {
 	"ani",
 	"sprite", "sprite_body",
-	"move","ai","action",
+	"action",
 	"map","image_map",
 	"camera",
 }
@@ -79,6 +79,9 @@ function on_every_frame()
 		on_input(s)
 	end
 	g_timer:on_every_frame()
+	if g_camera then
+		g_camera:watch_player() 
+	end
 	ui:on_every_frame()
 	--may be game.on_every_frame()
 	--
@@ -242,7 +245,7 @@ function on_input(s)
 		cdriver.dump_resource(t[2])
 	else
 		--print("error! can not parse the input",s)
-		loadstring(s)()
+		load(s)()
 	end
 end
 

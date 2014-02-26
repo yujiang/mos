@@ -12,9 +12,11 @@ function action:on_end(rt)
 	end
 end
 
-function action:destroy()
-	self.timer:destroy()
-	self.timer = nil	
+function action:stop_action()
+	if self.timer then
+		self.timer:destroy()
+		self.timer = nil	
+	end
 	self.co = nil
 end
 
@@ -31,6 +33,7 @@ local coroutine_resume = function(...)
 	local ok,rt = coroutine.resume(...)
 	if not ok then
 		print("coroutine.resume error",rt)
+		print(debug.traceback())
 	end
 	return ok,rt
 end
@@ -56,11 +59,6 @@ function action_move:move_to(cell,x,y,speed,callback)
 
 	local x0,y0 = cell:get_pos()
 	local distance = math.sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0))
-	if distance <= 0.01 then
-		--print("distance <= 0.01",x,y,x0,y0)
-		self:on_end()
-		return 
-	end
 
 	local x_speed = (x-x0) / distance * speed
 	local y_speed = (y-y0) / distance * speed
@@ -89,7 +87,9 @@ function action_move:move_to(cell,x,y,speed,callback)
 	self:add_timer()
 	if cell.set_dir then --cell会变方向吗?
 		local dir = cdriver.get_dir(x-x0,y-y0)
-		cell:set_dir(dir)
+		if dir >= 0 then
+			cell:set_dir(dir)
+		end
 	end
 	return true
 end
@@ -211,41 +211,53 @@ end
 local action_movepath = class(action,"action_movepath")
 function action_movepath:move_path(sprite,paths,loop,speed,callback)
 	assert(speed ~= 0)
-	assert(#paths > 0)
+	assert(#paths >= 2)
 	--print("action_path:path",#paths)
-	local co = coroutine_wrap(
+	local co 
+	co = coroutine_wrap(
 		function()
 			local index = 1
 			while true do
-				local pos = paths[index]
+				local x,y = paths[2*index-1],paths[2*index]
 				--print("action_path:path",index,pos[1],pos[2])
 				local mv = action_move()
-				mv:move_to(sprite,pos[1],pos[2],speed,function() coroutine_resume(self.co) end)
+				mv:move_to(sprite,x,y,speed,
+					function() 
+						coroutine_resume(co) 
+					end)
+				self.move = mv
+				coroutine.yield()
 				index = index + 1
-				if index > #paths then
+				if 2*index > #paths then
 					if not loop then
 						break
 					else
 						index = 1
 					end
 				end
-				coroutine.yield()
 			end
 			if callback then
 				callback()
 			end
+			return true
 		end
 	)
-	self.co = co
 	coroutine_resume(co)
 end
 
+function action_movepath:stop_action()
+	action.stop_action(self)
+	if self.move then
+		self.move:stop_action()
+	end
+end
 
 local action_moverandom = class(action,"action_moverandom")
 function action_moverandom:move_random(sprite,l,t,r,b,speed,sleepmin,sleepmax)
 	assert(speed > 0)
 	--print("action_path:path",#paths)
-	local co = coroutine_wrap(
+	local co 
+	co = coroutine_wrap(
 		function()
 			while true do
 				local x = math.random(l,r)
@@ -257,16 +269,24 @@ function action_moverandom:move_random(sprite,l,t,r,b,speed,sleepmin,sleepmax)
 							coroutine_resume(self.co) 
 						else
 							local sleep = math.random(sleepmin,sleepmax)
-							g_timer:add_timer(sleep/1000,function() coroutine_resume(self.co) end)
+							g_timer:add_timer(sleep/1000,function() coroutine_resume(co) end)
 						end
 					end)
+				self.move = mv
 				coroutine.yield()
 			end
 		end
 	)
-	self.co = co
 	coroutine_resume(co)
 end
+
+function action_moverandom:stop_action()
+	action.stop_action(self)
+	if self.move then
+		self.move:stop_action()
+	end
+end
+
 
 return {action_move = action_move,
 	action_fade = action_fade,

@@ -138,7 +138,7 @@ function test_win3()
 	local mv3 = action.action_shadow()
 	mv3:shadow(win3,0.3,255,50,-50)
 	local mv = action.action_move()
-	mv:move_to(win3,400,400,100,function() print("moved over2") mv3:destroy() end)
+	mv:move_to(win3,400,400,100,function() print("moved over2") mv3:stop_action() end)
 	local mv4 = action.action_room()
 	mv4:room(win3,0.5,1,0.3,function() print("roomed over") end)
 	--local mv2 = action.action_fade()
@@ -359,7 +359,7 @@ function test_sprite2()
 	mv4:rotate(sp,0.2)
 
 	local p = action.action_movepath()
-	p:move_path(sp,{{1214,777},{1214,888},{1414,777}},true,100)
+	p:move_path(sp,{1214,777,1214,888,1414,777},true,100)
 
 	local sp = sprite()
 	--sp:create_sprite(nil,100,100,0,101)
@@ -377,7 +377,7 @@ function test_sprite2()
 	for i=32,1,-4 do 
 		table.insert(tb,i-1)
 	end
-	ani:custom_ani(tb)
+	ani:custom_ani(tb,100)
 	ani.loop = true
 
 	local p = action.action_moverandom
@@ -480,7 +480,6 @@ function test_mos()
 	
 	g_camera = camera()
 	g_camera:create_camera(g_root:get_map())
-	g_camera:run_normal()
 
 	test_fps()
 	--test_png8_shader()
@@ -542,5 +541,5 @@ end
 test_mos()
 --test_win3()
 --test_sprite2()
-test_td()
+--test_td()
 --c()

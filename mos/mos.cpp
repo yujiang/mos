@@ -50,9 +50,9 @@ bool window_run()
 		return false;
 
 	g_time_now = get_time();
-	get_render()->render_start0();
+	//get_render()->render_start0();
 	lua_call_function("on_every_frame");
-	get_render()->render_end();
+	//get_render()->render_end();
 
 	return true;
 }

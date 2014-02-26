@@ -113,7 +113,7 @@ function sprite_body:stand()
 	self:do_ani("stand")
 	local ani = self.ani
 	if ani.ani_tb then
-		ani.on_aniend = 
+		ani.callback = 
 			function(ended)
 				--add a random timer to do again
 				local tm = math.random(1,100) / 10 + 3

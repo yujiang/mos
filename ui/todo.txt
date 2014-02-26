@@ -145,4 +145,8 @@ changelog
 2014.2.25
 	sprite动态合并到大的贴图中以节约资源
 	移植到lua5.2
-
+2014.2.26
+	lua5.2的debug和release无法混用了。
+	改了一些编译到/MD，并且改了luabin和luasocekt的debug的输出函数+_d跟dll匹配。
+	使用vld并且发现一处memoryleak。
+	停下来的时候有点抖动，是这样，停下来的时候必须在walk的最后一帧才停，否则有点怪。

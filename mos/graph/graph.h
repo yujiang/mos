@@ -77,10 +77,7 @@ public:
 	int get_text_line(const st_cell& text,const g_size& sz_father);
 	g_size get_text_size(const st_cell& text,const g_size& sz_father);
 
-	//loop
-	void render_begin();
-	void render_end();
-	
+
 	void draw_win_begin(int x,int y,int w,int h,const st_cell& win);
 	void draw_win_end();
 

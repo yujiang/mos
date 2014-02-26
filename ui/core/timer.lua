@@ -115,6 +115,13 @@ function timer:on_every_frame()
 	self.in_on_every_frame = true
 	
 	local clock = os.clock() - self.time_clock --单位是秒
+	if (clock > 0.033) then --30fps
+		print("on_every_frame outoftime",clock)
+		--做点优化，用一个线程来渲染就可以提高效率。
+		clock = 0.033
+	end
+
+
 	self.time_clock = os.clock()
 
 	if self.time_clock - self.time_fps >= 1 then

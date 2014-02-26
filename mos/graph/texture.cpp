@@ -179,8 +179,11 @@ void texture_mul::released_sub(texture_sub* sub)
 {
 	sub->release();
 	m_release_sub++;
-	if (m_release_sub * 2 > m_sub_num)
+	if (m_release_sub >= 10 && m_release_sub * 2 > m_sub_num)
 	{
+		//int n1 = m_release_sub;
+		//int n2 = m_sub_num; 
 		merge();
+		//printf("texture_mul:merged %d/%d -- >%d/%d\n",n1,n2,m_release_sub,m_sub_num);
 	}
 }
