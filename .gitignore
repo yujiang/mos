@@ -10,4 +10,8 @@ ui/*.exe
 Debug.win32
 Release
 Debug
+Debug_dll
+Release_dll
+*.obj
+*.o
 ipch
