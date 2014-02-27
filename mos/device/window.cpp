@@ -213,14 +213,15 @@ bool is_key_down(int key)
 extern bool g_exit;
 static char buffer[1024] = {0};
 
-#ifndef WIN32
 #include "core/wait_notify.h"
 
 std::thread* g_threadInput = NULL;
 std::mutex   g_mx_input;
+bool g_input_threadexit = true;
 
 void input_loop()
 {
+	g_input_threadexit = false;
 	while(!g_exit) 
 	{
 		{
@@ -229,6 +230,7 @@ void input_loop()
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+	g_input_threadexit = true;
 }
 
 
@@ -237,6 +239,7 @@ const char* get_input_string()
 	if (!g_threadInput) 
 	{
 		g_threadInput = new std::thread(input_loop);
+		//g_threadInput->detach();
 		return "";
 	}
 	static std::string s;
@@ -251,46 +254,32 @@ const char* get_input_string()
 	return "";
 }
 
-#else
-DWORD WINAPI InputLoop(void * param)
+void write_stdin_return()
 {
-	while(!g_exit) 
-	{
-		gets_s(buffer, 1024);
-		Sleep(100);
-	}
-	return 0;
+	HANDLE conIn = GetStdHandle(STD_INPUT_HANDLE);
+	INPUT_RECORD irec[2];
+	irec[0].EventType = KEY_EVENT;
+	irec[0].Event.KeyEvent.bKeyDown = TRUE;
+	irec[0].Event.KeyEvent.dwControlKeyState = 0;
+	irec[0].Event.KeyEvent.uChar.AsciiChar = '\r';
+	irec[0].Event.KeyEvent.wRepeatCount = 1;
+	irec[0].Event.KeyEvent.wVirtualKeyCode = VK_RETURN; /* virtual keycode is always uppercase */
+	irec[0].Event.KeyEvent.wVirtualScanCode = MapVirtualKeyA(VK_RETURN & 0x00ff, 0);
+	irec[1] = irec[0];
+	irec[1].Event.KeyEvent.bKeyDown = FALSE;
+	DWORD dw;
+	BOOL rt = WriteConsoleInput(conIn, irec, 2 , &dw);
 }
-
-HANDLE g_threadInput = NULL;
-HANDLE begin_thread(LPTHREAD_START_ROUTINE Thread, LPVOID lParam , int nPriority = THREAD_PRIORITY_NORMAL)
-{
-	nPriority;
-	DWORD id;
-	HANDLE handle = CreateThread(NULL,0,Thread,lParam,0,&id);
-	return handle;
-}
-
-const char* get_input_string()
-{
-	static std::string s;
-	if (g_threadInput == NULL)
-	{
-		g_threadInput = begin_thread(InputLoop,0,0);
-		return "";
-	}
-	s = buffer;
-	buffer[0] = 0;
-	return s.c_str();
-}
-#endif
 
 void end_thread_input()
 {
 	//because get_s£¬there is no way safe delete thread.
 	if (g_threadInput)
 	{
-		//delete g_threadInput;
-		//g_threadInput = NULL;
+		write_stdin_return();
+		g_threadInput->join();
+		delete g_threadInput;
+		g_threadInput = NULL;
 	}
 }
+

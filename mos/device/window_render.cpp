@@ -16,7 +16,7 @@ window_render::window_render(window* w) : m_window(w)
 
 	is_batch = true;
 	is_multexture = true;
-	is_multhread = false;
+	is_multhread = true;
 }
 
 window_render::~window_render()

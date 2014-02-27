@@ -330,7 +330,7 @@ std::thread* g_thread_render;
 
 wait_notify g_wn_renderstart;
 wait_notify g_wn_renderfinish;
-wait_notify g_wm_threadend;
+//wait_notify g_wm_threadend;
 
 extern bool g_exit;
 
@@ -344,7 +344,7 @@ void thread_render_func()
 		get_render()->render_end();
 		g_wn_renderfinish.notify();
 	}
-	g_wm_threadend.notify();
+	//g_wm_threadend.notify();
 }
 
 int lua_render(lua_State *L) 
@@ -357,7 +357,7 @@ int lua_render(lua_State *L)
 		if (!g_thread_render)
 		{
 			g_thread_render = new std::thread(&thread_render_func);
-			g_thread_render->detach();
+			//g_thread_render->detach();
 		}
 		else
 			g_wn_renderfinish.wait();
@@ -386,7 +386,9 @@ void end_thread_cell()
 	if (g_thread_render)
 	{
 		g_wn_renderstart.notify();
-		g_wm_threadend.wait();
+
+		g_thread_render->join();
+		//g_wm_threadend.wait();
 		delete g_thread_render;
 		g_thread_render = NULL;
 	}
@@ -394,6 +396,8 @@ void end_thread_cell()
 
 int lua_render_texture(lua_State *L) 
 {
+	if (get_render()->is_thread())
+		return 0;
 	cell* root = g_cells.construct();
 	lua_walk(L,root);
 	st_cell st;
