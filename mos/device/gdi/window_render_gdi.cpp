@@ -67,6 +67,7 @@ void window_render_gdi::render_end()
 		printf("error! SetDIBitsToDevice %d %d\n",err,GetLastError());
 	}
 	ReleaseDC((HWND)m_window->m_hWnd,dc);
+	window_render::render_end();
 }
 
 int window_render_gdi::draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc)

@@ -68,8 +68,12 @@ public:
 
 
 	bool is_batch;
-	bool is_mul;
-	bool is_thread;
+	bool is_multexture;
+	bool is_multhread;
+
+	bool is_thread() const{
+		return is_batch && is_multhread;
+	}
 
 	void wait_render_finish();
 };

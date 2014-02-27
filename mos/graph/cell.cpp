@@ -352,7 +352,7 @@ int lua_render(lua_State *L)
 	cell* root = g_cells.construct();
 	lua_walk(L,root);
 
-	if (get_render()->is_thread)
+	if (get_render()->is_thread())
 	{
 		if (!g_thread_render)
 		{
@@ -369,13 +369,13 @@ int lua_render(lua_State *L)
 	g_cells.clear_all();
 	get_graph()->auto_clear_resource();
 
-	if (get_render()->is_thread)
+	if (get_render()->is_thread())
 	{
 		g_wn_renderstart.notify();
 	}
 	else
 	{		
-		get_render()->render_end();
+		//get_render()->render_end();
 	}
 
 	return 1;

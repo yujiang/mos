@@ -226,13 +226,13 @@ static int lua_set_render_param(lua_State *L) {
 	{
 		get_render()->is_batch = param;
 	}
-	else if (key == "is_mul")
+	else if (key == "is_multexture")
 	{
-		get_render()->is_mul = param;
+		get_render()->is_multexture = param;
 	}
-	else if (key == "is_thread")
+	else if (key == "is_multhread")
 	{
-		get_render()->is_thread = param;
+		get_render()->is_multhread = param;
 	}
 	return 0;
 }

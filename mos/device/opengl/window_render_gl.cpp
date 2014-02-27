@@ -66,7 +66,7 @@ bool window_render_gl::create_render(int width,int height)
 	SetupPixelFormat(m_hDC);
 	m_hRC = wglCreateContext(m_hDC);
 	wglMakeCurrent(m_hDC, m_hRC);
-	if (is_thread)
+	if (is_thread())
 	{
 		m_hRCThread = wglCreateContext(m_hDC);
 		BOOL rt = wglShareLists(m_hRC, m_hRCThread);
@@ -163,7 +163,7 @@ void window_render_gl::on_destroy()
 
 void window_render_gl::render_start()
 {
-	if (is_thread || is_batch)
+	if (is_batch)
 		;
 	else
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -238,7 +238,7 @@ void window_render_gl::flush_draws()
 
 void window_render_gl::render_end()
 {
-	if (is_thread)
+	if (is_thread())
 	{
 		HGLRC rc = wglGetCurrentContext();
 		if (rc == NULL)
@@ -248,13 +248,14 @@ void window_render_gl::render_end()
 		}
 	}
 
-	if (is_thread || is_batch)
+	if (is_batch)
 		glClear(GL_COLOR_BUFFER_BIT);	
 	flush_draws();
 	if (m_hDC != NULL)
 	{
 		::SwapBuffers(m_hDC);
 	}
+	window_render::render_end();
 }
 
 
@@ -554,7 +555,7 @@ int window_render_gl::draw_image_cell(const st_cell& cell,image* img,const char*
 {
 	s_image_render++;
 
-	if (is_mul)
+	if (is_multexture)
 	{
 		enum_objtype obj = get_objtype_byfile(file);
 		if (obj == obj_char) //
