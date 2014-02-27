@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <assert.h>
 #include <string>
-#include <thread>
+#include "core/wait_notify.h"
 
 #pragma warning(disable:4244)
 
@@ -326,35 +326,25 @@ static int lua_walk(lua_State *L,cell* f)
 
 
 std::thread* g_thread_render;
-bool g_renderfinish_notifyed = false;
-bool g_renderstart_notifyed = false;
 
-void wait_render_finish()
-{
-	while(!g_renderfinish_notifyed)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
-	g_renderfinish_notifyed = false;
-}
 
-void wait_render_start()
-{
-	while(!g_renderstart_notifyed)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
-	g_renderstart_notifyed = false;
-}
+wait_notify g_wn_renderstart;
+wait_notify g_wn_renderfinish;
+wait_notify g_wm_threadend;
+
+extern bool g_exit;
 
 void thread_render_func()
 {
-	while(true)
+	while(!g_exit)
 	{
-		wait_render_start();
+		g_wn_renderstart.wait();
+		if (g_exit)
+			break;
 		get_render()->render_end();
-		g_renderfinish_notifyed = true;
+		g_wn_renderfinish.notify();
 	}
+	g_wm_threadend.notify();
 }
 
 int lua_render(lua_State *L) 
@@ -370,7 +360,7 @@ int lua_render(lua_State *L)
 			g_thread_render->detach();
 		}
 		else
-			wait_render_finish();
+			g_wn_renderfinish.wait();
 	}
 
 	get_render()->render_start0();
@@ -381,7 +371,7 @@ int lua_render(lua_State *L)
 
 	if (get_render()->is_thread)
 	{
-		g_renderstart_notifyed = true;
+		g_wn_renderstart.notify();
 	}
 	else
 	{		
@@ -391,6 +381,16 @@ int lua_render(lua_State *L)
 	return 1;
 }
 
+void end_thread_cell()
+{
+	if (g_thread_render)
+	{
+		g_wn_renderstart.notify();
+		g_wm_threadend.wait();
+		delete g_thread_render;
+		g_thread_render = NULL;
+	}
+}
 
 int lua_render_texture(lua_State *L) 
 {

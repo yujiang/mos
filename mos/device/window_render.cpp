@@ -16,7 +16,7 @@ window_render::window_render(window* w) : m_window(w)
 
 	is_batch = true;
 	is_mul = true;
-	is_thread = true;
+	is_thread = false;
 }
 
 window_render::~window_render()

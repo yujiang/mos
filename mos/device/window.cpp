@@ -210,18 +210,59 @@ bool is_key_down(int key)
 
 //////////////////////////////////////////////////////////////////////////
 //use a thread
-HANDLE g_threadInput = NULL;
+extern bool g_exit;
 static char buffer[1024] = {0};
 
+#ifndef WIN32
+#include "core/wait_notify.h"
+
+std::thread* g_threadInput = NULL;
+std::mutex   g_mx_input;
+
+void input_loop()
+{
+	while(!g_exit) 
+	{
+		{
+			//std::lock_guard<std::mutex> lock(g_mx_input);
+			gets_s(buffer);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+
+
+const char* get_input_string()
+{
+	if (!g_threadInput) 
+	{
+		g_threadInput = new std::thread(input_loop);
+		return "";
+	}
+	static std::string s;
+	s.clear();
+	//if (g_mx_input.try_lock())
+	{
+		s = buffer;
+		buffer[0] = 0;
+		//g_mx_input.unlock();
+		return s.c_str();
+	}
+	return "";
+}
+
+#else
 DWORD WINAPI InputLoop(void * param)
 {
-	for (; ; ) 
+	while(!g_exit) 
 	{
 		gets_s(buffer, 1024);
 		Sleep(100);
 	}
+	return 0;
 }
 
+HANDLE g_threadInput = NULL;
 HANDLE begin_thread(LPTHREAD_START_ROUTINE Thread, LPVOID lParam , int nPriority = THREAD_PRIORITY_NORMAL)
 {
 	nPriority;
@@ -242,5 +283,14 @@ const char* get_input_string()
 	buffer[0] = 0;
 	return s.c_str();
 }
+#endif
 
-
+void end_thread_input()
+{
+	//because get_s£¬there is no way safe delete thread.
+	if (g_threadInput)
+	{
+		//delete g_threadInput;
+		//g_threadInput = NULL;
+	}
+}

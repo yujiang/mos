@@ -80,6 +80,9 @@ _TCHAR** get_argv()
 	return g_argv;
 }
 
+void end_thread_cell();
+void end_thread_input();
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	g_argc = argc;
@@ -96,13 +99,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	init_lua(argv[1]);
 
-	while(1)
+	while(!g_exit)
 	{
 		if (!window_run())
-			break;
-		if (g_exit)
-			break;
+			g_exit = true;
 	}
+
+	end_thread_input();
+	end_thread_cell();
 
 	delete g_window;
 	g_window = NULL;

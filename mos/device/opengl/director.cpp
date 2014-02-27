@@ -79,5 +79,6 @@ void director::set_projection()
 	glOrtho(0,w,h,0,-1,1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	CHECK_GL_ERROR_DEBUG();
 }
 
