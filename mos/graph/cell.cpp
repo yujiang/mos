@@ -348,10 +348,10 @@ void thread_render_func()
 
 int lua_render(lua_State *L) 
 {
-	double time = get_time_ex();
+	//double time = get_time_ex();
 	cell* root = g_cells.construct();
 	lua_walk(L,root);
-	printf("time %f\n",get_time_ex()-time);
+	//printf("time %f\n",get_time_ex()-time);
 
 	if (get_render()->is_thread())
 	{

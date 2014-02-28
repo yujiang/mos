@@ -2,7 +2,6 @@
 #define __DEVICE_WINDOW_RENDER_GL_H_
 
 #include "../window_render.h"
-#include <windows.h>
 #include <vector>
 
 class director;
@@ -71,6 +70,8 @@ struct st_texture
 	g_rect rect;
 };
 
+class device_gl;
+
 class window_render_gl : public window_render
 {
 public:
@@ -103,8 +104,6 @@ public:
 	int draw_text_cell(const st_cell& cell,texture* tex,const g_rect* rc);
 	int draw_image_cell(const st_cell& cell,image* img,const char* file,const g_rect* rc);
 
-	HDC  m_hDC;
-	HGLRC m_hRC;
 	director* m_director;
 
 	unsigned int m_program_palette;

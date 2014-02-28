@@ -4,7 +4,6 @@
 #include "graph/texture.h"
 #include "graph/image.h"
 #include "graph/graph.h"
-#include <windows.h>
 #include "GL/glew.h"
 #include "director.h"
 #include "texture_gl.h"
@@ -21,43 +20,12 @@ window_render_gl::window_render_gl(window* w):window_render(w)
 	m_shader_manager = 0;
 	m_render_start = false;
 	m_in_flush = false;
-	m_hDC = 0;
-	m_hRC = 0;
 }
 
 window_render_gl::~window_render_gl()
 {
 }
 
-static void SetupPixelFormat(HDC hDC)
-{
-	int pixelFormat;
-
-	PIXELFORMATDESCRIPTOR pfd =
-	{
-		sizeof(PIXELFORMATDESCRIPTOR),  // size
-		1,                          // version
-		PFD_SUPPORT_OPENGL |        // OpenGL window
-		PFD_DRAW_TO_WINDOW |        // render to window
-		PFD_DOUBLEBUFFER,           // support double-buffering
-		PFD_TYPE_RGBA,              // color type
-		32,                         // preferred color depth
-		0, 0, 0, 0, 0, 0,           // color bits (ignored)
-		0,                          // no alpha buffer
-		0,                          // alpha bits (ignored)
-		0,                          // no accumulation buffer
-		0, 0, 0, 0,                 // accum bits (ignored)
-		24,                         // depth buffer
-		8,                          // no stencil buffer
-		0,                          // no auxiliary buffers
-		PFD_MAIN_PLANE,             // main layer
-		0,                          // reserved
-		0, 0, 0,                    // no layer, visible, damage masks
-	};
-
-	pixelFormat = ChoosePixelFormat(hDC, &pfd);
-	SetPixelFormat(hDC, pixelFormat, &pfd);
-}
 	
 bool window_render_gl::create_render(int width,int height)
 {
@@ -75,10 +43,7 @@ bool window_render_gl::create_render(int width,int height)
 
 bool window_render_gl::_create_render(int width,int height)
 {
-	m_hDC = GetDC((HWND)m_window->m_hWnd);
-	SetupPixelFormat(m_hDC);
-	m_hRC = wglCreateContext(m_hDC);
-	wglMakeCurrent(m_hDC, m_hRC);
+	m_director->create_dc();
 
 	// check OpenGL version at first
 	const GLubyte* glVersion = glGetString(GL_VERSION);
@@ -160,19 +125,11 @@ void window_render_gl::on_destroy()
 
 void window_render_gl::_on_destroy()
 {
-	delete m_director;
-	m_director = 0;
 	delete m_shader_manager;
 	m_shader_manager = 0;
-
-	if (m_hDC != NULL && m_hRC != NULL)
-	{
-		// deselect rendering context and delete it
-		wglMakeCurrent(m_hDC, NULL);
-		wglDeleteContext(m_hRC);
-		m_hDC = NULL;
-		m_hRC = NULL;
-	}
+	m_director->destroy_dc();
+	delete m_director;
+	m_director = 0;
 }
 
 void window_render_gl::render_start()
@@ -275,7 +232,7 @@ void window_render_gl::render_end()
 {
 	if (is_thread())
 	{
-		if (!m_hDC)
+		if (!m_director->is_created())
 			_create_render(m_width,m_height);
 		update_textures();
 	}
@@ -283,10 +240,7 @@ void window_render_gl::render_end()
 	if (is_batch)
 		glClear(GL_COLOR_BUFFER_BIT);	
 	flush_draws();
-	if (m_hDC != NULL)
-	{
-		::SwapBuffers(m_hDC);
-	}
+	m_director->flip();
 	window_render::render_end();
 }
 

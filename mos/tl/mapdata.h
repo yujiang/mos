@@ -1,8 +1,10 @@
 #pragma once
 
-#include <windows.h>
 #include <string>
 #include "device/file.h"
+
+typedef unsigned long      DWORD;
+typedef unsigned char      BYTE;
 
 struct NORMAL_MAP_HEADER
 {

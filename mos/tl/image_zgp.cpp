@@ -10,8 +10,6 @@
 //但是png没有块的信息，而为了分块染色并且在内存动态展开，还是必须用的。
 //所以。。。
 
-#include <windows.h>
-
 #include <string>
 #include <fstream>
 #include <iostream>

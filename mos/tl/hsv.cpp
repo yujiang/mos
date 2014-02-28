@@ -1,5 +1,4 @@
 #include "math.h"
-#include <windows.h>
 #pragma warning(disable:4244)
 
 typedef float Float;
@@ -7,6 +6,18 @@ typedef float Float;
 #undef PI
 #define PI (3.1415926535897932)
 #define SMALL_NUMBER (1.e-8)
+
+typedef unsigned short      WORD;
+typedef unsigned long      DWORD;
+#define TRUE 1
+#define FALSE 0
+#ifndef max
+#define max(a,b) (a)>(b)?(a):(b)
+#endif
+#ifndef min
+#define min(a,b) (a)>(b)?(b):(a)
+#endif
+
 
 // 平方根的倒数
 inline Float QInvSqrt( Float F )

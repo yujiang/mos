@@ -11,19 +11,20 @@ public:
 	bool m_notifyed;
 //*
 	std::mutex  m_mutex;
-	std::condition_variable m_cond;
+	//std::condition_variable m_cond;
 	void wait(){
-		std::unique_lock<std::mutex> locker(m_mutex);
+		//std::unique_lock<std::mutex> locker(m_mutex);
 		while(!m_notifyed)
 		{
-			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			m_cond.wait(locker);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			//m_cond.wait(locker);
 		}
 		m_notifyed = false;
 	}
 	void notify(){
+		//std::unique_lock<std::mutex> locker(m_mutex);
 		m_notifyed = true;
-		m_cond.notify_one();
+		//m_cond.notify_one();
 	}
 /**/	
 /*

@@ -10,6 +10,66 @@ director::director(window_render_gl* w)
 	m_wgl = w;
 	m_alpha_blending = false;
 	m_depth_test = false;
+	m_hDC = 0;
+	m_hRC = 0;
+}
+
+void director::destroy_dc()
+{
+	if (m_hDC != NULL && m_hRC != NULL)
+	{
+		// deselect rendering context and delete it
+		wglMakeCurrent(m_hDC, NULL);
+		wglDeleteContext(m_hRC);
+		m_hDC = NULL;
+		m_hRC = NULL;
+	}
+}
+
+static void SetupPixelFormat(HDC hDC)
+{
+	int pixelFormat;
+
+	PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),  // size
+		1,                          // version
+		PFD_SUPPORT_OPENGL |        // OpenGL window
+		PFD_DRAW_TO_WINDOW |        // render to window
+		PFD_DOUBLEBUFFER,           // support double-buffering
+		PFD_TYPE_RGBA,              // color type
+		32,                         // preferred color depth
+		0, 0, 0, 0, 0, 0,           // color bits (ignored)
+		0,                          // no alpha buffer
+		0,                          // alpha bits (ignored)
+		0,                          // no accumulation buffer
+		0, 0, 0, 0,                 // accum bits (ignored)
+		24,                         // depth buffer
+		8,                          // no stencil buffer
+		0,                          // no auxiliary buffers
+		PFD_MAIN_PLANE,             // main layer
+		0,                          // reserved
+		0, 0, 0,                    // no layer, visible, damage masks
+	};
+
+	pixelFormat = ChoosePixelFormat(hDC, &pfd);
+	SetPixelFormat(hDC, pixelFormat, &pfd);
+}
+
+void director::create_dc()
+{
+	m_hDC = GetDC((HWND)m_wgl->m_window->m_hWnd);
+	SetupPixelFormat(m_hDC);
+	m_hRC = wglCreateContext(m_hDC);
+	wglMakeCurrent(m_hDC, m_hRC);
+}
+
+void director::flip()
+{
+	if (m_hDC != NULL)
+	{
+		::SwapBuffers(m_hDC);
+	}
 }
 
 void director::create_director()

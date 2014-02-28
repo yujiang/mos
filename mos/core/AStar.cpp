@@ -7,7 +7,9 @@
 #include <ctype.h>
 //#include <iostream>
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 
 using namespace std;
 
@@ -33,6 +35,7 @@ void clear_astar()
 
 void clrscr()
 {
+#ifdef WIN32
 	HANDLE hCon = GetStdHandle( STD_OUTPUT_HANDLE );
 	CONSOLE_SCREEN_BUFFER_INFO  csbi; 
 	DWORD                       dwConSize;
@@ -55,15 +58,18 @@ void clrscr()
 		coordScreen,
 		&cCharsWritten ); 
 	SetConsoleCursorPosition( hCon, coordScreen ); 
+#endif
 }
 
 void gotoxy(int x,int y)
 {
+#ifdef WIN32
 	HANDLE hCon = GetStdHandle( STD_OUTPUT_HANDLE );
 	COORD coord;
 	coord.X = x;
 	coord.Y = y;
 	SetConsoleCursorPosition(hCon,coord);
+#endif
 }
 
 void drawxy(int x,int y,char ch)
@@ -129,7 +135,7 @@ void cAStar::create_astar(g_size size,Obs_type* buffer,const g_rect& rc)
 		map[tile_num(map_w-1,y)] = OBS;
 	}
 
-	dis_map = new DWORD[map_w*map_h];
+	dis_map = new unsigned long[map_w*map_h];
 }
 
 void cAStar::showmap(void)
