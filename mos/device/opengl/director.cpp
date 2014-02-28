@@ -3,7 +3,7 @@
 #include "GL/glew.h"
 #include "../window.h"
 #include "gl_macro.h"
-
+#include <assert.h>
 
 director::director(window_render_gl* w)
 {

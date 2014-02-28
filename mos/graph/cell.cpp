@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <string>
 #include "core/wait_notify.h"
+#include "device/window.h"
 
 #pragma warning(disable:4244)
 
@@ -327,10 +328,8 @@ static int lua_walk(lua_State *L,cell* f)
 
 std::thread* g_thread_render;
 
-
 wait_notify g_wn_renderstart;
 wait_notify g_wn_renderfinish;
-//wait_notify g_wm_threadend;
 
 extern bool g_exit;
 
@@ -344,13 +343,15 @@ void thread_render_func()
 		get_render()->render_end();
 		g_wn_renderfinish.notify();
 	}
-	//g_wm_threadend.notify();
+	get_render()->_on_destroy();
 }
 
 int lua_render(lua_State *L) 
 {
+	double time = get_time_ex();
 	cell* root = g_cells.construct();
 	lua_walk(L,root);
+	printf("time %f\n",get_time_ex()-time);
 
 	if (get_render()->is_thread())
 	{
@@ -388,7 +389,6 @@ void end_thread_cell()
 		g_wn_renderstart.notify();
 
 		g_thread_render->join();
-		//g_wm_threadend.wait();
 		delete g_thread_render;
 		g_thread_render = NULL;
 	}

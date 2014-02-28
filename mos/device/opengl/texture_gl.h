@@ -39,15 +39,21 @@ public:
 		return m_use_palette;
 	}
 
-	bool create_texture_gl(image* img) ;
-
+public:
+	bool create_texture_gl(const image* img) ;
 	bool create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
 	int draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) ;
 
 	/** Initializes with a texture2d with data */
+protected:
+	bool _create_texture_gl(const image* img) ;
+	bool _create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) ;
+	bool _draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) ;
+
 	bool init_data(const void* data, int rowLength,CCTexture2DPixelFormat pixelFormat, int pixelsWide, int pixelsHigh, int width, int height);
 	bool update_data(const void* data, int rowLength,int offx,int offy,int width, int height);
 
+	friend class window_render_gl;
 };
 
 

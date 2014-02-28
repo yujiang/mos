@@ -8,7 +8,7 @@
 struct g_rect;
 class st_cell;
 
-typedef enum {
+enum CCTexture2DPixelFormat{
 
 	//! 32-bit texture: RGBA8888
 	kCCTexture2DPixelFormat_RGBA8888,
@@ -43,7 +43,7 @@ typedef enum {
 	kTexture2DPixelFormat_RGB5A1 = kCCTexture2DPixelFormat_RGB5A1,
 	kTexture2DPixelFormat_Default = kCCTexture2DPixelFormat_Default
 
-} CCTexture2DPixelFormat;
+} ;
 
 
 struct formatinfo{

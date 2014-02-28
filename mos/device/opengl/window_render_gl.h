@@ -50,17 +50,41 @@ struct st_draw{
 	bool drawed;
 };
 
+enum texture_op{
+	op_create_texture_gl,
+	op_create_texture_dynamic,
+	op_draw_image_ontexture,
+};
+
+class texture_gl;
+enum CCTexture2DPixelFormat;
+
+struct st_texture
+{
+	texture_op op;
+	texture_gl* tex;
+	const image* img;
+	int width,height;
+	int x,y;
+	CCTexture2DPixelFormat format;
+	const g_rect* rc;
+	g_rect rect;
+};
+
 class window_render_gl : public window_render
 {
 public:
 	window_render_gl(window* w);
 	~window_render_gl();
 
+	int m_width,m_height;
 	bool create_render(int width,int height);
+	bool _create_render(int width,int height);
 	void create_shaders();
 
 	texture* create_texture() ;
 	void on_destroy();
+	void _on_destroy();
 
 	void render_start();
 	void render_end();
@@ -81,7 +105,6 @@ public:
 
 	HDC  m_hDC;
 	HGLRC m_hRC;
-	HGLRC m_hRCThread;
 	director* m_director;
 
 	unsigned int m_program_palette;
@@ -97,6 +120,10 @@ public:
 	void batch_set_alpha_blending(bool bOn);
 
 	texture_sub* create_texturesub(image* img,const g_rect* rc);
+
+	//all texture op
+	std::vector<st_texture> m_textures;
+	void update_textures();
 };
 
 #endif

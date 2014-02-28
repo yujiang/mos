@@ -127,6 +127,7 @@ public:
 	enum_createtype m_create_type;
 
 	std::string m_file; //for debug
+	int m_id;//for debug
 	
 	static image* create_image_file(const char* file);
 	static image* create_image_file_buffer(const char* file,void* buf,size_t size);

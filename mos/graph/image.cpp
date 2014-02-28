@@ -28,7 +28,8 @@ image::image()
 
 //	m_buffer_compress = 0;
 //	m_sz_compress = 0;
-	
+	m_id = 0;
+
 	m_create_type = image_create_null;
 }	
 
@@ -43,6 +44,7 @@ image::~image()
 	m_pal_alpha = 0;
 //	delete m_buffer_compress;
 //	m_buffer_compress = 0;
+	//printf("image release %s %d\n",m_file.c_str(),m_id);
 }
 
 
@@ -82,7 +84,9 @@ image* image::create_image_file(const char* file)
 	char* buf = read_resourcefile(file,sz);
 	if (!buf)
 		return false;
-	return create_image_file_buffer(file,buf,sz);
+	image* i = create_image_file_buffer(file,buf,sz);
+	delete buf;
+	return i;
 }
 
 std::string c_obj_type[] = {

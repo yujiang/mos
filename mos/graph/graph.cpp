@@ -53,6 +53,7 @@ file_source* graph::find_file_source(const char* file) const
 void graph::maped_image(const char* file,image* img)
 {
 	img->image_add_ref();
+	img->m_file = file;
 	image_map[file] = img;
 }
 
@@ -151,6 +152,21 @@ texture_sub* graph::find_texturesub(const char* file)
 	return t;
 }
 
+void graph::maped_font_image(int id,image* p)
+{
+	p->mark_use_image(g_time_now);
+	image_font_map[id] = p;
+	p->m_id = id;
+}
+
+image* graph::find_font_image(int id)
+{
+	image* t = image_font_map[id];
+	if (t)
+		t->mark_use_image(g_time_now);
+	return t;
+}
+
 texture* graph::find_texture(const char* file)
 {
 	texture* t = texture_map[file];
@@ -172,7 +188,7 @@ texture_font* graph::find_texture_font(int font,bool bold)
 		return NULL;
 
 	tf = new texture_font;
-	tf->create_texture_font(512,512,st,bold);
+	tf->create_texture_font(font,512,512,st,bold);
 	texture_font_map[font] = tf;
 	return tf;
 }
@@ -296,6 +312,21 @@ void graph::auto_clear_resource()
 		else 
 			++it;
 	}	
+
+	for (auto it = image_font_map.begin(); it != image_font_map.end();)
+	{
+		auto img = it->second;
+		if (img && TIME_NOTUSE(img,m_clear_texture))
+		{
+#ifdef _DEBUG_RESOURCE
+			std::cout << "clear image_font_map " << it->first << " time: " << TIME(img) << std::endl;
+#endif
+			delete img;
+			it = image_font_map.erase(it);
+		}
+		else 
+			++it;
+	}	
 }
 
 void graph::close_resource()
@@ -320,6 +351,10 @@ void graph::close_resource()
 		delete *it;
 	texture_muls.clear();
 	texturesub_map.clear();
+
+	for (auto it = image_font_map.begin(); it != image_font_map.end(); ++it)
+		delete it->second;
+	image_font_map.clear();
 }
 
 //why not image:dump 因为也只有这里用，写到类里没意思。

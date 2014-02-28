@@ -21,7 +21,6 @@ window_render_gl::window_render_gl(window* w):window_render(w)
 	m_shader_manager = 0;
 	m_render_start = false;
 	m_in_flush = false;
-	m_hRCThread = 0;
 	m_hDC = 0;
 	m_hRC = 0;
 }
@@ -62,15 +61,24 @@ static void SetupPixelFormat(HDC hDC)
 	
 bool window_render_gl::create_render(int width,int height)
 {
+	m_width = width;
+	m_height = height;
+	if (is_thread())
+	{
+		return true;
+	}
+	else
+	{
+		return _create_render(width,height);
+	}
+}
+
+bool window_render_gl::_create_render(int width,int height)
+{
 	m_hDC = GetDC((HWND)m_window->m_hWnd);
 	SetupPixelFormat(m_hDC);
 	m_hRC = wglCreateContext(m_hDC);
 	wglMakeCurrent(m_hDC, m_hRC);
-	if (is_thread())
-	{
-		m_hRCThread = wglCreateContext(m_hDC);
-		BOOL rt = wglShareLists(m_hRC, m_hRCThread);
-	}
 
 	// check OpenGL version at first
 	const GLubyte* glVersion = glGetString(GL_VERSION);
@@ -144,6 +152,14 @@ texture* window_render_gl::create_texture()
 
 void window_render_gl::on_destroy()
 {
+	if (!is_thread())
+	{
+		_on_destroy();
+	}
+}
+
+void window_render_gl::_on_destroy()
+{
 	delete m_director;
 	m_director = 0;
 	delete m_shader_manager;
@@ -154,10 +170,8 @@ void window_render_gl::on_destroy()
 		// deselect rendering context and delete it
 		wglMakeCurrent(m_hDC, NULL);
 		wglDeleteContext(m_hRC);
-		wglDeleteContext(m_hRCThread);
 		m_hDC = NULL;
 		m_hRC = NULL;
-		m_hRCThread = NULL;
 	}
 }
 
@@ -236,16 +250,34 @@ void window_render_gl::flush_draws()
 	m_in_flush = false;
 }
 
+void window_render_gl::update_textures()
+{
+	for (auto it = m_textures.begin(); it != m_textures.end(); ++it)
+	{
+		st_texture& st = *it;
+		if (st.op == op_create_texture_dynamic)
+		{
+			st.tex->_create_texture_dynamic(st.width,st.height,st.format);
+		}
+		else if(st.op == op_create_texture_gl)
+		{
+			st.tex->_create_texture_gl(st.img);
+		}
+		else if (st.op == op_draw_image_ontexture)
+		{
+			st.tex->_draw_image_ontexture(st.x,st.y,st.img,st.rc ? &st.rect : 0 );
+		}
+	}
+	m_textures.clear();
+}
+
 void window_render_gl::render_end()
 {
 	if (is_thread())
 	{
-		HGLRC rc = wglGetCurrentContext();
-		if (rc == NULL)
-		{
-			wglMakeCurrent(m_hDC, m_hRCThread);
-			m_director->create_director();
-		}
+		if (!m_hDC)
+			_create_render(m_width,m_height);
+		update_textures();
 	}
 
 	if (is_batch)

@@ -52,9 +52,10 @@ public:
 
 	texture_char* find_char(int char_value);
 
-	bool create_texture_font(int width,int height,const stFont* st_font,bool bold);
+	bool create_texture_font(int id,int width,int height,const stFont* st_font,bool bold);
 	const stFont* m_st_font;
 	bool m_bold;
+	int m_fontid;
 
 	unsigned int m_time_use;
 	void mark_use_texturefont(unsigned int time){

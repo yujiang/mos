@@ -230,10 +230,10 @@ static int lua_set_render_param(lua_State *L) {
 	{
 		get_render()->is_multexture = param;
 	}
-	else if (key == "is_multhread")
-	{
-		get_render()->is_multhread = param;
-	}
+	//else if (key == "is_multhread")
+	//{
+	//	get_render()->is_multhread = param;
+	//}
 	return 0;
 }
 
@@ -326,12 +326,18 @@ static int lua_exit(lua_State* L){
 //	return 1;
 //}
 
+static int  lua_get_time(lua_State *L) {
+	lua_pushnumber(L,get_time_ex());
+	return 1;
+}
+
 static const luaL_Reg driver_lib[] = {
 	{"render",				lua_render},
 	{"render_texture",		lua_render_texture},
 
 	{"create_window",		lua_create_window},
 	{"get_input_string",	lua_get_input_string},
+	{"get_time",			lua_get_time},
 	{"exit",				lua_exit},
 
 	{"get_image_size",		lua_get_image_size},

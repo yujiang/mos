@@ -76,6 +76,7 @@ public:
 	}
 
 	void wait_render_finish();
+	virtual void _on_destroy(){}
 };
 
 

@@ -12,11 +12,6 @@ function sprite:create_sprite(id,x,y,z,ani_id,use_zgp)
 		g_sprite_id = id + 1
 	end
 	cell.create_cell(self,tostring(id),x,y,z or 0,0,0)
-	--self.ani_id = ani_id
-	self.emitter = emitter()
-	--self.dir = 0
-	--self.use_zgp = use_zgp
-
 	local body = sprite_body()
 	body:create_body("body",0,0,-1000,ani_id,use_zgp)
 	self:add_child(body)
@@ -154,7 +149,6 @@ function sprite:on_mouse_msg(mouse_event,x,y,param)
 end
 
 function sprite:on_loaded_from_table()
-	self.emitter = emitter()
 end
 
 

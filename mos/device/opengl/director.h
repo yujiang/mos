@@ -1,7 +1,6 @@
 #ifndef __DEVICE_DIRECTOR_H_
 #define __DEVICE_DIRECTOR_H_
 
-#include <windows.h>
 class window_render_gl;
 
 class director

@@ -57,7 +57,9 @@ function ui:on_every_frame()
 	end
 	--g_root:center_play()
 
+	local clock = cdriver.get_time()
 	local rd = g_root:get_render_childs()
+	print("get_render_childs()",cdriver.get_time() - clock)
 	--print("on_every_frame rd",rd)
 	--cell.print_render(rd)
 	if rd then

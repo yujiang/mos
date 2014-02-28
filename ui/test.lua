@@ -377,7 +377,7 @@ function test_sprite2()
 	for i=32,1,-4 do 
 		table.insert(tb,i-1)
 	end
-	ani:custom_ani(tb,100)
+	ani:custom_ani(100,tb)
 	ani.loop = true
 
 	local p = action.action_moverandom
@@ -505,7 +505,7 @@ function add_sprite(num)
 		bd:set_weapon(2)	
 		m:add_child(sp)
 		sp:stop()
-		sp:set_name("test"..i,0x0000ff)
+		--sp:set_name("test"..i,0x0000ff)
 		--sp:random_walk()
 	end
 end
@@ -539,7 +539,7 @@ function s(type,...)
 end
 
 test_mos()
---test_win3()
---test_sprite2()
+test_win3()
+test_sprite2()
 test_td()
 --c()

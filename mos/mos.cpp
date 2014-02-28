@@ -94,6 +94,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
+	g_time_now = get_time();
+
 	get_graph()->init_graph();
 	
 	custom_game_source();

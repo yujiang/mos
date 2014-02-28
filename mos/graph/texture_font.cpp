@@ -23,8 +23,9 @@ texture_font::~texture_font()
 	m_map_char.clear();
 }
 
-bool texture_font::create_texture_font(int width,int height,const stFont* st_font,bool bold)
+bool texture_font::create_texture_font(int id,int width,int height,const stFont* st_font,bool bold)
 {
+	m_fontid = id;
 	m_st_font = st_font;
 	m_bold = bold;
 
@@ -73,12 +74,19 @@ texture_char* texture_font::find_char(int char_value)
 
 bool texture_font::create_char(texture_char* tc,int char_value)
 {
-	image* img = create_font_image(m_st_font,char_value,tc->advance);
+	int id = (m_fontid << 16) | char_value;
+	image* img = get_graph()->find_font_image(id);
 	if (!img)
-		return false;
+	{
+		img = create_font_image(m_st_font,char_value,tc->advance);
+		if (!img)
+			return false;
+		get_graph()->maped_font_image(id,img);
+	}
+
 	m_texture->draw_image_ontexture(tc->rc.l,tc->rc.t,img,0);
 
-	delete img;
+	//delete img;
 	return true;
 }
 

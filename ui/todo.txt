@@ -150,3 +150,6 @@ changelog
 	改了一些编译到/MD，并且改了luabin和luasocekt的debug的输出函数+_d跟dll匹配。
 	使用vld并且发现一处memoryleak。
 	停下来的时候有点抖动，是这样，停下来的时候必须在walk的最后一帧才停，否则有点怪。
+2014.2.27
+	今天在使用std::thread发生了一些困难，最终发现opengl的multithread没有那么完善。
+	除非把更新texture的所有操作也放到m_stDraw，否则没法多线程。

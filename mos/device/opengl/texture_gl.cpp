@@ -47,7 +47,21 @@ texture_gl::~texture_gl()
 	}
 }
 
-bool texture_gl::create_texture_gl(image* img) 
+bool texture_gl::create_texture_gl(const image* img) 
+{
+	if (get_render_gl()->is_thread())
+	{
+		st_texture st;
+		st.op = op_create_texture_gl;
+		st.tex = this;
+		st.img = img;
+		get_render_gl()->m_textures.push_back(st);
+		return true;
+	}
+	return _create_texture_gl(img);
+}
+
+bool texture_gl::_create_texture_gl(const image* img) 
 {
 	m_obj_type = img->m_obj_type;
 	int width = img->get_width();
@@ -110,6 +124,29 @@ bool texture_gl::create_texture_gl(image* img)
 
 bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) 
 {
+	if (get_render_gl()->is_thread())
+	{
+		st_texture st;
+		st.op = op_create_texture_dynamic;
+		st.tex = this;
+		st.width = width;
+		st.height = height;
+		st.format = format;
+		get_render_gl()->m_textures.push_back(st);
+
+		m_tex_width = width;
+		m_tex_height = height;
+		m_width = width;
+		m_height = height;
+		m_format = format;
+
+		return true;
+	}
+	return _create_texture_dynamic(width,height,format);
+}
+
+bool texture_gl::_create_texture_dynamic(int width,int height,CCTexture2DPixelFormat format) 
+{
 	assert(is_2_mi(width) && is_2_mi(height));
 	int bits = bitsPerPixelForFormat(format)/8;
 	char* data = new char[width*height*bits];
@@ -120,6 +157,25 @@ bool texture_gl::create_texture_dynamic(int width,int height,CCTexture2DPixelFor
 }
 
 int texture_gl::draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) 
+{
+	if (get_render_gl()->is_thread())
+	{
+		st_texture st;
+		st.op = op_draw_image_ontexture;
+		st.tex = this;
+		st.x = x;
+		st.y = y;
+		st.img = img;
+		st.rc = rc;
+		if (rc)
+			st.rect = *rc;
+		get_render_gl()->m_textures.push_back(st);
+		return true;
+	}
+	return _draw_image_ontexture(x,y,img,rc);
+}
+
+bool texture_gl::_draw_image_ontexture(int x,int y,const image* img,const g_rect* rc) 
 {
 	const formatinfo* info = get_formatinfo(m_format);
 	if (!info)
@@ -132,6 +188,7 @@ int texture_gl::draw_image_ontexture(int x,int y,const image* img,const g_rect* 
 
 bool texture_gl::update_data(const void* data, int rowLength,int offx,int offy,int width, int height)
 {
+	assert(width > 0 && width <= 10240 && height > 0 && height <= 10240);
 	const formatinfo* info = get_formatinfo(m_format);
 	if (!info)
 		return false;

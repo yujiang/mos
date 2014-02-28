@@ -119,11 +119,18 @@ HWND InitInstance(HINSTANCE hInstance, const char* szWindowClass, const char* sz
 
 
 //////////////////////////////////////////////////////////////////////////
+LARGE_INTEGER ws_frequency = {1,1};
+__int64 _org_time;
 
 window::window() 
 {
 	m_destroy = false;
 	m_render = 0;
+
+	LARGE_INTEGER cur_time;
+	QueryPerformanceFrequency(&ws_frequency);
+	QueryPerformanceCounter(&cur_time);
+	_org_time = cur_time.QuadPart;
 }
 
 window::~window()
@@ -201,6 +208,13 @@ const char* get_line_timeout(unsigned int timeout)
 unsigned long get_time()
 {
 	return timeGetTime();
+}
+
+double get_time_ex()
+{
+	LARGE_INTEGER cur_time;
+	QueryPerformanceCounter(&cur_time);
+	return (double)(cur_time.QuadPart-_org_time) * 1000 / ws_frequency.QuadPart;
 }
 
 bool is_key_down(int key)

@@ -536,7 +536,7 @@ function cell:clone()
 	local s = self:to_string()
 	local str = "local "..s .."\nreturn "..self.name
 	--print(str)
-	local c = assert(loadstring(str))()
+	local c = assert(load(str))()
 	if c then
 		cell.loaded(c)
 		return c

@@ -46,6 +46,9 @@ function timer:_add_timer(t)
 	elseif type == TIMER_TYPE_EVERYFRAME then
 		self.everyframe:add_timer(t)
 	else --default is TIMER_TYPE_MAP
+		if (_G.type(time) ~= "number") then	
+			print(debug.traceback())
+		end
 		t.clock_time = os.clock() + time
 		self.map:add_timer(time,t)
 	end
@@ -116,7 +119,7 @@ function timer:on_every_frame()
 	
 	local clock = os.clock() - self.time_clock --单位是秒
 	if (clock > 0.033) then --30fps
-		print("on_every_frame outoftime",clock)
+		--print("on_every_frame outoftime",clock)
 		--做点优化，用一个线程来渲染就可以提高效率。
 		clock = 0.033
 	end

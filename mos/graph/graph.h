@@ -102,6 +102,10 @@ public:
 
 	texture_sub* find_texturesub(const char* file);
 	void maped_texturesub(const char* file,texture_sub* p);
+
+	std::unordered_map<int,image*> image_font_map;
+	image* find_font_image(int id);
+	void maped_font_image(int id,image* img);
 };
 
 graph* get_graph();
