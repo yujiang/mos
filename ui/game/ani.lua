@@ -1,6 +1,7 @@
 --动画
 
 local ani = class("ani")
+--ani是非组合的，所以没有放在action中。
 
 function ani:create_ani(image)
 	self.image = image
@@ -9,19 +10,25 @@ end
 
 --sprite始终用8方向，等于dirmax的几方向呢？
 --并且由于历史的原因方向数目跟我们想的不一致。
-local magic_dirs = {
+local magic_dirs8 = {
 	--0,1,2,3,4,5,6,7,
 	6,3,7,0,4,1,5,2,
+}
+local magic_dirs4 = {
+	--0,1,2,3,4,5,6,7,
+	3,3,0,0,1,1,2,2,
 }
 
 function dir8_inverse(dir,dirmax)
 	if dirmax == 8 then 
-		return magic_dirs[dir+1]
+		return magic_dirs8[dir+1]
 	elseif dirmax == 1 then 
 		return 0
 	elseif dirmax == 4 then  
 		--未实现。
+		return magic_dirs4[dir+1]
 	end
+	assert(0)
 end
 
 function dir8(dir,dirmax)
@@ -31,7 +38,9 @@ function dir8(dir,dirmax)
 		return 0
 	elseif dirmax == 4 then  
 		--未实现。
+		return math.floor(dir / 2)
 	end
+	assert(0)
 end
 
 --复杂的ani
@@ -39,25 +48,20 @@ function get_dir_base(tb,dir)
 	return tb.dir_inverse and dir8_inverse(dir,tb.dir) or dir8(dir,tb.dir)
 end
 
-function ani:set_ani_tb(tb,updateimage)
+function ani:set_ani_tb(tb,callback)
 	self.callback = nil
 	if self.ani_tb == tb then --同一个ani
-		self.loop = tb.loop
+		self.loop = tb.loop		
+		self.step = 1
+		--ani_end and ani_back will change loop
 		return
 	end
 
 	self.ani_tb = tb
 	local base = get_dir_base(tb,self.ani_dir) * tb.dir_frame
-	--有可能不需要set_image因为从可能从walk到快速walk。
-	--print("ani:set_ani_tb0",tb.image_file)
-	--print("ani:set_ani_tb1 self.ani_dir "..self.ani_dir.." tb.dir " .. tb.dir .. " base ".. base .. " tb.frame_start " ..tb.frame_start)
-	
-	if updateimage then
-		self.image:set_image(tb.image_file,base + tb.frame_start)
-	end
-
+	self.image:set_image(tb.image_file,base + tb.frame_start)
 	if tb.ani_speed > 0 then
-		self:set_ani(tb.ani_speed,base + tb.frame_start,base + tb.frame_end,tb.loop)
+		self:set_ani(tb.ani_speed,base + tb.frame_start,base + tb.frame_end,tb.loop,1,callback)
 	else
 		self:stop_ani()
 	end
@@ -86,7 +90,7 @@ function ani:set_ani_dir(dir)
 	end
 end
 
---简单的ani with dir
+--简单的ani with dir——这个常用不适合做action
 function ani:set_ani(ani_speed,frame_start,frame_end,loop,step,callback)
 	--print(frame_start,frame_end)
 	self.speed = ani_speed
@@ -96,16 +100,6 @@ function ani:set_ani(ani_speed,frame_start,frame_end,loop,step,callback)
 	self.step = step or 1 --may be -1...
 	self.callback = callback
 	self:add_timer()
-	self.ani_type = 1
-end
-
-function ani:custom_ani(ani_speed,frames,loop,step,callback)
-	self.speed = ani_speed
-	self.custom_frames = frames
-	self.custom_index = 1
-	self.callback = callback
-	self:add_timer()
-	self.ani_type = 2
 end
 
 function ani:stop_ani()
@@ -128,22 +122,6 @@ function ani:on_loaded_from_table()
 	self:add_timer()
 end
 
-function ani:ontimer_updatecustom()
-	local img = self.image
-	local rt = true
-	if self.custom_index <= #self.custom_frames then
-	else
-		if self.loop then
-			self.custom_index = 1
-		else
-			self.custom_index = #self.custom_frames
-			rt = false
-		end
-	end
-	frame = self.custom_frames[self.custom_index]
-	self.custom_index = self.custom_index + 1
-	return rt,frame
-end
 
 --此处不用coroutine是因为太多了，不像action，基本只有一两个。
 function ani:ontimer_updatestartend()
@@ -169,9 +147,7 @@ function ani:ontimer_updatestartend()
 end
 
 function ani:on_timer_updateframe()
-	local funcs = {nil,ani.ontimer_updatecustom}
-	local func = funcs[self.ani_type] or ani.ontimer_updatestartend
-	local rt , frame = func(self) 
+	local rt , frame = self:ontimer_updatestartend()
 	if not rt then
 		if self.callback then
 			self.callback(true)
@@ -182,7 +158,7 @@ function ani:on_timer_updateframe()
 end
 
 --会冲突出现站着移动的情况，所以callback不能指定必须传递。
-function ani:ani_aniend(callback)
+function ani:ani_end(callback)
 	local frame = self.image.frame
 	local a = frame - self.frame_start
 	if a == 0 then
@@ -194,6 +170,12 @@ function ani:ani_aniend(callback)
 	return true
 end
 
+function ani:ani_back(callback)
+	self.step = -self.step
+	self.callback = callback
+	self:add_timer()
+	return true
+end
 
 
 return ani

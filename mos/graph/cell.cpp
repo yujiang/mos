@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <assert.h>
 #include <string>
+#include <algorithm>
 #include "core/wait_notify.h"
 #include "device/window.h"
 
@@ -132,20 +133,31 @@ public:
 		childs.clear();
 		init();
 	}
-	void add_child(cell* r,int index);
 	void print(int level) const;
 	void draw(int level,const st_cell& st) const;
 	void draw_texture(int level,const st_cell& st) const;
+
+	void add_child(cell* r);
+	void sort();
 };
 
 #include "core/pool.h"
 core::temp_pool<cell> g_cells;
 
-void cell::add_child(cell* r,int index)
+bool comp_cell( const cell* a, const cell* b ) {
+	if (a->z == b->z)
+		return (a->y*1024+a->x < b->y*1024+b->x);
+	return (a->z < b->z);
+}
+
+void cell::sort()
 {
-	if (childs.size() < index)
-		childs.resize(index);
-	childs[index-1] = r;
+	std::sort(childs.begin(),childs.end(),comp_cell);
+}
+
+void cell::add_child(cell* r)
+{
+	childs.push_back(r);
 }
 
 void cell::print(int level) const
@@ -289,18 +301,35 @@ void cell::draw(int level,const st_cell& st) const
 		get_map()->draw_map_end();
 }
 
-
-static int lua_walk(lua_State *L,cell* f) 
+static int lua_walkex(lua_State *L,cell* f) 
 {
-	luaL_checktype(L, 1, LUA_TTABLE);
+	luaL_checktype(L, -1, LUA_TTABLE);
 	for (lua_pushnil(L); lua_next(L, -2); lua_pop(L, 1))
 	{
-		if (lua_isnumber(L,-2) && lua_istable(L,-1))
+		if (lua_istable(L,-1))
 		{
-			//cell* c = new cell();
-			cell* c = g_cells.construct();
-			lua_walk(L,c);
-			f->add_child(c,lua_tointeger(L,-2));
+			const char* key = lua_tostring(L,-2);
+			if (strcmp(key,"childs") == 0)
+			{
+				for (lua_pushnil(L); lua_next(L, -2); lua_pop(L, 1))
+				{
+					luaL_checktype(L, -1, LUA_TTABLE);
+					//get L table._hide
+					lua_getfield(L,-1,"_hide");
+					if (lua_isboolean(L,-1) && lua_toboolean(L,-1))
+					{
+						lua_pop(L,1);
+					}
+					else
+					{
+						lua_pop(L,1);
+						cell* c = g_cells.construct();
+						lua_walkex(L,c);
+						c->sort();
+						f->add_child(c);
+					}
+				}
+			}
 		}
 		else if(lua_isstring(L,-2))
 		{
@@ -324,6 +353,7 @@ static int lua_walk(lua_State *L,cell* f)
 	}
 	return 1;
 }
+
 
 
 std::thread* g_thread_render;
@@ -350,7 +380,11 @@ int lua_render(lua_State *L)
 {
 	//double time = get_time_ex();
 	cell* root = g_cells.construct();
-	lua_walk(L,root);
+	//lua_walk(L,root);
+	lua_walkex(L,root);
+	root->sort();
+	//大概是100个sprite（拿武器没有名字），1ms，500个4ms，1000个6ms，这个级别
+	//1-2ms可以，6ms还是有点多了，不过一般没有这么多。
 	//printf("time %f\n",get_time_ex()-time);
 
 	if (get_render()->is_thread())
@@ -399,7 +433,7 @@ int lua_render_texture(lua_State *L)
 	if (get_render()->is_thread())
 		return 0;
 	cell* root = g_cells.construct();
-	lua_walk(L,root);
+	lua_walkex(L,root);
 	st_cell st;
 	root->draw_texture(0,st);
 	g_cells.clear_all();

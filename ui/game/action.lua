@@ -2,6 +2,7 @@
 
 local action = class("action")
 function action:add_timer()
+	assert(self.timer == nil)
 	self.timer = g_timer:add_timer_everyframe(self.on_timer_update,self)		
 end
 
@@ -50,7 +51,6 @@ function action:on_timer_update(pass)
 	end
 end
 
-
 local action_move = class(action,"action_move")
 --speed Ã¿Ãë¶àÉÙÏñËØ£¿
 function action_move:move_to(cell,x,y,speed,callback)
@@ -94,6 +94,36 @@ function action_move:move_to(cell,x,y,speed,callback)
 	return true
 end
 
+local action_ani = class(action,"action_ani")
+function action_ani:do_ani(image,ani_speed,frames,loop,callback)
+	--print("action_ani:do_ani",image.frame,ani_speed,frames,loop)
+	assert(ani_speed > 0)
+	self.callback = callback
+	self.co = coroutine_wrap(
+		function()
+			local index = 1
+			while true do
+				local pass = coroutine.yield()
+				local frame = frames[index]
+				image:change_frame(frame)
+				index = index + 1
+				--print("action_ani:do_ani",image.frame,index)
+				if index > #frames then
+					if loop then
+						index = 1
+					else
+						break
+					end
+				end
+			end
+			return true
+		end
+	)
+	self.timer = g_timer:add_timer_list(ani_speed,self.on_timer_update,self)	
+	return true;
+end
+
+
 local action_fade = class(action,"action_fade")
 function action_fade:fade(cell,alpha_start,alpha_end,speed,callback)
 	self.callback = callback
@@ -134,7 +164,8 @@ function action_shadow:shadow(cell,time_once,alpha_start,alpha_end,alpha_speed)
 			while true do
 				local pass = coroutine.yield()
 				local c = cell:clone()
-				c.name = "shadow_"..index
+				c.name = cell.name.."_shadow_"..index
+				c:disable()
 				index = index + 1
 				f:add_child(c)
 
@@ -288,7 +319,9 @@ function action_moverandom:stop_action()
 end
 
 
-return {action_move = action_move,
+return {
+	action_move = action_move,
+	action_ani = action_ani,
 	action_fade = action_fade,
 	action_shadow = action_shadow,
 	action_room = action_room,

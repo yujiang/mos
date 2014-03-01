@@ -61,9 +61,9 @@ function sprite:get_z()
 	return self.y + self.x / 10000
 end
 
-function sprite:do_ani(ani_name)
+function sprite:do_ani(ani_name,callback)
 	local body = self:get_body() 
-	body:do_ani(ani_name)
+	body:do_ani(ani_name,callback)
 end
 
 function sprite:walk_to(x,y,speed,callback)
@@ -86,7 +86,7 @@ function sprite:walk_to(x,y,speed,callback)
 		function()
 			local ani = self:get_ani()
 			--print("mv:move_path end")
-			ani:ani_aniend(function()
+			ani:ani_end(function()
 				 --print("ani:ani_toend") 
 				 self:stand() end)
 			if callback then

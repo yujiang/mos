@@ -13,6 +13,7 @@ function cell:create_cell(name,x,y,z,w,h)
 	self.h = h
 	self.childs = {} 
 	self.room = 1
+	self.__cell = true --for c++ render select by __cell and child. 
 end
 
 --create and destroy

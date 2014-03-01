@@ -360,6 +360,11 @@ function test_sprite2()
 
 	local p = action.action_movepath()
 	p:move_path(sp,{1214,777,1214,888,1414,777},true,100)
+end
+
+function test_sprite3()
+	local r = g_root
+	local m = r:get_map()
 
 	local sp = sprite()
 	--sp:create_sprite(nil,100,100,0,101)
@@ -377,12 +382,35 @@ function test_sprite2()
 	for i=32,1,-4 do 
 		table.insert(tb,i-1)
 	end
-	ani:custom_ani(100,tb)
-	ani.loop = true
+
+	local a = action.action_ani()
+	a:do_ani(sp:get_body(),0.2,tb,true)
 
 	local p = action.action_moverandom
 	p:move_random(sp,1214,666,1614,888,100,1000,2000)
 	--r:set_play(sp)
+end
+
+function test_sprite4()
+	local r = g_root
+	local m = r:get_map()
+
+	local sp = sprite()
+	--sp:create_sprite(nil,100,100,0,101)
+	sp:create_sprite(nil,1914,777,0,0120,true)
+	m:add_child(sp)
+	local bd = sp:get_body()
+	bd:set_weapon(2)	
+	sp:stop()
+	sp:set_name("精灵die",0x0000ff)
+	local ani = sp:get_ani()
+
+	local backfunc
+	backfunc = function()
+		--print("ani:ani_back()")
+		ani:ani_back(backfunc)
+	end
+	sp:do_ani("die",backfunc)
 end
 
 function test_fps()
@@ -390,7 +418,8 @@ function test_fps()
 	local l1 = r:find_child("top")
 
 	local label1 = label()
-	label1:create_label("fps",0,0,0,600,20,"fps:100")
+	label1:create_label("fps",0,0,0,640,20,"fps:100")
+	label1:set_box(0x8040ff,255)
 	label1._disable = false
 	label1:get_text():set_color(-1)
 	l1:add_child(label1)
@@ -541,5 +570,6 @@ end
 test_mos()
 test_win3()
 test_sprite2()
+test_sprite4()
 test_td()
 --c()

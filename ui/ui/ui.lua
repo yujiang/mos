@@ -58,13 +58,13 @@ function ui:on_every_frame()
 	--g_root:center_play()
 
 	--local clock = cdriver.get_time()
-	local rd = g_root:get_render_childs()
+	--local rd = g_root:get_render_childs()
 	--print("get_render_childs()",cdriver.get_time() - clock)
 	--print("on_every_frame rd",rd)
 	--cell.print_render(rd)
-	if rd then
-		cdriver.render(rd)
-	end
+	--if rd then
+		cdriver.render(g_root)
+	--end
 
 	local fps = g_timer:get_fps()
 	local l = g_root:find_control("top.fps")

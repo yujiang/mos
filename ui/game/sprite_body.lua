@@ -80,7 +80,7 @@ function sprite_body:set_zgp_part_pal(part,h,s,v)
 	self["part"..part] = (h+180) * 256 * 64 + (s+100) * 64 + (v+20)
 end
 
-function sprite_body:do_ani(ani_name)
+function sprite_body:do_ani(ani_name,callback)
 	self.ani_name = ani_name
 	local tb = g_ani_data:find_ani_data(self.ani_id,ani_name,self.use_zgp)	
 	if not tb then
@@ -89,7 +89,7 @@ function sprite_body:do_ani(ani_name)
 		return
 	end
 	
-	self.ani:set_ani_tb(tb,true)
+	self.ani:set_ani_tb(tb,callback)
 end
 
 function sprite_body:on_timer_stand()

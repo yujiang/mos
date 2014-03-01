@@ -11,7 +11,7 @@
 
 #include "mos.h"
 //#define VLD_FORCE_ENABLE
-#include "../3rd/vld/vld.h" //http://vld.codeplex.com/
+#include "vld/vld.h" //http://vld.codeplex.com/
 
 window* g_window = NULL;
 unsigned int g_time_now = 0;
@@ -84,14 +84,22 @@ _TCHAR** get_argv()
 void end_thread_cell();
 void end_thread_input();
 
+const char default_lua[] = "test.lua";
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	g_argc = argc;
 	g_argv = argv;
+	const char* file;
 	if (argc < 2)
 	{
 		printf("please use mos.exe xxx.lua\n");
-		return -1;
+		//return -1;
+		file = default_lua;
+	}
+	else
+	{
+		file = argv[1];
 	}
 
 	g_time_now = get_time();

@@ -105,7 +105,9 @@ function timer:add_timer(time,func,param)
 	return self:add_timer_type(time,TIMER_TYPE_MAP,func,param)
 end
 
+--ÃëÎªµ¥Î»
 function timer:add_timer_list(time,func,param)
+	--print("timer:add_timer_list",time,func,param)
 	return self:add_timer_type(time,TIMER_TYPE_LIST,func,param)
 end
 

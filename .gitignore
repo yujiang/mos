@@ -15,3 +15,4 @@ Release_dll
 *.obj
 *.o
 ipch
+*.7z

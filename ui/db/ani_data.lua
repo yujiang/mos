@@ -42,6 +42,7 @@ local default_char_ani =
 	walk = {file = "walk",speed = 0.1,loop = true},
 	fastwalk = {file = "walk",speed = 0.05,loop = true},
 	stand = {file = "stand",speed = 0.3,loop = false},
+	die = {file = "die",speed = 0.1,loop = false},
 }
 
 function ani_data:find_ani_data(shape,name,use_zgp)
@@ -52,10 +53,11 @@ function ani_data:find_ani_data(shape,name,use_zgp)
 		local rt,dir,frame 
 		local s = string.format("char/%04d/%s.zgp",shape,default.file)
 		rt,dir,frame = cdriver.regist_zgp(s)
-		--print("find_ani_data",s,rt,dir,frame)
 		if not rt then
+			print("erro! not find_ani_data",shape,name,s)
 			return
 		end
+		--print("find_ani_data",s,rt,dir,frame)
 		return self:regist_ani_data(shape,name,s,default.speed,dir,frame,0,frame-1,1,default.loop,true)
 	end
 	return tb
