@@ -16,11 +16,4 @@ function image_map:set_image_map(image_file,frame)
 	self.h = h 
 end
 
-function image_map:get_render_override()
-	--print("image:get_render_override()",self.name)
-	if self.map_file then
-		return self
-	end
-end
-
 return image_map

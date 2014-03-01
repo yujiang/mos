@@ -8,7 +8,6 @@ end
 
 function cdriver.render(rd)
 	print("cdriver:render",rd)
-	cell.print_render(rd)
 end
 
 return cdriver

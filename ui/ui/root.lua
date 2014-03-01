@@ -31,11 +31,21 @@ function root:create_root(w,h)
 	local m = map()
 	m:create_map("map",w,h,1005)
 	--print(m.name)
+	local m2 = cell()
+	m2:create_cell("map2",0,0,0,w,h)
+	m2.z = 1
+	m2.alpha = 128
+
 	self:find_child("map"):add_child(m)
+	self:find_child("map"):add_child(m2)
 end
 
 function root:get_map()
 	return self:find_child("map"):find_child("map")
+end
+
+function root:get_map2()
+	return self:find_child("map"):find_child("map2")
 end
 
 --²Ù×ÝµÄÖ÷½Ç¡£

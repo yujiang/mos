@@ -319,9 +319,9 @@ function test_sprite(png)
 	sp:create_sprite(nil,1658,991,0,0120,true)
 	local r = g_root
 	local m = r:get_map()
+	sp:set_name("猫猫",0x00ff00)
 	m:add_child(sp)
 	sp:stop()
-	sp:set_name("猫猫",0x00ff00)
 
 	local bd = sp:get_body()
 	bd:set_weapon(2)
@@ -486,7 +486,7 @@ function td(index)
 		img.frame = index
 	end
 	local label1 = g_texture_debug:find_child("text")
-	label1:get_text():set_string("tex"..img.frame)
+	label1:get_text():set_string("tex: "..img.frame)
 end
 
 function test_mos()
@@ -505,10 +505,8 @@ function test_mos()
 	g_root = root()
 	g_root:create_root(w,h)
 
-	g_root:find_child("map").get_render_childs = maplayer_get_render_childs
-	
 	g_camera = camera()
-	g_camera:create_camera(g_root:get_map())
+	g_camera:create_camera()
 
 	test_fps()
 	--test_png8_shader()

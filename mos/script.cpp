@@ -70,7 +70,7 @@ lua_State* init_lua(const char* arg)
 	int err = luaL_dofile(L,"main.lua");
 	if (err)
 	{
-		printf("main.lua %d %s\n",err,lua_tostring(L,-1));
+		printf("main.lua err: %d %s\n",err,lua_tostring(L,-1));
 		lua_pop(L,1);
 	}
 	else
@@ -78,7 +78,7 @@ lua_State* init_lua(const char* arg)
 		err = lua_call_function(FUNCTION_INIT);
 		if (err)
 		{
-			printf("main.lua %s() %d %s\n",FUNCTION_INIT,err,lua_tostring(L,-1));
+			printf("main.lua %s err: %d %s\n",FUNCTION_INIT,err,lua_tostring(L,-1));
 			lua_pop(L,1);
 		}
 		else
@@ -86,7 +86,7 @@ lua_State* init_lua(const char* arg)
 			err = luaL_dofile(L,arg);
 			if (err)
 			{
-				printf("arg %s %d %s\n",arg,err,lua_tostring(L,-1));
+				printf("arg %s err: %d %s\n",arg,err,lua_tostring(L,-1));
 				lua_pop(L,1);
 			}
 		}

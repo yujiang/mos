@@ -79,18 +79,48 @@ function on_every_frame()
 		on_input(s)
 	end
 	g_timer:on_every_frame()
-	if g_camera then
-		g_camera:watch_player() 
+
+	local map = g_root:get_map()
+	local play = g_root:get_play()
+	if map and play then
+		if g_camera then
+			g_camera:watch_player(map,play) 
+		end
 	end
-	ui:on_every_frame()
-	--may be game.on_every_frame()
+
+	if play and map then
+		--local s = play:to_string()
+		--print(s)
+		local map2 = g_root:get_map2()
+		map2.x = map.x
+		map2.y = map.y
+
+		local c = play:clone()
+		c:disable()
+		c.z = 1000
+		c.is_map = nil
+		map2:add_child(c)
+	end
+
+	cdriver.render(g_root)
+
+	local fps = g_timer:get_fps()
+	local l = g_root:find_control("top.fps")
+	if l then
+		local s = "fps:"..fps.." "..cdriver:get_graph_trace()
+		local play = g_root:get_play()
+		if play then
+			local x,y = play:get_pos()
+			x = math.floor(x)
+			y = math.floor(y)
+			s = s .. " play " .. x .. " " .. y
+		end
+		l:set_string(s)
+	end
+
 	--
 	if g_texture_debug then
-		local rd = g_texture_debug:get_render_childs()
-		--g_texture_debug:print_render()
-		if rd then
-			cdriver.render_texture(rd)
-		end
+		cdriver.render_texture(g_texture_debug)
 	end
 end
 
@@ -168,29 +198,6 @@ function show(win,hide)
 	end
 end
 
-function maplayer_get_render_childs(self)
-	--print("maplayer_get_render_childs")
-
-	local tb = cell.get_render_childs(self)
-	local play = g_root:get_play()
-	if not play then
-		return tb
-	end
-	--主角繪製2次，第二次半透明。
-	local tb2 = {}
-	table_copyvalue(tb2,g_root:get_map())
-	tb2.is_map = nil
-	tb2.alpha = 128
-
-	local t = play:get_render_childs()
-	table.insert(tb2,t)
-
-	table.insert(tb,tb2)
-
-	return tb
-end
-
-
 function on_init()
 	init_base()
 	init_main()
@@ -215,19 +222,12 @@ function on_input(s)
 		print("s showwindow ")
 		print("df dofile ")
 		print("p r(p) g_root(play) print ")
-		print("pr r(p) g_root(play) print_render")
-		print("prp g_root.play print_render")
 		print("dump cdriver.dump_resource ")
 		print("test() get example.")
 	elseif t[1] == 's' then
 		show(t[2],t[3])
 	elseif t[1] == 'send' then
 		g_client:send(t[2])
-	elseif t[1] == 'pr' then
-		local des = find_des(t[2])
-		if des then
-			des:print_render()
-		end
 	elseif t[1] == 'p' then
 		local des = find_des(t[2])
 		if des then

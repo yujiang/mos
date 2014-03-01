@@ -50,37 +50,6 @@ function ui:reload_ui(file,path)
 	return true
 end
 
---每一帧调用
-function ui:on_every_frame()
-	if not g_root then
-		return
-	end
-	--g_root:center_play()
-
-	--local clock = cdriver.get_time()
-	--local rd = g_root:get_render_childs()
-	--print("get_render_childs()",cdriver.get_time() - clock)
-	--print("on_every_frame rd",rd)
-	--cell.print_render(rd)
-	--if rd then
-		cdriver.render(g_root)
-	--end
-
-	local fps = g_timer:get_fps()
-	local l = g_root:find_control("top.fps")
-	if l then
-		local s = "fps:"..fps.." "..cdriver:get_graph_trace()
-		local play = g_root:get_play()
-		if play then
-			local x,y = play:get_pos()
-			x = math.floor(x)
-			y = math.floor(y)
-			s = s .. " play " .. x .. " " .. y
-		end
-		l:set_string(s)
-	end
-end
-
 --鼠标消息
 MK_CONTROL = 0x0008
 MK_LBUTTON = 0x0001
@@ -211,8 +180,6 @@ function ui:on_sprite_mouse_rd(win,x,y)
 			self:save_window(win)
 		elseif menu == 'print' then
 			win:print()
-		elseif menu == 'printrd' then
-			win:print_render()
 		elseif menu == 'resetpal' then
 			local bd = win:get_body()
 			if bd.part1 then
@@ -295,8 +262,6 @@ function ui:on_window_mouse_rd(win,x,y)
 			self:save_window(win)
 		elseif menu == 'print' then
 			win:print()
-		elseif menu == 'printrd' then
-			win:print_render()
 		end
 	end
 	g_root:set_popup_menu(m)

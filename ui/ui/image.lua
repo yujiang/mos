@@ -37,16 +37,8 @@ function image:change_frame(frame)
 	self:_change_frame(frame)
 end
 
-function image:get_render_override()
-	--print("image:get_render_override()",self.name)
-	if self.image_file then
-		return self
-	end
-end
-
 --…Ë∂®ani
 function image:set_ani(ani_speed,frame_start,frame_to,loop)
-	--print("image:get_render_override()",self.name)
 	if not self.ani then
 		self.ani = ani()
 		self.ani:create_ani(self)

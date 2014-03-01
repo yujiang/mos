@@ -25,13 +25,7 @@ function text:get_text_size()
 	return cdriver.get_text_size(self.text,self.font,self.wrap,self.w,self.h)
 end
 
-function text:get_render_override()
-	--print("image:get_render_override()",self.name)
-	return #self.text > 0 and self or nil
-end
-
 function text:set_scroll(scroll)
-	--print("image:get_render_override()",self.name)
 	self.scroll = scroll
 end
 

@@ -22,7 +22,6 @@ function mitem:set_check(check)
 	end
 
 	c:set_string(check and "√" or "")
-	--self:print_render()
 end
 
 function mitem:disable()

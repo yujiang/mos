@@ -2,17 +2,13 @@
 
 local camera = class("camera")
 
-function camera:create_camera(map,type)
-	self.map = map
+function camera:create_camera(type)
 end
 
 --不能用timer，必须等人物运动之后再watch_player()
-function camera:watch_player() 
-	local player = g_root:get_play()
-	if player then
-		local x,y = player:get_pos()
-		self.map:center_play(x,y,g_root.w,g_root.h)
-	end
+function camera:watch_player(map,player) 
+	local x,y = player:get_pos()
+	map:center_play(x,y,g_root.w,g_root.h)
 	return true
 end
 

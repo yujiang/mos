@@ -476,10 +476,6 @@ function cell:get_sortmsg_childs()
 	return get_sortshow_tb(self.childs,self.is_msg,true)
 end
 
---重载这个得到渲染对象。
-function cell:get_render_override()
-end
-
 function table_copyvalue(t,tb)
 	for k,v in pairs(tb) do
 		if type(k) == "string" then
@@ -489,37 +485,6 @@ function table_copyvalue(t,tb)
 		end
 	end
 	return t
-end
---render
---虚函数 get_render_override,不用在lua层确定offset，在c++层确定即可。
-function cell:get_render_childs()
-	if self:get_childs_num() > 0 then
-		--base is here!
-		local tb = {}
-		local shows = self:get_sortshow_childs()
-		for _,child in pairs(shows) do
-			local t = child:get_render_childs()
-			if t then
-				table.insert(tb,t)
-			end
-		end	
-		if #tb == 0 then			
-			return self:get_render_override()
-		end
-		table_copyvalue(tb,self)
-		return tb
-	else
-		return self:get_render_override() --or cell
-	end
-end
-
---打印render,相当于static的函数。
-function cell:print_render(tb)
-	if not tb then
-		tb = self:get_render_childs()
-	end
-	local ignores = {father = true,childs = true}
-	table_print(tb,nil,nil,ignores)
 end
 
 --打印cell

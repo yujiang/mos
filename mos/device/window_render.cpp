@@ -16,7 +16,12 @@ window_render::window_render(window* w) : m_window(w)
 
 	is_batch = true;
 	is_multexture = true;
+#ifdef _DEBUG
+	is_multhread = false;
+#else
 	is_multhread = true;
+#endif // _DEBUG
+
 }
 
 window_render::~window_render()

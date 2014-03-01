@@ -98,6 +98,7 @@ function ani:set_ani(ani_speed,frame_start,frame_end,loop,step,callback)
 	self.frame_end = frame_end
 	self.loop = loop
 	self.step = step or 1 --may be -1...
+	assertex(callback == nil or type(callback) == "function")
 	self.callback = callback
 	self:add_timer()
 end
@@ -166,12 +167,14 @@ function ani:ani_end(callback)
 		return false
 	end
 	self.loop = false
+	assertex(callback == nil or type(callback) == "function")
 	self.callback = callback
 	return true
 end
 
 function ani:ani_back(callback)
 	self.step = -self.step
+	assertex(callback == nil or type(callback) == "function")
 	self.callback = callback
 	self:add_timer()
 	return true

@@ -11,7 +11,7 @@ function sprite:create_sprite(id,x,y,z,ani_id,use_zgp)
 		id = g_sprite_id
 		g_sprite_id = id + 1
 	end
-	cell.create_cell(self,tostring(id),x,y,z or 0,0,0)
+	cell.create_cell(self,"s"..id,x,y,z or 0,0,0)
 	local body = sprite_body()
 	body:create_body("body",0,0,-1000,ani_id,use_zgp)
 	self:add_child(body)

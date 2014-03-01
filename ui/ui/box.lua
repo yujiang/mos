@@ -10,9 +10,4 @@ function box:create_box(name,x,y,z,w,h,color,alpha)
 	self._disable = true
 end
 
-function box:get_render_override()
-	--print("image:get_render_override()",self.name)
-	return self
-end
-
 return box

@@ -108,7 +108,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	custom_game_source();
 
-	init_lua(argv[1]);
+	init_lua(file);
 
 	while(!g_exit)
 	{
