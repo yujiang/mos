@@ -4,11 +4,11 @@
 #include "point.h"
 typedef point2 g_point;
 
-#ifndef max
-#define max(a,b) (a)>(b)?(a):(b)
+#ifndef MYMAX
+#define MYMAX(a,b) (a)>(b)?(a):(b)
 #endif
-#ifndef min
-#define min(a,b) (a)>(b)?(b):(a)
+#ifndef MYMIN
+#define MYMIN(a,b) (a)>(b)?(b):(a)
 #endif
 
 typedef unsigned long g_long;
@@ -128,10 +128,10 @@ inline g_rect operator + (const g_rect &r1, const g_rect &r2){
 		return r2;
 	if (r2.is_empty())
 		return r1;
-	return g_rect(min(r1.l,r2.l),min(r1.t,r2.t),max(r1.r,r2.r),max(r1.b,r2.b));
+	return g_rect(MYMIN(r1.l,r2.l),MYMIN(r1.t,r2.t),MYMAX(r1.r,r2.r),MYMAX(r1.b,r2.b));
 }
 inline g_rect operator - (const g_rect &r1, const g_rect &r2){
-	return g_rect(max(r1.l,r2.l),max(r1.t,r2.t),min(r1.r,r2.r),min(r1.b,r2.b));
+	return g_rect(MYMAX(r1.l,r2.l),MYMAX(r1.t,r2.t),MYMIN(r1.r,r2.r),MYMIN(r1.b,r2.b));
 }
 
 inline bool rect_intersection(const g_rect& r1,const g_rect& r2){

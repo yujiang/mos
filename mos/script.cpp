@@ -12,7 +12,7 @@ lua_State* get_lua()
 	return g_L;
 }
 
-#define error(L,sig,...)  {printf(sig"\n", __VA_ARGS__);return -1;}
+#define error(L,sig,...)  {printf(sig"\n", ##__VA_ARGS__);return -1;}
 
 int docall (lua_State *L, int narg, int nresults);
 void on_enter_lua(lua_State *L, const char* where);

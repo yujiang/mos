@@ -16,3 +16,5 @@ Release_dll
 *.o
 ipch
 *.7z
+change.txt
+mos/mos.c

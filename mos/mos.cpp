@@ -1,7 +1,6 @@
 // mos.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
 #include "driver.h"
 #include "device/window.h"
 #include "device/window_render.h"
@@ -10,8 +9,11 @@
 #include "map/map.h"
 
 #include "mos.h"
+
+#ifdef WIN32
 //#define VLD_FORCE_ENABLE
 #include "vld/vld.h" //http://vld.codeplex.com/
+#endif
 
 window* g_window = NULL;
 unsigned int g_time_now = 0;
@@ -69,14 +71,14 @@ void custom_game_source()
 bool g_exit = false;
 
 int g_argc;
-_TCHAR** g_argv;
+char** g_argv;
 
 int get_argc()
 {
 	return g_argc;
 }
 
-_TCHAR** get_argv()
+char** get_argv()
 {
 	return g_argv;
 }
@@ -86,7 +88,7 @@ void end_thread_input();
 
 const char default_lua[] = "test.lua";
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
 	g_argc = argc;
 	g_argv = argv;

@@ -1,6 +1,7 @@
-#include "stdafx.h"
+
 #include "dir32.h"
 #include "core/cc.h"
+#include <stdlib.h>
 //#include "time.h"
 
 #define ASSERT(a)

@@ -1,15 +1,12 @@
 
-#include "stdafx.h"
-
 #include "AStar.h"
 #include "dir32.h"
-#include <conio.h>
-#include <ctype.h>
-//#include <iostream>
-
+#include <string.h>
 #ifdef WIN32
+#include <conio.h>
 #include <windows.h>
 #endif
+#include <stdlib.h>
 
 using namespace std;
 
@@ -74,11 +71,13 @@ void gotoxy(int x,int y)
 
 void drawxy(int x,int y,char ch)
 {
+#ifdef WIN32
 	gotoxy(x,y);
 	char c[2];
 	c[0] = ch;
 	c[1] = 0;
 	cprintf(c);
+#endif
 }
 
 cAStar::~cAStar()
@@ -140,6 +139,7 @@ void cAStar::create_astar(g_size size,Obs_type* buffer,const g_rect& rc)
 
 void cAStar::showmap(void)
 {
+#ifdef WIN32
 #ifndef Trace_AStarFindPath
 	return;
 #endif
@@ -164,6 +164,7 @@ void cAStar::showmap(void)
 	}
 	draw_point(start_x,start_y,'s');
 	draw_point(end_x,end_y,'e');
+#endif
 }
 
 // 初始化队列

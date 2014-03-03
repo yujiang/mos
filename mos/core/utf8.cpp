@@ -1,7 +1,6 @@
 // a2u.cpp : 定义控制台应用程序的入口点。
 //
 
-#include "stdafx.h"
 #include "utf8.h"
 #include "iconv/iconv.h"
 #include "assert.h"
